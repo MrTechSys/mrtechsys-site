@@ -1,0 +1,113 @@
+{
+  "name": "Tutorial",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "module_ref": {
+      "type": "string",
+      "enum": [
+        "dashboard",
+        "leads",
+        "quotes",
+        "compliance",
+        "devops",
+        "reports"
+      ],
+      "description": "Module this tutorial belongs to"
+    },
+    "segment": {
+      "type": "string",
+      "enum": [
+        "first_run",
+        "intermediate",
+        "advanced",
+        "admin"
+      ],
+      "default": "first_run"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector to highlight"
+          },
+          "tip": {
+            "type": "string",
+            "description": "Instruction text"
+          },
+          "media_url": {
+            "type": "string",
+            "description": "Optional screenshot/video"
+          },
+          "action": {
+            "type": "string",
+            "description": "Optional action to perform"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "top",
+              "bottom",
+              "left",
+              "right"
+            ],
+            "default": "bottom"
+          }
+        }
+      },
+      "description": "Tutorial steps"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "required_role": {
+      "type": "string",
+      "description": "Minimum role to see this tutorial"
+    }
+  },
+  "required": [
+    "slug",
+    "title",
+    "module_ref",
+    "steps"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

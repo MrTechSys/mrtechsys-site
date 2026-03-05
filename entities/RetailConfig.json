@@ -1,0 +1,119 @@
+{
+  "name": "RetailConfig",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "business_address": {
+      "type": "string"
+    },
+    "business_type": {
+      "type": "string",
+      "default": "retail"
+    },
+    "onboarding_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started"
+    },
+    "storefront_domain": {
+      "type": "string"
+    },
+    "storefront_status": {
+      "type": "string",
+      "enum": [
+        "inactive",
+        "staging",
+        "active"
+      ],
+      "default": "inactive"
+    },
+    "delivery_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "pickup, local_delivery, ship"
+    },
+    "payment_gateway": {
+      "type": "string"
+    },
+    "theme_config": {
+      "type": "object",
+      "properties": {
+        "logo_url": {
+          "type": "string"
+        },
+        "primary_color": {
+          "type": "string"
+        },
+        "secondary_color": {
+          "type": "string"
+        },
+        "banner_image": {
+          "type": "string"
+        }
+      }
+    },
+    "advanced_theme_config": {
+      "type": "object",
+      "properties": {
+        "custom_font_url": {
+          "type": "string"
+        },
+        "font_family": {
+          "type": "string"
+        },
+        "layout_mode": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "sidebar_left",
+            "minimal"
+          ],
+          "default": "standard"
+        },
+        "custom_css": {
+          "type": "string"
+        },
+        "header_style": {
+          "type": "string",
+          "enum": [
+            "sticky",
+            "static",
+            "transparent"
+          ],
+          "default": "static"
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "refund_policy": {
+          "type": "string"
+        },
+        "shipping_policy": {
+          "type": "string"
+        },
+        "terms": {
+          "type": "string"
+        },
+        "contact_email": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id"
+  ]
+}

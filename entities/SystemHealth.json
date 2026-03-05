@@ -1,0 +1,160 @@
+{
+  "name": "SystemHealth",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Service being monitored"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Specific endpoint checked"
+    },
+    "check_type": {
+      "type": "string",
+      "enum": [
+        "http",
+        "database",
+        "function",
+        "websocket",
+        "synthetic_transaction"
+      ],
+      "description": "Type of health check"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "degraded",
+        "down",
+        "unknown"
+      ],
+      "default": "healthy"
+    },
+    "response_time_ms": {
+      "type": "number",
+      "description": "Response time in milliseconds"
+    },
+    "status_code": {
+      "type": "number",
+      "description": "HTTP status code (if applicable)"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if check failed"
+    },
+    "uptime_pct": {
+      "type": "number",
+      "description": "Uptime percentage over monitoring window"
+    },
+    "availability_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall availability score"
+    },
+    "latency_p50": {
+      "type": "number"
+    },
+    "latency_p95": {
+      "type": "number"
+    },
+    "latency_p99": {
+      "type": "number"
+    },
+    "error_rate": {
+      "type": "number",
+      "description": "Error rate percentage"
+    },
+    "throughput_rps": {
+      "type": "number",
+      "description": "Requests per second"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "OpenTelemetry trace ID"
+    },
+    "span_id": {
+      "type": "string",
+      "description": "OpenTelemetry span ID"
+    },
+    "parent_span_id": {
+      "type": "string",
+      "description": "Parent span for tracing hierarchy"
+    },
+    "trace_context": {
+      "type": "object",
+      "description": "Additional trace context",
+      "properties": {
+        "service_name": {
+          "type": "string"
+        },
+        "operation_name": {
+          "type": "string"
+        },
+        "trace_state": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional check metadata"
+    },
+    "region": {
+      "type": "string",
+      "description": "Geographic region of check"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "production",
+        "staging",
+        "dev"
+      ],
+      "default": "production"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "endpoint",
+    "check_type",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

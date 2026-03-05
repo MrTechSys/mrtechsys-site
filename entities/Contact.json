@@ -1,0 +1,169 @@
+{
+  "name": "Contact",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID for multi-tenancy"
+    },
+    "first_name": {
+      "type": "string",
+      "description": "Contact first name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Contact last name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Contact tags for segmentation"
+    },
+    "lifecycle_stage": {
+      "type": "string",
+      "enum": [
+        "subscriber",
+        "lead",
+        "mql",
+        "sql",
+        "opportunity",
+        "customer",
+        "evangelist"
+      ],
+      "default": "lead",
+      "description": "Contact lifecycle stage"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Assigned user ID"
+    },
+    "activity_log": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Historical activity timeline"
+    },
+    "sentiment_score": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Sentiment score from -1 (negative) to 1 (positive)"
+    },
+    "emotion_state": {
+      "type": "string",
+      "enum": [
+        "neutral",
+        "happy",
+        "frustrated",
+        "angry",
+        "confused",
+        "excited"
+      ],
+      "default": "neutral"
+    },
+    "last_interaction_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "lead_source": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional custom fields"
+    }
+  },
+  "required": [
+    "org_id",
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

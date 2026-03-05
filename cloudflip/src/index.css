@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base Holographic Dark Theme */
+    --background: 213 60% 10%; /* #0a1929 */
+    --foreground: 210 40% 98%;
+    
+    --card: 213 60% 12%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 213 60% 10%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 38 92% 50%; /* Amber Neon */
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 190 90% 50%; /* Cyan Neon */
+    --secondary-foreground: 213 60% 10%;
+    
+    --muted: 213 40% 20%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 270 50% 40%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 213 40% 25%;
+    --input: 213 40% 20%;
+    --ring: 38 92% 50%; /* Amber ring */
+    
+    --radius: 0.75rem;
+
+    /* Sidebar Variables */
+    --sidebar-background: 213 60% 8%;
+    --sidebar-foreground: 210 40% 80%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 213 40% 20%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 213 40% 20%;
+    --sidebar-ring: 38 92% 50%;
+  }
+
+  .dark {
+    --background: 213 60% 10%;
+    --foreground: 210 40% 98%;
+    --card: 213 60% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 213 60% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 190 90% 50%;
+    --secondary-foreground: 213 60% 10%;
+    --muted: 213 40% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 270 50% 40%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 213 40% 25%;
+    --input: 213 40% 20%;
+    --ring: 38 92% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-holo-blue text-foreground font-sans antialiased;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 20%);
+    min-height: 100vh;
+  }
+  
+  /* Holographic Card Styles */
+  .holo-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-lg;
+    transition: all 0.3s ease;
+  }
+  
+  .holo-card:hover {
+    @apply border-white/20 shadow-neon-cyan/20 translate-y-[-2px];
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-bold text-white;
+  }
+  
+  h1 { @apply text-4xl lg:text-5xl drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]; }
+  h2 { @apply text-3xl lg:text-4xl; }
+  h3 { @apply text-2xl lg:text-3xl; }
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(10, 25, 41, 0.8);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.3);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.5);
+  }
+}
+
+/* Custom Component Utilities */
+@layer components {
+  .btn-neon-primary {
+    @apply bg-gradient-to-r from-neon-amber to-orange-600 text-white font-bold 
+           hover:shadow-neon-amber/50 hover:brightness-110 transition-all duration-300;
+  }
+  
+  .btn-neon-secondary {
+    @apply bg-gradient-to-r from-neon-cyan to-blue-600 text-white font-bold
+           hover:shadow-neon-cyan/50 hover:brightness-110 transition-all duration-300;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+}

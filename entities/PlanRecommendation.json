@@ -1,0 +1,172 @@
+{
+  "name": "PlanRecommendation",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "recommended_tier": {
+      "type": "string",
+      "enum": [
+        "demo",
+        "starter",
+        "pro",
+        "partner",
+        "elite"
+      ],
+      "description": "AI-recommended CloudFlip subscription tier"
+    },
+    "reasoning": {
+      "type": "string",
+      "description": "Explanation for recommendation"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "AI confidence in recommendation"
+    },
+    "alternative_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tier": {
+            "type": "string"
+          },
+          "fit_score": {
+            "type": "number"
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Other viable options"
+    },
+    "estimated_monthly_cost": {
+      "type": "number",
+      "description": "Projected monthly spend"
+    },
+    "roi_projection": {
+      "type": "object",
+      "properties": {
+        "cost_savings": {
+          "type": "number"
+        },
+        "efficiency_gains": {
+          "type": "string"
+        },
+        "payback_period_months": {
+          "type": "number"
+        },
+        "time_to_value_weeks": {
+          "type": "number"
+        }
+      }
+    },
+    "plan_features": {
+      "type": "object",
+      "description": "Features included in recommended tier",
+      "properties": {
+        "ai_modules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "storage_quota_gb": {
+          "type": "number"
+        },
+        "users_allowed": {
+          "type": "number"
+        },
+        "support_level": {
+          "type": "string"
+        },
+        "leads_per_month": {
+          "type": "number"
+        },
+        "trial_days": {
+          "type": "number"
+        }
+      }
+    },
+    "upgrade_path": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tier progression path: demo → starter → pro → partner → elite"
+    },
+    "user_override": {
+      "type": "string",
+      "description": "If user manually selected different tier"
+    }
+  },
+  "required": [
+    "org_id",
+    "recommended_tier",
+    "reasoning"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "name": "NurtureWorkflow",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Workflow name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "object",
+      "description": "What triggers this workflow",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "lead_created",
+            "lead_status_change",
+            "manual",
+            "lead_score_threshold"
+          ]
+        },
+        "conditions": {
+          "type": "object"
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Sequential nurture steps",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number"
+          },
+          "delay_hours": {
+            "type": "number",
+            "description": "Hours to wait after previous step"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "send_email",
+              "create_task",
+              "update_lead_score",
+              "notify_rep"
+            ]
+          },
+          "email_template": {
+            "type": "object",
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "use_ai": {
+                "type": "boolean"
+              }
+            }
+          },
+          "task_template": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              }
+            }
+          },
+          "exit_conditions": {
+            "type": "object",
+            "description": "Conditions to exit workflow",
+            "properties": {
+              "min_score": {
+                "type": "number"
+              },
+              "sentiment_threshold": {
+                "type": "number"
+              },
+              "engagement_level": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "engagement_rules": {
+      "type": "object",
+      "description": "How to respond to engagement",
+      "properties": {
+        "email_opened_action": {
+          "type": "string",
+          "enum": [
+            "accelerate",
+            "continue",
+            "skip_next"
+          ]
+        },
+        "link_clicked_action": {
+          "type": "string",
+          "enum": [
+            "create_task",
+            "notify_rep",
+            "accelerate"
+          ]
+        },
+        "no_engagement_action": {
+          "type": "string",
+          "enum": [
+            "continue",
+            "pause",
+            "exit"
+          ]
+        }
+      }
+    },
+    "ai_optimization": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "adjust_timing": {
+          "type": "boolean",
+          "default": true
+        },
+        "personalize_content": {
+          "type": "boolean",
+          "default": true
+        },
+        "optimize_send_time": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_enrolled": {
+      "type": "number",
+      "default": 0
+    },
+    "total_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_completion_rate": {
+      "type": "number"
+    },
+    "created_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "trigger",
+    "steps"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

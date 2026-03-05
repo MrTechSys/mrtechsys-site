@@ -1,0 +1,92 @@
+{
+  "name": "IndustryTemplate",
+  "type": "object",
+  "properties": {
+    "industry_name": {
+      "type": "string",
+      "description": "Industry vertical name"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "default_products": {
+      "type": "array",
+      "description": "Pre-configured products for this industry",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unit_price": {
+            "type": "number"
+          },
+          "tax_rate": {
+            "type": "number"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "default_settings": {
+      "type": "object",
+      "description": "Industry-specific organization settings",
+      "properties": {
+        "brand_name": {
+          "type": "string"
+        },
+        "tax_default": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
+    "quote_templates": {
+      "type": "array",
+      "description": "Sample quote templates",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "industry_name",
+    "display_name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "name": "CommissionPayout",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "User ID of agent"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Agent name"
+    },
+    "job_id": {
+      "type": "string",
+      "description": "Related job ID"
+    },
+    "invoice_id": {
+      "type": "string",
+      "description": "Related invoice ID"
+    },
+    "quote_id": {
+      "type": "string",
+      "description": "Related quote ID"
+    },
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "rule_id": {
+      "type": "string",
+      "description": "Commission rule applied"
+    },
+    "job_value": {
+      "type": "number",
+      "description": "Total job/deal value"
+    },
+    "commission_amount": {
+      "type": "number",
+      "description": "Calculated commission"
+    },
+    "commission_rate": {
+      "type": "number",
+      "description": "Rate/percentage applied"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "paid",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "check",
+        "direct_deposit",
+        "cash"
+      ]
+    },
+    "period": {
+      "type": "string",
+      "description": "Commission period (YYYY-MM)"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "agent_id",
+    "job_value",
+    "commission_amount"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "name": "ClientPortalAccess",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client record"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Client login email"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Unique access token for client"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether portal access is enabled"
+    },
+    "last_login": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "login_count": {
+      "type": "number",
+      "default": 0
+    },
+    "permissions": {
+      "type": "object",
+      "description": "What client can do in portal",
+      "properties": {
+        "can_view_deals": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_view_quotes": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_view_invoices": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_view_jobs": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_update_profile": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_add_comments": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "invited_by": {
+      "type": "string",
+      "description": "User ID who sent the invite"
+    },
+    "invited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access expires (optional)"
+    }
+  },
+  "required": [
+    "org_id",
+    "client_id",
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

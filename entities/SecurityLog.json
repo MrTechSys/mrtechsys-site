@@ -1,0 +1,130 @@
+{
+  "name": "SecurityLog",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User making the request (if authenticated)"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Client IP address"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser/client user agent"
+    },
+    "request_method": {
+      "type": "string",
+      "description": "HTTP method (GET, POST, etc.)"
+    },
+    "request_path": {
+      "type": "string",
+      "description": "URL path accessed"
+    },
+    "request_params": {
+      "type": "object",
+      "description": "Query parameters (sanitized)"
+    },
+    "response_status": {
+      "type": "number",
+      "description": "HTTP response code"
+    },
+    "response_time_ms": {
+      "type": "number",
+      "description": "Response time in milliseconds"
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Automated risk assessment score"
+    },
+    "risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Detected risk indicators"
+    },
+    "geolocation": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "is_bot": {
+      "type": "boolean",
+      "default": false,
+      "description": "Bot detection flag"
+    },
+    "is_suspicious": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as suspicious"
+    },
+    "is_blocked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Request was blocked"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "User session identifier"
+    },
+    "referrer": {
+      "type": "string",
+      "description": "HTTP referrer"
+    },
+    "device_fingerprint": {
+      "type": "string",
+      "description": "Unique device identifier"
+    }
+  },
+  "required": [
+    "ip_address",
+    "request_method",
+    "request_path"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

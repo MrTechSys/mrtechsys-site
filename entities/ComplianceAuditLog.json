@@ -1,0 +1,88 @@
+{
+  "name": "ComplianceAuditLog",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of audit event"
+    },
+    "actor": {
+      "type": "string",
+      "description": "User or system that triggered event"
+    },
+    "resource": {
+      "type": "string",
+      "description": "Resource affected"
+    },
+    "action": {
+      "type": "string",
+      "description": "Action performed"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failure"
+      ],
+      "default": "success"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "event_type",
+    "actor",
+    "action"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

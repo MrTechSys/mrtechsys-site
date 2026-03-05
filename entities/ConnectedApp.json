@@ -1,0 +1,155 @@
+{
+  "name": "ConnectedApp",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Owning CloudFlip tenant ID"
+    },
+    "app_name": {
+      "type": "string",
+      "description": "Display name of the connected application"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Unique client identifier for API access"
+    },
+    "client_secret_hash": {
+      "type": "string",
+      "description": "Hashed client secret (never stored plain)"
+    },
+    "webhook_key_hash": {
+      "type": "string",
+      "description": "Hashed HMAC webhook key"
+    },
+    "allowed_event_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Permitted webhook event types",
+      "default": [
+        "user.created",
+        "job.created",
+        "crm.lead.created",
+        "security.event"
+      ]
+    },
+    "allowed_scopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "API access scopes granted",
+      "default": [
+        "crm:self",
+        "jobs:self",
+        "webhook:events:create"
+      ]
+    },
+    "redirect_uris": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Allowed OAuth redirect URIs"
+    },
+    "rate_limit": {
+      "type": "object",
+      "properties": {
+        "requests_per_minute": {
+          "type": "number",
+          "default": 60
+        },
+        "requests_per_hour": {
+          "type": "number",
+          "default": 1000
+        },
+        "burst_limit": {
+          "type": "number",
+          "default": 100
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "request_count": {
+      "type": "number",
+      "default": 0
+    },
+    "webhook_failures": {
+      "type": "number",
+      "default": 0
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional app configuration"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "app_name",
+    "client_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

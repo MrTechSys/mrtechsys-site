@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr. TechSys – Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    .main-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero-logo img {
+      max-width: 220px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+      transition: transform 1s ease;
+    }
+
+    .centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .solution-btn {
+      background-color: #f1c40f;
+      border: none;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      margin: 14px auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .solution-btn:hover {
+      transform: scale(1.1);
+      animation: shake 0.3s ease-in-out;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <!-- LOGO -->
+    <div class="centered hero-logo">
+      <a href="index.html" onclick="spinAndGo(event, this)">
+        <img id="mainLogo" src="logo.png" alt="Mr. TechSys Logo" />
+      </a>
+    </div>
+
+    <!-- WELCOME SECTION -->
+    <section class="section-card">
+      <h2 class="section-title">Welcome to Mr. TechSys</h2>
+      <p class="section-text">
+        If it ain’t TechSys… it ain’t Texas. We help small businesses modernize
+        their operations with cloud-native automation, real-time dashboards, and AI-driven solutions.
+      </p>
+    </section>
+
+    <!-- === EXPLORE SOLUTIONS SECTION === -->
+<section class="section-card">
+  <h2 class="section-title">Explore Solutions</h2>
+  <p class="section-subtext">Choose from tailored modules for:</p>
+
+  <div class="button-grid">
+    <a href="/" class="module-btn">Small Business CloudFX</a>
+    <a href="/" class="module-btn">Real Estate Tools</a>
+    <a href="/" class="module-btn">Volunteer Coordination</a>
+    <a href="/" class="module-btn">AutoModular Contracts</a>
+  </div>
+
+  <div class="cta-card">
+    <p class="cta-text">Not sure where to begin?</p>
+    <a href="/form_pyscript.html" class="explore-btn">Explore Solutions</a>
+  </div>
+</section>
+
+    <!-- FOOTER -->
+    <footer class="section-card">
+      <p class="section-text" style="text-align: center;">
+        <a href="privacy.html">Privacy Policy</a> |
+        <a href="terms.html">Terms of Use</a> |
+        <a href="cookies.html">Cookie Policy</a><br />
+        &copy; 2025 Mr. TechSys Solutions, All Rights Reserved
+      </p>
+    </footer>
+  </div>
+
+  <!-- LOGO SPIN + GPT Bounce Logic -->
+  <script>
+    function navigateWithSpin(target) {
+      const logo = document.getElementById('mainLogo');
+      logo.classList.add('spin');
+      setTimeout(() => {
+        window.location.href = target;
+      }, 1000);
+    }
+
+    function spinAndGo(event, link) {
+      event.preventDefault();
+      navigateWithSpin(link.getAttribute('href'));
+    }
+
+  </script>
+
+<script>
+  function openChat() {
+    window.location.href = "/dashboard"; // or modal/chat launch logic
+  }
+
+  // Animation interval logic
+  setInterval(() => {
+    const bot = document.getElementById("texasBot");
+    bot.classList.add("attention");
+    setTimeout(() => bot.classList.remove("attention"), 1000);
+  }, 20000); // every 20 seconds
+</script>
+
+<!-- === TexasBot Always-On Assistant === -->
+<div id="texasBot" onclick="toggleChatBox()">
+  <img src="/texas_bot.png" alt="MrTechSysGPT" />
+</div>
+
+<!-- === Texas-shaped Chat Box === -->
+<div id="chatBox" class="chat-texas">
+  <div class="chat-header">🤖 MrTechSysGPT</div>
+  <textarea id="chatInput" placeholder="Ask me anything..."></textarea>
+  <button onclick="submitChat()">Send</button>
+</div>
+
+<script>
+  function toggleChatBox() {
+    const box = document.getElementById("chatBox");
+    box.style.display = (box.style.display === "flex") ? "none" : "flex";
+  }
+
+  async function submitChat() {
+    const message = document.getElementById("chatInput").value;
+    const response = await fetch("https://https://drg21pnoha.execute-api.us-east-1.amazonaws.com/prod/invoke", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+
+    const result = await response.json();
+    alert("MrTechSysGPT says:\n" + result.reply); // Or render into a chat log
+  }
+</script>
+
+
+</body>
+</html>

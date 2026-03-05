@@ -1,0 +1,82 @@
+{
+  "name": "GroupMembership",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "group_id": {
+      "type": "string",
+      "description": "Group ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "assigned_by": {
+      "type": "string",
+      "description": "User who assigned this membership"
+    },
+    "ad_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if synced from Azure AD"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "group_id",
+    "user_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

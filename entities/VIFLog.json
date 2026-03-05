@@ -1,0 +1,47 @@
+{
+  "name": "VIFLog",
+  "type": "object",
+  "properties": {
+    "tenantId": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "retrieval",
+        "tool_invocation",
+        "credit_usage",
+        "policy_enforcement"
+      ]
+    },
+    "detail": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenantId",
+    "kind",
+    "createdAt"
+  ],
+  "rls": {
+    "create": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "read": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "tenantId": "{{user.data.current_org_id}}"
+    }
+  }
+}

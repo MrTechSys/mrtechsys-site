@@ -1,0 +1,181 @@
+{
+  "name": "Appointment",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Associated contact"
+    },
+    "service_type": {
+      "type": "string",
+      "description": "Type of service"
+    },
+    "title": {
+      "type": "string",
+      "description": "Appointment title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Appointment start time"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Appointment end time"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "pending"
+    },
+    "booking_source": {
+      "type": "string",
+      "enum": [
+        "online",
+        "phone",
+        "walk_in",
+        "referral",
+        "admin"
+      ],
+      "default": "admin"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "assigned_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs assigned to this appointment"
+    },
+    "reminder_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "reminder_sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "calendar_sync": {
+      "type": "object",
+      "properties": {
+        "google_event_id": {
+          "type": "string"
+        },
+        "outlook_event_id": {
+          "type": "string"
+        },
+        "synced_at": {
+          "type": "string"
+        }
+      }
+    },
+    "estimated_value": {
+      "type": "number"
+    },
+    "actual_value": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "client_preferences": {
+      "type": "string",
+      "description": "Quick reference to client preferences"
+    }
+  },
+  "required": [
+    "org_id",
+    "title",
+    "start_time",
+    "end_time"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

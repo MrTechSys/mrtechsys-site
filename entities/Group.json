@@ -1,0 +1,96 @@
+{
+  "name": "Group",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "group_name": {
+      "type": "string",
+      "description": "Group name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Group description"
+    },
+    "group_type": {
+      "type": "string",
+      "enum": [
+        "security",
+        "distribution",
+        "department"
+      ],
+      "default": "security",
+      "description": "Group type"
+    },
+    "ad_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if synced from Azure AD"
+    },
+    "ad_object_id": {
+      "type": "string",
+      "description": "Azure AD object ID"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Cached member count"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "group_name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

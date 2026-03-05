@@ -1,0 +1,233 @@
+{
+  "name": "DevOpsSprint",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "sprint_id": {
+      "type": "string",
+      "description": "Sprint identifier (e.g., SPRINT-2024-W12)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Sprint name"
+    },
+    "epic_id": {
+      "type": "string",
+      "description": "Parent epic (optional)"
+    },
+    "sprint_number": {
+      "type": "number",
+      "description": "Sequential sprint number"
+    },
+    "duration_weeks": {
+      "type": "number",
+      "default": 2,
+      "description": "Sprint duration"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Sprint goal/objective"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "review",
+        "retrospective",
+        "completed"
+      ],
+      "default": "planning"
+    },
+    "team_id": {
+      "type": "string",
+      "description": "Assigned team"
+    },
+    "capacity": {
+      "type": "object",
+      "properties": {
+        "total_points": {
+          "type": "number"
+        },
+        "committed_points": {
+          "type": "number"
+        },
+        "completed_points": {
+          "type": "number"
+        }
+      }
+    },
+    "user_stories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "story_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          },
+          "assignee": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "todo",
+              "in_progress",
+              "review",
+              "done"
+            ]
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "velocity": {
+      "type": "number",
+      "description": "Actual points completed"
+    },
+    "burndown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "remaining_points": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Daily burndown data"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "bugs_found": {
+          "type": "number"
+        },
+        "bugs_fixed": {
+          "type": "number"
+        },
+        "code_reviews": {
+          "type": "number"
+        },
+        "deployments": {
+          "type": "number"
+        },
+        "test_coverage_pct": {
+          "type": "number"
+        }
+      }
+    },
+    "retrospective": {
+      "type": "object",
+      "properties": {
+        "what_went_well": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "what_needs_improvement": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "action_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "demo_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "org_id",
+    "sprint_id",
+    "name",
+    "start_date",
+    "end_date"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

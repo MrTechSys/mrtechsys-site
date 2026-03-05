@@ -1,0 +1,234 @@
+{
+  "name": "PredictedIncident",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "prediction_id": {
+      "type": "string",
+      "description": "Unique prediction identifier"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Service at risk"
+    },
+    "incident_type": {
+      "type": "string",
+      "enum": [
+        "latency_spike",
+        "error_rate_increase",
+        "resource_exhaustion",
+        "dependency_failure",
+        "cascade_failure",
+        "data_corruption"
+      ],
+      "description": "Type of predicted incident"
+    },
+    "probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Probability of incident occurring (0-1)"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Model confidence in prediction"
+    },
+    "predicted_severity": {
+      "type": "string",
+      "enum": [
+        "sev1",
+        "sev2",
+        "sev3",
+        "sev4"
+      ],
+      "description": "Expected incident severity"
+    },
+    "predicted_impact": {
+      "type": "object",
+      "properties": {
+        "affected_users": {
+          "type": "number"
+        },
+        "revenue_at_risk": {
+          "type": "number"
+        },
+        "sla_breach_risk": {
+          "type": "boolean"
+        },
+        "estimated_downtime_minutes": {
+          "type": "number"
+        },
+        "cascading_services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Predicted business impact"
+    },
+    "triggering_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "signal_type": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string"
+          },
+          "current_value": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "trend": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Metrics/logs that triggered prediction"
+    },
+    "time_to_incident": {
+      "type": "number",
+      "description": "Estimated hours until incident"
+    },
+    "predicted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this prediction is no longer relevant"
+    },
+    "remediation_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "estimated_impact": {
+            "type": "string"
+          },
+          "automation_available": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "AI-suggested preventive actions"
+    },
+    "similar_incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "incident_id": {
+            "type": "string"
+          },
+          "occurred_at": {
+            "type": "string"
+          },
+          "actual_severity": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Historical incidents with similar patterns"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "prevented",
+        "occurred",
+        "false_positive",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "actual_incident_id": {
+      "type": "string",
+      "description": "If incident occurred, link to actual incident"
+    },
+    "prevention_actions_taken": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "taken_at": {
+            "type": "string"
+          },
+          "taken_by": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "outcome": {
+      "type": "string",
+      "description": "What actually happened"
+    }
+  },
+  "required": [
+    "org_id",
+    "prediction_id",
+    "incident_type",
+    "probability",
+    "predicted_severity"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

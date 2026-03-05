@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore Solutions – Mr. TechSys</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    .main-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero-logo img {
+      max-width: 220px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+      transition: transform 1s ease;
+    }
+
+    .centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .solution-btn {
+      background-color: #f1c40f;
+      border: none;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      margin: 14px auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: fit-content;
+    }
+
+    .solution-btn:hover {
+      transform: scale(1.1);
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* GPT Chat Bubble */
+    #chat-bubble {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #f1c40f;
+      color: #000;
+      font-weight: bold;
+      padding: 12px 16px;
+      border-radius: 30px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.5s ease;
+    }
+
+    #chat-bubble.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-wrapper">
+
+    <!-- Logo Header -->
+    <div class="centered hero-logo">
+      <a href="index.html" onclick="spinAndGo(event, this)">
+        <img id="mainLogo" src="logo.png" alt="Mr. TechSys Logo" />
+      </a>
+    </div>
+
+    <!-- Page Title -->
+    <section class="section-card">
+      <h2 class="section-title">Explore Mr. TechSys Solutions</h2>
+      <p class="section-text">
+        Choose from our library of plug-and-play modules, designed to help you automate, scale, and dominate.
+      </p>
+    </section>
+
+    <!-- Module Buttons -->
+    <section class="section-card">
+      <button class="solution-btn" onclick="navigateWithSpin('form_pyscript.html')">Small Business CloudFX</button>
+      <button class="solution-btn" onclick="navigateWithSpin('real_estate.html')">Real Estate Tools</button>
+      <button class="solution-btn" onclick="navigateWithSpin('volunteer_ops.html')">Volunteer Coordination</button>
+      <button class="solution-btn" onclick="navigateWithSpin('automodular.html')">AutoModular Contracts</button>
+    </section>
+
+    <!-- Reminder -->
+    <section class="section-card">
+      <h2 class="section-title">Need a Guided Setup?</h2>
+      <p class="section-text">
+        Click below to start a smart recommendation flow tailored to your business type and current system operations.
+      </p>
+      <button class="solution-btn" onclick="navigateWithSpin('form_pyscript.html')">Launch Smart Survey</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="section-card">
+      <p class="section-text" style="text-align: center;">
+        <a href="privacy.html">Privacy Policy</a> |
+        <a href="terms.html">Terms of Use</a> |
+        <a href="cookies.html">Cookie Policy</a><br />
+        &copy; 2025 Mr. TechSys Solutions, All Rights Reserved
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- GPT Assistant -->
+  <div id="chat-bubble" onclick="alert('Howdy partner! I\'m MrTechSysGPT. Ready to assist.')">
+    💬 MrTechSysGPT
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function navigateWithSpin(target) {
+      const logo = document.getElementById('mainLogo');
+      logo.classList.add('spin');
+      setTimeout(() => {
+        window.location.href = target;
+      }, 1000);
+    }
+
+    function spinAndGo(event, link) {
+      event.preventDefault();
+      navigateWithSpin(link.getAttribute('href'));
+    }
+
+    // GPT bubble every 15s
+    setInterval(() => {
+      const bubble = document.getElementById("chat-bubble");
+      bubble.classList.add("show");
+      setTimeout(() => {
+        bubble.classList.remove("show");
+      }, 5000);
+    }, 15000);
+  </script>
+</body>
+</html>

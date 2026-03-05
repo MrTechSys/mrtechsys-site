@@ -1,0 +1,207 @@
+{
+  "name": "ComplianceFinding",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "finding_id": {
+      "type": "string",
+      "description": "Unique finding identifier"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "api_audit",
+        "manual_review",
+        "automated_scan",
+        "security_log",
+        "data_residency_check"
+      ],
+      "description": "How this finding was discovered"
+    },
+    "regulation": {
+      "type": "string",
+      "enum": [
+        "gdpr",
+        "hipaa",
+        "pci",
+        "ccpa",
+        "sox",
+        "data_residency"
+      ],
+      "description": "Applicable regulation"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info"
+      ],
+      "default": "medium",
+      "description": "Issue severity"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "data_exposure",
+        "data_residency",
+        "encryption",
+        "access_control",
+        "data_retention",
+        "consent",
+        "audit_trail",
+        "breach_notification"
+      ],
+      "description": "Finding category"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short finding title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "affected_data_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Types of data affected (PII, PHI, PCI, etc.)"
+    },
+    "affected_regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Geographic regions involved"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "API endpoint or system component"
+    },
+    "request_data": {
+      "type": "object",
+      "description": "Sample request that triggered finding"
+    },
+    "response_data": {
+      "type": "object",
+      "description": "Sample response that triggered finding"
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "How to fix this issue"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "accepted_risk",
+        "false_positive"
+      ],
+      "default": "open"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "User responsible for remediation"
+    },
+    "remediation_task_id": {
+      "type": "string",
+      "description": "Linked remediation task"
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolution_notes": {
+      "type": "string"
+    },
+    "recurrence_count": {
+      "type": "number",
+      "default": 1,
+      "description": "How many times this issue has occurred"
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Calculated risk score"
+    },
+    "compliance_impact": {
+      "type": "object",
+      "properties": {
+        "potential_fine": {
+          "type": "number"
+        },
+        "data_subjects_affected": {
+          "type": "number"
+        },
+        "breach_notification_required": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "finding_id",
+    "regulation",
+    "severity",
+    "title",
+    "description"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

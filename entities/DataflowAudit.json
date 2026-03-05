@@ -1,0 +1,144 @@
+{
+  "name": "DataflowAudit",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "description": "Unique audit identifier"
+    },
+    "source_entity": {
+      "type": "string",
+      "description": "Source entity in data flow"
+    },
+    "destination_entity": {
+      "type": "string",
+      "description": "Destination entity"
+    },
+    "flow_path": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Data flow path (e.g., [Lead, Contact, Deal, Invoice])"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "valid",
+        "schema_mismatch",
+        "missing_data",
+        "broken_reference",
+        "timeout"
+      ],
+      "default": "valid"
+    },
+    "schema_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "expected_type": {
+            "type": "string"
+          },
+          "actual_type": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Schema validation issues"
+    },
+    "missing_records": {
+      "type": "number",
+      "description": "Count of missing records in flow"
+    },
+    "broken_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "reference_id": {
+            "type": "string"
+          },
+          "reference_entity": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "latency_ms": {
+      "type": "number",
+      "description": "Time to complete data flow"
+    },
+    "records_processed": {
+      "type": "number",
+      "description": "Records successfully processed"
+    },
+    "records_failed": {
+      "type": "number",
+      "description": "Records that failed validation"
+    },
+    "auto_fixed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether auto-fix was applied"
+    },
+    "fix_details": {
+      "type": "string"
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "How to resolve issues"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "audit_id",
+    "source_entity",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

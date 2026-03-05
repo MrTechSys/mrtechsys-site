@@ -1,0 +1,115 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "entity": {
+      "type": "string",
+      "description": "Entity name"
+    },
+    "record_id": {
+      "type": "string"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "read",
+        "approve",
+        "reject",
+        "upload",
+        "review",
+        "schedule",
+        "execute"
+      ],
+      "description": "Action type"
+    },
+    "before": {
+      "type": "object",
+      "description": "State before change"
+    },
+    "after": {
+      "type": "object",
+      "description": "State after change"
+    },
+    "detail": {
+      "type": "string",
+      "description": "Human-readable detail"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "hash_chain": {
+      "type": "object",
+      "properties": {
+        "prev_hash": {
+          "type": "string",
+          "description": "SHA-256 hash of previous log entry"
+        },
+        "curr_hash": {
+          "type": "string",
+          "description": "SHA-256 hash of this entry"
+        }
+      },
+      "description": "Immutable hash chain for integrity"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "org_id",
+    "entity",
+    "action",
+    "hash_chain"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

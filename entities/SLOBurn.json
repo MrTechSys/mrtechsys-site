@@ -1,0 +1,96 @@
+{
+  "name": "SLOBurn",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "slo_id": {
+      "type": "string"
+    },
+    "window": {
+      "type": "string",
+      "enum": [
+        "1h",
+        "6h",
+        "24h",
+        "7d",
+        "30d"
+      ]
+    },
+    "burn_rate": {
+      "type": "number",
+      "description": "Error budget burn rate"
+    },
+    "remaining_budget_pct": {
+      "type": "number"
+    },
+    "projected_exhaust_ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When budget will exhaust"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "warning",
+        "critical"
+      ],
+      "default": "healthy"
+    },
+    "calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "slo_id",
+    "window",
+    "burn_rate"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "name": "DirectorySyncLog",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "integration_id": {
+      "type": "string",
+      "description": "Directory integration ID"
+    },
+    "sync_type": {
+      "type": "string",
+      "enum": [
+        "full",
+        "incremental",
+        "manual"
+      ],
+      "description": "Type of sync"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "completed",
+        "failed"
+      ],
+      "description": "Sync status"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "users_created": {
+          "type": "number"
+        },
+        "users_updated": {
+          "type": "number"
+        },
+        "users_disabled": {
+          "type": "number"
+        },
+        "groups_created": {
+          "type": "number"
+        },
+        "groups_updated": {
+          "type": "number"
+        },
+        "memberships_added": {
+          "type": "number"
+        },
+        "memberships_removed": {
+          "type": "number"
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of errors encountered"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "integration_id",
+    "sync_type",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

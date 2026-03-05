@@ -1,0 +1,173 @@
+{
+  "name": "DistributedTrace",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "OpenTelemetry trace ID"
+    },
+    "span_id": {
+      "type": "string",
+      "description": "Span identifier"
+    },
+    "parent_span_id": {
+      "type": "string",
+      "description": "Parent span ID for hierarchy"
+    },
+    "service_name": {
+      "type": "string",
+      "description": "Service that generated this span"
+    },
+    "operation_name": {
+      "type": "string",
+      "description": "Operation being traced (e.g., http.request, db.query)"
+    },
+    "span_kind": {
+      "type": "string",
+      "enum": [
+        "server",
+        "client",
+        "producer",
+        "consumer",
+        "internal"
+      ],
+      "description": "Type of span"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Span start timestamp"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Span end timestamp"
+    },
+    "duration_ms": {
+      "type": "number",
+      "description": "Span duration in milliseconds"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "error",
+        "unset"
+      ],
+      "default": "ok"
+    },
+    "status_message": {
+      "type": "string",
+      "description": "Error message if status is error"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Span attributes (http.method, db.statement, etc.)",
+      "properties": {
+        "http.method": {
+          "type": "string"
+        },
+        "http.url": {
+          "type": "string"
+        },
+        "http.status_code": {
+          "type": "number"
+        },
+        "db.system": {
+          "type": "string"
+        },
+        "db.statement": {
+          "type": "string"
+        },
+        "function.name": {
+          "type": "string"
+        },
+        "user.id": {
+          "type": "string"
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Span events (logs, exceptions)"
+    },
+    "resource": {
+      "type": "object",
+      "properties": {
+        "service.name": {
+          "type": "string"
+        },
+        "service.version": {
+          "type": "string"
+        },
+        "deployment.environment": {
+          "type": "string"
+        }
+      }
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "production",
+        "staging",
+        "dev"
+      ],
+      "default": "production"
+    }
+  },
+  "required": [
+    "trace_id",
+    "span_id",
+    "service_name",
+    "operation_name",
+    "start_time",
+    "duration_ms"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

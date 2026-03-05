@@ -1,0 +1,170 @@
+{
+  "name": "PayrollEntry",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "User ID of employee"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Employee name"
+    },
+    "pay_period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of pay period"
+    },
+    "pay_period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of pay period"
+    },
+    "hours_worked": {
+      "type": "number",
+      "description": "Total hours worked"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "description": "Hourly pay rate"
+    },
+    "overtime_hours": {
+      "type": "number",
+      "description": "Overtime hours worked"
+    },
+    "overtime_rate": {
+      "type": "number",
+      "description": "Overtime pay rate"
+    },
+    "base_pay": {
+      "type": "number",
+      "description": "Base pay amount"
+    },
+    "overtime_pay": {
+      "type": "number",
+      "description": "Overtime pay amount"
+    },
+    "bonuses": {
+      "type": "number",
+      "description": "Bonus amount"
+    },
+    "deductions": {
+      "type": "number",
+      "description": "Deductions amount"
+    },
+    "gross_pay": {
+      "type": "number",
+      "description": "Total gross pay"
+    },
+    "net_pay": {
+      "type": "number",
+      "description": "Net pay after deductions"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending",
+        "paid",
+        "cancelled"
+      ],
+      "default": "draft"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "check",
+        "direct_deposit",
+        "cash"
+      ],
+      "default": "direct_deposit"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "timesheet_entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "hours": {
+            "type": "number"
+          },
+          "job_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "employee_id",
+    "pay_period_start",
+    "pay_period_end"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

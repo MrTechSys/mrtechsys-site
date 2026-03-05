@@ -1,0 +1,144 @@
+{
+  "name": "ReportView",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "User who created this view"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "filters": {
+      "type": "object",
+      "description": "Global filters applied to all widgets",
+      "properties": {
+        "date_range": {
+          "type": "string"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "custom": {
+          "type": "object"
+        }
+      }
+    },
+    "widgets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "widget_key": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Ordered list of widgets"
+    },
+    "share_scope": {
+      "type": "string",
+      "enum": [
+        "private",
+        "team",
+        "org"
+      ],
+      "default": "private"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_viewed": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "owner_id",
+    "title",
+    "widgets"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "owner_id": "{{user.id}}"
+        },
+        {
+          "org_id": "{{user.data.current_org_id}}",
+          "share_scope": "org"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

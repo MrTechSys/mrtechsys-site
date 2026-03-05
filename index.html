@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MrTechSys – Coming Soon</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: black;
+      color: white;
+      text-align: center;
+    }
+
+    video#bgVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100vw;
+      min-height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .title {
+      font-size: 2.8rem;
+      font-weight: bold;
+      margin-top: 1.5rem;
+      color: #f1c40f;
+      text-shadow: 0 0 25px #f1c40f;
+    }
+
+    .countdown {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      color: #00e6e6;
+      text-shadow: 0 0 10px #00e6e6;
+    }
+
+    .orbit-container {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      animation: rotateOrbit 20s linear infinite;
+    }
+
+    .sun {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, #ffaa00, #ff5500);
+      border-radius: 50%;
+      box-shadow: 0 0 30px 15px #ffaa00;
+      transform: translate(-50%, -50%);
+    }
+
+    .planet {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      transform: translateX(-50%);
+    }
+
+    .planet img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      animation: spin 6s linear infinite;
+    }
+
+    @keyframes rotateOrbit {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #dvd-floater {
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      z-index: 9;
+    }
+
+    .dvd-content {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 12px #f1c40f;
+      font-size: 1rem;
+      color: #fff;
+      border: 1px solid #f1c40f;
+      backdrop-filter: blur(5px);
+    }
+
+    .dvd-content ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .dvd-content li {
+      padding: 0.3rem 0;
+      text-align: left;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-left: 0;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+
+    .footer a {
+      color: #f1c40f;
+      text-decoration: none;
+      margin: 0 12px;
+    }
+
+    .footer a:hover {
+      text-shadow: 0 0 10px #f1c40f;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop playsinline id="bgVideo">
+    <source src="https://cdn.coverr.co/videos/coverr-galactic-space-6366/1080p.mp4" type="video/mp4">
+  </video>
+
+  <div class="countdown" id="countdown">Launching in: --:--:--</div>
+  <div class="title">🚧 MrTechSys – Under Construction 🚀</div>
+
+  <div class="orbit-container">
+    <div class="sun"></div>
+    <div class="planet">
+      <img src="logo.png" alt="MrTechSys Logo" />
+    </div>
+  </div>
+
+  <div id="dvd-floater">
+    <div class="dvd-content">
+      <ul>
+        <li>🚀 Cloud Migration Templates</li>
+        <li>🤖 AI-Powered Dashboards</li>
+        <li>🔧 Small Biz Automation Tools</li>
+        <li>🛡️ Secure CRM + Workflow Ops</li>
+        <li>🧠 Smart Assistant (MrTechSysGPT)</li>
+        <li>🏡 Real Estate Agent Tools 🤠</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="terms.html">Terms of Use</a> |
+    <a href="cookies.html">Cookie Policy</a>
+  </div>
+
+  <script>
+    // Countdown timer
+    const countdownEl = document.getElementById("countdown");
+    const launchTime = new Date(Date.now() + 72 * 60 * 60 * 1000);
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = launchTime - now;
+
+      if (distance < 0) {
+        countdownEl.innerHTML = "🚀 We have liftoff!";
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownEl.innerHTML = `Launching in: ${hours.toString().padStart(2, '0')}h ${minutes
+        .toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // DVD Bounce
+    const floater = document.getElementById("dvd-floater");
+    let x = 1;
+    let y = 1;
+    let posX = 100;
+    let posY = 100;
+
+    function moveFloater() {
+      const floaterRect = floater.getBoundingClientRect();
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+
+      if (posX + floaterRect.width >= winW || posX <= 0) x = -x;
+      if (posY + floaterRect.height >= winH || posY <= 0) y = -y;
+
+      posX += x;
+      posY += y;
+
+      floater.style.left = posX + "px";
+      floater.style.top = posY + "px";
+
+      requestAnimationFrame(moveFloater);
+    }
+
+    moveFloater();
+  </script>
+</body>
+</html>

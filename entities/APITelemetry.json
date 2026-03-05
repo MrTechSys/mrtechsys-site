@@ -1,0 +1,189 @@
+{
+  "name": "APITelemetry",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Unique request identifier"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "API endpoint path"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "HTTP method"
+    },
+    "auth_context": {
+      "type": "object",
+      "properties": {
+        "token_type": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "request_metadata": {
+      "type": "object",
+      "properties": {
+        "payload_size": {
+          "type": "number"
+        },
+        "query_params_count": {
+          "type": "number"
+        },
+        "has_sensitive_fields": {
+          "type": "boolean"
+        }
+      }
+    },
+    "response_metadata": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "number"
+        },
+        "response_size": {
+          "type": "number"
+        },
+        "rows_returned": {
+          "type": "number"
+        },
+        "fields_exposed": {
+          "type": "number"
+        }
+      }
+    },
+    "network_context": {
+      "type": "object",
+      "properties": {
+        "ip_address": {
+          "type": "string"
+        },
+        "asn": {
+          "type": "string"
+        },
+        "geo_country": {
+          "type": "string"
+        },
+        "geo_city": {
+          "type": "string"
+        },
+        "is_tor": {
+          "type": "boolean"
+        },
+        "is_vpn": {
+          "type": "boolean"
+        },
+        "is_proxy": {
+          "type": "boolean"
+        }
+      }
+    },
+    "execution_time_ms": {
+      "type": "number"
+    },
+    "rate_limit_bucket": {
+      "type": "string"
+    },
+    "rate_limit_remaining": {
+      "type": "number"
+    },
+    "threat_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "threat_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "attack_pattern_detected": {
+      "type": "string",
+      "enum": [
+        "none",
+        "sql_injection",
+        "nosql_injection",
+        "path_traversal",
+        "command_injection",
+        "replay_attack",
+        "token_manipulation",
+        "rate_abuse",
+        "data_scraping",
+        "bola",
+        "enumeration"
+      ],
+      "default": "none"
+    },
+    "flagged_for_review": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "tenant_id",
+    "request_id",
+    "endpoint",
+    "method"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

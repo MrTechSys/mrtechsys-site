@@ -1,0 +1,182 @@
+{
+  "name": "ZeroTrustPolicy",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID (null for global policies)"
+    },
+    "policy_id": {
+      "type": "string",
+      "description": "Unique policy identifier"
+    },
+    "policy_name": {
+      "type": "string",
+      "description": "Human-readable policy name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Policy description"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "global",
+        "tenant",
+        "module",
+        "action"
+      ],
+      "description": "Policy enforcement scope"
+    },
+    "module": {
+      "type": "string",
+      "description": "Module this policy applies to (if scope=module)"
+    },
+    "action": {
+      "type": "string",
+      "description": "Specific action this policy governs (if scope=action)"
+    },
+    "requirements": {
+      "type": "object",
+      "properties": {
+        "min_trust_level": {
+          "type": "string",
+          "enum": [
+            "untrusted",
+            "low",
+            "medium",
+            "high",
+            "verified"
+          ]
+        },
+        "max_risk_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "requires_mfa": {
+          "type": "boolean"
+        },
+        "requires_jit_elevation": {
+          "type": "boolean"
+        },
+        "allowed_ip_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked_ip_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_locations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "time_restrictions": {
+          "type": "object",
+          "properties": {
+            "allowed_hours": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "allowed_days": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "Zero-Trust requirements for access"
+    },
+    "enforcement_mode": {
+      "type": "string",
+      "enum": [
+        "enforce",
+        "audit",
+        "disabled"
+      ],
+      "default": "enforce",
+      "description": "How policy is enforced"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether policy is active"
+    },
+    "is_system_policy": {
+      "type": "boolean",
+      "default": false,
+      "description": "System policies cannot be deleted"
+    },
+    "priority": {
+      "type": "number",
+      "default": 100,
+      "description": "Policy priority (lower = higher priority)"
+    },
+    "violation_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of violations detected"
+    },
+    "last_violation_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time policy was violated"
+    }
+  },
+  "required": [
+    "policy_id",
+    "policy_name",
+    "scope",
+    "requirements"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "tenant_id": null
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$and": [
+        {
+          "is_system_policy": false
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

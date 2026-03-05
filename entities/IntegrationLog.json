@@ -1,0 +1,80 @@
+{
+  "name": "IntegrationLog",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "integration_name": {
+      "type": "string",
+      "description": "Name of external service (stripe, facebook, etc.)"
+    },
+    "operation": {
+      "type": "string",
+      "description": "API operation performed"
+    },
+    "request_payload": {
+      "type": "object",
+      "description": "Sanitized request data"
+    },
+    "response_status": {
+      "type": "number",
+      "description": "HTTP status code"
+    },
+    "response_data": {
+      "type": "object",
+      "description": "Sanitized response data"
+    },
+    "duration_ms": {
+      "type": "number",
+      "description": "Request duration in milliseconds"
+    },
+    "success": {
+      "type": "boolean"
+    },
+    "error_message": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "integration_name",
+    "operation",
+    "success"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

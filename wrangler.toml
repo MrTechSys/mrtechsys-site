@@ -1,0 +1,16 @@
+name = "mrtechsys-site"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-04-01"
+
+[vars]
+JWT_SECRET = "CHANGE_ME_IN_DASHBOARD"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mrtechsys-db"
+database_id = "your-d1-id-here"
+
+# Note: Cloudflare Pages automatically routes based on the functions directory.
+# To handle multiple domains (mrtechsys.com and cloudflip.mrtechsys.com) 
+# pointing to different parts of the same build, you can use a _middleware.ts
+# or configure Custom Domains in the Cloudflare Pages dashboard.

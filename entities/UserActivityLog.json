@@ -1,0 +1,102 @@
+{
+  "name": "UserActivityLog",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User performing the action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "mfa_enabled",
+        "mfa_disabled",
+        "backup_codes_generated",
+        "backup_code_used",
+        "trusted_device_added",
+        "trusted_device_removed",
+        "recovery_email_updated",
+        "password_changed",
+        "login_success",
+        "login_failed",
+        "security_settings_updated"
+      ],
+      "description": "Type of security action"
+    },
+    "details": {
+      "type": "object",
+      "description": "Additional action details"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "IP address of action"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser/device user agent"
+    },
+    "device_fingerprint": {
+      "type": "string",
+      "description": "Unique device identifier"
+    },
+    "geolocation": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        }
+      }
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Calculated risk score for this action"
+    },
+    "success": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether action was successful"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if action failed"
+    }
+  },
+  "required": [
+    "user_id",
+    "action_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

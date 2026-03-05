@@ -1,0 +1,350 @@
+{
+  "name": "TenantSecurityProfile",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "profile_name": {
+      "type": "string",
+      "description": "Profile name (e.g., 'Financial Services High Security')"
+    },
+    "industry_vertical": {
+      "type": "string",
+      "enum": [
+        "financial_services",
+        "healthcare",
+        "technology",
+        "retail",
+        "manufacturing",
+        "professional_services",
+        "government",
+        "education",
+        "other"
+      ],
+      "description": "Industry classification"
+    },
+    "data_sensitivity_level": {
+      "type": "string",
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "highly_confidential",
+        "regulated"
+      ],
+      "default": "internal",
+      "description": "Highest data classification handled"
+    },
+    "regulatory_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "soc2",
+          "gdpr",
+          "hipaa",
+          "pci_dss",
+          "iso27001",
+          "ccpa",
+          "sox",
+          "fisma",
+          "fedramp",
+          "none"
+        ]
+      },
+      "description": "Applicable regulations"
+    },
+    "custom_controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "test_procedure": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "automated": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Tenant-defined custom controls"
+    },
+    "risk_thresholds": {
+      "type": "object",
+      "properties": {
+        "critical_finding_auto_escalate": {
+          "type": "boolean",
+          "default": true
+        },
+        "high_finding_sla_hours": {
+          "type": "number",
+          "default": 24
+        },
+        "medium_finding_sla_hours": {
+          "type": "number",
+          "default": 72
+        },
+        "low_finding_sla_hours": {
+          "type": "number",
+          "default": 168
+        },
+        "auto_remediate_low": {
+          "type": "boolean",
+          "default": true
+        },
+        "auto_remediate_medium": {
+          "type": "boolean",
+          "default": false
+        },
+        "mfa_required_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "admin"
+          ]
+        },
+        "password_complexity_score": {
+          "type": "number",
+          "default": 3
+        },
+        "session_timeout_minutes": {
+          "type": "number",
+          "default": 60
+        },
+        "failed_login_lockout_threshold": {
+          "type": "number",
+          "default": 5
+        },
+        "max_security_alert_risk_score": {
+          "type": "number",
+          "default": 70
+        }
+      },
+      "description": "Tenant-specific risk tolerance and thresholds"
+    },
+    "monitoring_preferences": {
+      "type": "object",
+      "properties": {
+        "real_time_alerts": {
+          "type": "boolean",
+          "default": true
+        },
+        "alert_channels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "email",
+              "slack",
+              "teams",
+              "pagerduty",
+              "webhook"
+            ]
+          },
+          "default": [
+            "email"
+          ]
+        },
+        "alert_contacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Email addresses for alerts"
+        },
+        "daily_digest": {
+          "type": "boolean",
+          "default": true
+        },
+        "weekly_report": {
+          "type": "boolean",
+          "default": true
+        },
+        "evidence_auto_collect": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "compliance_targets": {
+      "type": "object",
+      "properties": {
+        "target_overall_score": {
+          "type": "number",
+          "default": 85,
+          "description": "Target compliance score (0-100)"
+        },
+        "min_control_coverage_pct": {
+          "type": "number",
+          "default": 95,
+          "description": "Minimum control coverage percentage"
+        },
+        "max_open_critical_findings": {
+          "type": "number",
+          "default": 0
+        },
+        "max_open_high_findings": {
+          "type": "number",
+          "default": 3
+        },
+        "evidence_approval_rate_target": {
+          "type": "number",
+          "default": 90
+        },
+        "audit_readiness_target_days": {
+          "type": "number",
+          "default": 30,
+          "description": "Days to maintain audit-ready state"
+        }
+      }
+    },
+    "auto_remediation_config": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "allowed_severities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium"
+            ]
+          },
+          "default": [
+            "low"
+          ]
+        },
+        "sentinel_integration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow Sentinel SRE to auto-remediate infrastructure issues"
+        },
+        "approval_required_for_medium": {
+          "type": "boolean",
+          "default": true
+        },
+        "max_auto_remediation_per_day": {
+          "type": "number",
+          "default": 10
+        },
+        "rollback_on_failure": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "audit_settings": {
+      "type": "object",
+      "properties": {
+        "next_audit_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "audit_frequency_months": {
+          "type": "number",
+          "default": 12
+        },
+        "auditor_name": {
+          "type": "string"
+        },
+        "auditor_contact": {
+          "type": "string"
+        },
+        "evidence_retention_days": {
+          "type": "number",
+          "default": 2555,
+          "description": "7 years default"
+        },
+        "continuous_monitoring": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "last_updated_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "profile_name",
+    "industry_vertical",
+    "data_sensitivity_level"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

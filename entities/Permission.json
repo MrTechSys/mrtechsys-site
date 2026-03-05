@@ -1,0 +1,66 @@
+{
+  "name": "Permission",
+  "type": "object",
+  "properties": {
+    "permission_key": {
+      "type": "string",
+      "description": "Unique permission identifier (e.g., crm.read, billing.manage)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Permission description"
+    },
+    "module": {
+      "type": "string",
+      "description": "Module this permission belongs to (e.g., CRM, Billing, Jobs)"
+    },
+    "resource_type": {
+      "type": "string",
+      "description": "Resource type (e.g., leads, quotes, invoices)"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "read",
+        "create",
+        "update",
+        "delete",
+        "manage",
+        "execute"
+      ],
+      "description": "Action type"
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": true,
+      "description": "System permissions cannot be deleted"
+    }
+  },
+  "required": [
+    "permission_key",
+    "module",
+    "action"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

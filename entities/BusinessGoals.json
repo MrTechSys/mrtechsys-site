@@ -1,0 +1,140 @@
+{
+  "name": "BusinessGoals",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "top_priorities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "scale",
+          "security",
+          "automation",
+          "ai_integration",
+          "cost_optimization",
+          "compliance",
+          "modernization",
+          "disaster_recovery",
+          "performance",
+          "collaboration"
+        ]
+      },
+      "description": "Top 3 business priorities",
+      "maxItems": 3
+    },
+    "compliance_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "gdpr",
+          "soc2",
+          "hipaa",
+          "pci_dss",
+          "iso27001",
+          "none"
+        ]
+      },
+      "description": "Compliance standards needed"
+    },
+    "budget_range": {
+      "type": "string",
+      "enum": [
+        "under_1k",
+        "1k_5k",
+        "5k_10k",
+        "10k_25k",
+        "25k_50k",
+        "50k_plus"
+      ],
+      "description": "Monthly budget range for cloud services"
+    },
+    "pain_points": {
+      "type": "string",
+      "description": "Detailed description of current challenges"
+    },
+    "timeline": {
+      "type": "string",
+      "enum": [
+        "immediate",
+        "1_3_months",
+        "3_6_months",
+        "6_12_months",
+        "12_plus_months"
+      ],
+      "description": "Desired migration timeline"
+    },
+    "team_size": {
+      "type": "number",
+      "description": "Number of team members"
+    },
+    "technical_expertise": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "expert"
+      ],
+      "description": "Team's technical capability level"
+    }
+  },
+  "required": [
+    "org_id",
+    "top_priorities"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

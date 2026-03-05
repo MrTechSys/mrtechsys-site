@@ -1,0 +1,76 @@
+{
+  "name": "VIFMemory",
+  "type": "object",
+  "properties": {
+    "tenantId": {
+      "type": "string",
+      "description": "Tenant/organization identifier (enforced)"
+    },
+    "agentId": {
+      "type": "string",
+      "description": "Optional agent identifier writing this memory"
+    },
+    "namespace": {
+      "type": "string",
+      "enum": [
+        "crm.leads",
+        "sales.quotes",
+        "ops.jobs",
+        "finance.invoices",
+        "comms.interactions",
+        "analytics.insights",
+        "security.events",
+        "sre.incidents",
+        "devops.deployments",
+        "agents.preferences"
+      ]
+    },
+    "content": {
+      "type": "string",
+      "description": "Canonical normalized text"
+    },
+    "source": {
+      "type": "string",
+      "description": "Entity ref, URL, file, or tool output"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Tags, timestamps, ACL hints, chunk info"
+    },
+    "embedding": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Vector embedding"
+    },
+    "hash": {
+      "type": "string",
+      "description": "Deduplication hash (tenant+namespace+content)"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenantId",
+    "namespace",
+    "content",
+    "hash"
+  ],
+  "rls": {
+    "create": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "read": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "tenantId": "{{user.data.current_org_id}}"
+    }
+  }
+}

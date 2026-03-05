@@ -1,0 +1,142 @@
+{
+  "name": "LoyaltyProgram",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client in loyalty program"
+    },
+    "points": {
+      "type": "number",
+      "default": 0,
+      "description": "Loyalty points earned"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze"
+    },
+    "jobs_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "referrals_made": {
+      "type": "number",
+      "default": 0
+    },
+    "badges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "badge_name": {
+            "type": "string"
+          },
+          "earned_at": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Earned badges and achievements"
+    },
+    "rewards_claimed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reward_type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "claimed_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "next_reward_at": {
+      "type": "number",
+      "description": "Points needed for next reward"
+    },
+    "lifetime_value": {
+      "type": "number",
+      "default": 0
+    },
+    "joined_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "client_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

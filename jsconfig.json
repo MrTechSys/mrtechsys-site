@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./cloudflip/src/*"]
+    },
+    "jsx": "react-jsx"
+  },
+  "include": ["cloudflip/src/**/*.js", "cloudflip/src/**/*.jsx"]
+} 

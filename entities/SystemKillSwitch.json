@@ -1,0 +1,128 @@
+{
+  "name": "SystemKillSwitch",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID (null for global kill-switch)"
+    },
+    "switch_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "agent",
+        "tenant",
+        "soc_autonomy",
+        "global_lockdown"
+      ],
+      "description": "Type of kill-switch"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of target (user_id, agent_id, tenant_id, etc.)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether kill-switch is currently active"
+    },
+    "activated_by": {
+      "type": "string",
+      "description": "User who activated the kill-switch"
+    },
+    "activated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When kill-switch was activated"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for activation"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "Severity of threat requiring kill-switch"
+    },
+    "auto_activated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether kill-switch was auto-activated by SOC"
+    },
+    "actions_blocked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific actions blocked by this kill-switch"
+    },
+    "deactivated_by": {
+      "type": "string",
+      "description": "User who deactivated the kill-switch"
+    },
+    "deactivated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When kill-switch was deactivated"
+    },
+    "deactivation_reason": {
+      "type": "string",
+      "description": "Reason for deactivation"
+    },
+    "requires_multi_party_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requires multiple admins to deactivate"
+    },
+    "approval_requests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "admin_id": {
+            "type": "string"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Multi-party approval tracking"
+    }
+  },
+  "required": [
+    "switch_type",
+    "is_active"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "name": "MultiVariateAnomaly",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "anomaly_id": {
+      "type": "string",
+      "description": "Unique anomaly identifier"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "correlated_metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "baseline": {
+            "type": "number"
+          },
+          "current": {
+            "type": "number"
+          },
+          "deviation_pct": {
+            "type": "number"
+          },
+          "z_score": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Metrics involved in this anomaly"
+    },
+    "pattern_type": {
+      "type": "string",
+      "enum": [
+        "latency_error_inverse",
+        "cpu_memory_correlated",
+        "throughput_quality_inverse",
+        "cascade_failure",
+        "gradual_degradation",
+        "sudden_spike"
+      ],
+      "description": "Type of multi-variate pattern"
+    },
+    "severity_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Combined severity score"
+    },
+    "ai_hypothesis": {
+      "type": "object",
+      "properties": {
+        "root_cause": {
+          "type": "string"
+        },
+        "contributing_factors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": "number"
+        },
+        "similar_past_incidents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommended_investigation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "AI-generated root cause analysis"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "detected",
+        "investigating",
+        "resolved",
+        "false_positive"
+      ],
+      "default": "detected"
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "incident_created_id": {
+      "type": "string",
+      "description": "If incident was auto-created"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "time_series_data": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Time series data points showing the anomaly"
+    }
+  },
+  "required": [
+    "org_id",
+    "anomaly_id",
+    "correlated_metrics",
+    "pattern_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

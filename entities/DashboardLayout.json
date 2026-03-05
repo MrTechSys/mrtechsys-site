@@ -1,0 +1,66 @@
+{
+  "name": "DashboardLayout",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who owns this layout"
+    },
+    "org_id": {
+      "type": "string"
+    },
+    "widgets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of widget IDs in display order"
+    },
+    "layout_config": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "number",
+          "default": 3
+        },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "default",
+            "dark",
+            "neon"
+          ],
+          "default": "default"
+        }
+      }
+    }
+  },
+  "required": [
+    "user_id",
+    "org_id",
+    "widgets"
+  ],
+  "rls": {
+    "create": {
+      "user_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_id": "{{user.id}}"
+    },
+    "delete": {
+      "user_id": "{{user.id}}"
+    }
+  }
+}

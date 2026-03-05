@@ -1,0 +1,99 @@
+{
+  "name": "TeamActivity",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Name of user who performed the action"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "User ID who performed the action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted",
+        "emailed",
+        "viewed",
+        "converted",
+        "assigned",
+        "completed"
+      ],
+      "description": "Type of action performed"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Entity type that was acted upon (Lead, Quote, etc.)"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity that was acted upon"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context about the action"
+    }
+  },
+  "required": [
+    "org_id",
+    "action_type",
+    "entity_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

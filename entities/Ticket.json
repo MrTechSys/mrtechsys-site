@@ -1,0 +1,180 @@
+{
+  "name": "Ticket",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Associated contact"
+    },
+    "number": {
+      "type": "string",
+      "description": "Ticket number (e.g., TKT-2024-001)"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "billing",
+        "general",
+        "feature_request",
+        "bug"
+      ],
+      "default": "general"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "open",
+        "escalated",
+        "waiting_on_customer",
+        "resolved",
+        "closed"
+      ],
+      "default": "new"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Assigned user ID"
+    },
+    "sentiment_score": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "emotion_state": {
+      "type": "string",
+      "enum": [
+        "neutral",
+        "happy",
+        "frustrated",
+        "angry",
+        "confused",
+        "excited"
+      ],
+      "default": "neutral"
+    },
+    "sla_due_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "SLA deadline"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "chat",
+        "phone",
+        "form",
+        "social"
+      ],
+      "default": "email"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "sentiment": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "subject"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

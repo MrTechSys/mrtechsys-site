@@ -1,0 +1,63 @@
+{
+  "name": "NotificationPreference",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "push",
+        "in_app"
+      ],
+      "description": "Notification channel"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "lead_assigned",
+        "quote_approved",
+        "invoice_paid",
+        "job_scheduled",
+        "payment_received",
+        "security_alert",
+        "system_notification",
+        "workflow_complete"
+      ],
+      "description": "Type of event to notify about"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "delivery_address": {
+      "type": "string",
+      "description": "Email, phone, or push token"
+    }
+  },
+  "required": [
+    "user_id",
+    "channel",
+    "event_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "user_id": "{{user.id}}"
+    },
+    "update": {
+      "user_id": "{{user.id}}"
+    },
+    "delete": {
+      "user_id": "{{user.id}}"
+    }
+  }
+}

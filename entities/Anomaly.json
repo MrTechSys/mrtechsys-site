@@ -1,0 +1,126 @@
+{
+  "name": "Anomaly",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "metric",
+        "log",
+        "trace",
+        "slo"
+      ],
+      "description": "Type of anomaly"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "signal": {
+      "type": "string",
+      "description": "What signal triggered it"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Anomaly severity score"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "detected",
+        "investigating",
+        "resolved",
+        "false_positive"
+      ],
+      "default": "detected"
+    },
+    "rca": {
+      "type": "object",
+      "description": "Root cause analysis hints",
+      "properties": {
+        "suspect_deps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recent_deploy": {
+          "type": "boolean"
+        },
+        "error_spikes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "correlated_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "scope",
+    "signal",
+    "score"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

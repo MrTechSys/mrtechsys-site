@@ -1,0 +1,106 @@
+{
+  "name": "Activity",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "call",
+        "note",
+        "meeting",
+        "webhook"
+      ],
+      "default": "note"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "related_type": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "client",
+        "quote",
+        "invoice",
+        "job"
+      ]
+    },
+    "related_id": {
+      "type": "string"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "User who created activity"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ],
+      "default": "outbound"
+    }
+  },
+  "required": [
+    "org_id",
+    "kind"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

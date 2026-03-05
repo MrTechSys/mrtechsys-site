@@ -1,0 +1,96 @@
+{
+  "name": "EventMicroSignal",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Contact generating the signal"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": [
+        "pricing_view",
+        "form_abandon",
+        "quick_return",
+        "high_intent_scroll",
+        "download",
+        "demo_request",
+        "feature_click"
+      ],
+      "description": "Type of micro-moment signal"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Signal importance weight (0-1)"
+    },
+    "page_url": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional signal context"
+    }
+  },
+  "required": [
+    "org_id",
+    "contact_id",
+    "signal_type",
+    "weight"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

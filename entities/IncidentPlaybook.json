@@ -1,0 +1,223 @@
+{
+  "name": "IncidentPlaybook",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "playbook_id": {
+      "type": "string",
+      "description": "Unique playbook identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Playbook name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "trigger_conditions": {
+      "type": "object",
+      "description": "Conditions that trigger this playbook",
+      "properties": {
+        "anomaly_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "threat_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severity_threshold": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "alert_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "automated_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "block_ip",
+              "suspend_user",
+              "send_alert",
+              "create_incident",
+              "notify_team",
+              "escalate_pagerduty",
+              "lock_account",
+              "require_mfa_reset",
+              "quarantine_data",
+              "snapshot_logs"
+            ]
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "delay_seconds": {
+            "type": "number"
+          },
+          "requires_approval": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Sequential automated response steps"
+    },
+    "manual_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "assigned_role": {
+            "type": "string"
+          },
+          "sla_minutes": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Manual investigation/remediation steps"
+    },
+    "notification_channels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "email",
+          "slack",
+          "teams",
+          "pagerduty",
+          "sms"
+        ]
+      }
+    },
+    "escalation_policy": {
+      "type": "object",
+      "properties": {
+        "level_1": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User IDs to notify first"
+        },
+        "level_2": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Escalate after X minutes"
+        },
+        "level_2_delay_minutes": {
+          "type": "number"
+        }
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Criteria for incident resolution"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "execution_count": {
+      "type": "number",
+      "default": 0
+    },
+    "success_rate": {
+      "type": "number",
+      "description": "Percentage of successful executions"
+    },
+    "avg_resolution_time_minutes": {
+      "type": "number"
+    },
+    "last_executed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "playbook_id",
+    "name",
+    "trigger_conditions",
+    "automated_steps"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "name": "ExternalLogSource",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Unique source identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Source name"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "aws_cloudwatch",
+        "azure_monitor",
+        "gcp_logging",
+        "firewall",
+        "endpoint_agent",
+        "network_device",
+        "application",
+        "database",
+        "web_server",
+        "syslog"
+      ],
+      "description": "Type of log source"
+    },
+    "connection_config": {
+      "type": "object",
+      "description": "Connection settings (encrypted)",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "auth_type": {
+          "type": "string",
+          "enum": [
+            "api_key",
+            "oauth",
+            "basic",
+            "certificate"
+          ]
+        },
+        "region": {
+          "type": "string"
+        },
+        "polling_interval_minutes": {
+          "type": "number",
+          "default": 5
+        }
+      }
+    },
+    "normalization_schema": {
+      "type": "object",
+      "description": "Field mapping for normalization",
+      "properties": {
+        "timestamp_field": {
+          "type": "string"
+        },
+        "severity_field": {
+          "type": "string"
+        },
+        "message_field": {
+          "type": "string"
+        },
+        "source_ip_field": {
+          "type": "string"
+        },
+        "user_field": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "error",
+        "disconnected"
+      ],
+      "default": "active"
+    },
+    "last_ingestion_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "logs_ingested_count": {
+      "type": "number",
+      "default": 0
+    },
+    "error_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_error": {
+      "type": "string"
+    },
+    "retention_days": {
+      "type": "number",
+      "default": 90,
+      "description": "How long to retain logs from this source"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "source_id",
+    "name",
+    "source_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "name": "ClientPreference",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "preference_type": {
+      "type": "string",
+      "enum": [
+        "scheduling",
+        "communication",
+        "service",
+        "personal",
+        "payment"
+      ],
+      "description": "Type of preference"
+    },
+    "key": {
+      "type": "string",
+      "description": "Preference key (e.g., 'preferred_time', 'likes_coffee')"
+    },
+    "value": {
+      "type": "string",
+      "description": "Preference value"
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "last_confirmed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this preference was last confirmed"
+    },
+    "auto_learned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this was learned by AI"
+    }
+  },
+  "required": [
+    "org_id",
+    "client_id",
+    "key",
+    "value"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

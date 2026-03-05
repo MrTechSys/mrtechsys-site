@@ -1,0 +1,187 @@
+{
+  "name": "SecurityEvent",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event occurrence time"
+    },
+    "actor_user_id": {
+      "type": "string",
+      "description": "User who triggered the event"
+    },
+    "actor_agent_id": {
+      "type": "string",
+      "description": "AI agent that triggered the event (if applicable)"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "login",
+        "logout",
+        "login_failed",
+        "role_change",
+        "permission_grant",
+        "permission_revoke",
+        "data_export",
+        "data_delete",
+        "config_change",
+        "api_abuse",
+        "privilege_escalation",
+        "account_takeover_attempt",
+        "mfa_bypass_attempt",
+        "agent_action",
+        "agent_scope_violation",
+        "exfiltration_attempt",
+        "anomaly_detected"
+      ],
+      "description": "Type of security event"
+    },
+    "event_category": {
+      "type": "string",
+      "enum": [
+        "authentication",
+        "authorization",
+        "data_access",
+        "configuration",
+        "network",
+        "threat",
+        "compliance"
+      ],
+      "description": "Event category for filtering"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Event-specific metadata (encrypted with BlurCrypt)"
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Calculated risk score for this event"
+    },
+    "risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Contributing risk factors"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "ip_address": {
+          "type": "string"
+        },
+        "user_agent": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "device_fingerprint": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string"
+        }
+      },
+      "description": "Contextual information about the event"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "triaged",
+        "escalated",
+        "mitigated",
+        "false_positive"
+      ],
+      "default": "new",
+      "description": "Event processing status"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Event severity level"
+    },
+    "auto_actions_taken": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Automated actions executed in response"
+    },
+    "related_alert_id": {
+      "type": "string",
+      "description": "Related SOC alert if escalated"
+    },
+    "blurcrypt_encrypted": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether sensitive fields are BlurCrypt encrypted"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "event_id",
+    "event_type",
+    "event_category"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

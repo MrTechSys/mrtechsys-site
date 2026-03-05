@@ -1,0 +1,282 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Associated contact record"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "web",
+        "form",
+        "import",
+        "manual",
+        "referral",
+        "facebook",
+        "nextdoor",
+        "instagram",
+        "tiktok",
+        "zapier"
+      ],
+      "default": "manual"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Original post or content URL"
+    },
+    "source_post_id": {
+      "type": "string",
+      "description": "Platform-specific post ID"
+    },
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string",
+      "description": "Initial inquiry message or post content"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "won",
+        "lost",
+        "claimed",
+        "unclaimed"
+      ],
+      "default": "new"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "demo_scheduled",
+        "proposal_sent",
+        "negotiating",
+        "won",
+        "lost"
+      ],
+      "default": "new"
+    },
+    "score": {
+      "type": "number",
+      "description": "Lead score 0-100",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confidence": {
+      "type": "number",
+      "description": "ML confidence in score (0-1)",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "ai_scoring": {
+      "type": "object",
+      "description": "AI-powered lead scoring details",
+      "properties": {
+        "engagement_score": {
+          "type": "number",
+          "description": "Score based on interactions (0-100)"
+        },
+        "demographic_score": {
+          "type": "number",
+          "description": "Score based on demographic fit (0-100)"
+        },
+        "conversion_probability": {
+          "type": "number",
+          "description": "Predicted conversion likelihood (0-1)"
+        },
+        "predicted_value": {
+          "type": "number",
+          "description": "Predicted deal value in USD"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "hot",
+            "warm",
+            "cold"
+          ],
+          "description": "AI-assigned priority"
+        },
+        "scoring_factors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "factor": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "number"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "description": "Breakdown of scoring factors"
+        },
+        "recommended_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "AI-recommended next steps"
+        },
+        "last_scored_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "expected_value": {
+      "type": "number",
+      "description": "Estimated deal value"
+    },
+    "close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expected close date"
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "AI-generated summary of lead intent"
+    },
+    "ai_suggested_response": {
+      "type": "string",
+      "description": "AI-generated outreach message"
+    },
+    "sentiment_last": {
+      "type": "string",
+      "description": "Latest sentiment analysis"
+    },
+    "micro_moment_signal": {
+      "type": "string",
+      "description": "Latest high-intent signal detected"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "claimed_by": {
+      "type": "string",
+      "description": "User ID who claimed this community lead"
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "neighborhood": {
+          "type": "string"
+        }
+      }
+    },
+    "vertical_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Industry/service tags (hvac, plumbing, av, etc.)"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional lead data"
+    }
+  },
+  "required": [
+    "org_id",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

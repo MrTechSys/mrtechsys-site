@@ -1,0 +1,202 @@
+{
+  "name": "ComplianceTracker",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "permit",
+        "license",
+        "certification",
+        "inspection",
+        "insurance",
+        "registration"
+      ],
+      "description": "Type of compliance item"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of permit/license"
+    },
+    "description": {
+      "type": "string"
+    },
+    "issuing_agency": {
+      "type": "string",
+      "description": "Government or regulatory body"
+    },
+    "reference_number": {
+      "type": "string",
+      "description": "Permit/license number"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When this item expires"
+    },
+    "renewal_period": {
+      "type": "string",
+      "description": "e.g., annually, every 2 years, quarterly"
+    },
+    "cost": {
+      "type": "number",
+      "description": "Cost to obtain or renew"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expiring_soon",
+        "expired",
+        "pending_renewal",
+        "not_obtained"
+      ],
+      "default": "active"
+    },
+    "vertical": {
+      "type": "string",
+      "description": "Business vertical this applies to"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      }
+    },
+    "regulatory_level": {
+      "type": "string",
+      "enum": [
+        "federal",
+        "state",
+        "county",
+        "city"
+      ],
+      "description": "Level of government"
+    },
+    "auto_renew": {
+      "type": "boolean",
+      "default": false
+    },
+    "reminder_days_before": {
+      "type": "number",
+      "default": 30,
+      "description": "Days before expiry to send reminder"
+    },
+    "document_url": {
+      "type": "string",
+      "description": "Uploaded copy of permit/license"
+    },
+    "last_checked": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time AI checked for regulatory updates"
+    },
+    "regulatory_changes_detected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "change_date": {
+            "type": "string"
+          },
+          "change_description": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "action_required": {
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "AI-detected regulatory changes"
+    },
+    "alert_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "alert_sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "item_type",
+    "name",
+    "expiry_date"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

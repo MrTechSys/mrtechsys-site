@@ -1,0 +1,183 @@
+{
+  "name": "ThreatCorrelationGraph",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "graph_id": {
+      "type": "string",
+      "description": "Unique graph identifier"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "node_type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "device",
+              "ip",
+              "session",
+              "api_client",
+              "alert",
+              "event",
+              "anomaly"
+            ]
+          },
+          "entity_id": {
+            "type": "string"
+          },
+          "risk_score": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "attack_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path_id": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "severity": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "escalation_sequences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sequence_id": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pattern": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "impact_radius": {
+      "type": "object",
+      "properties": {
+        "users_affected": {
+          "type": "number"
+        },
+        "tenants_affected": {
+          "type": "number"
+        },
+        "data_at_risk": {
+          "type": "string"
+        },
+        "systems_compromised": {
+          "type": "number"
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "graph_id",
+    "nodes",
+    "edges"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

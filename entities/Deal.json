@@ -1,0 +1,150 @@
+{
+  "name": "Deal",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Associated contact"
+    },
+    "lead_id": {
+      "type": "string",
+      "description": "Associated lead"
+    },
+    "name": {
+      "type": "string",
+      "description": "Deal name"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Deal owner user ID"
+    },
+    "value": {
+      "type": "number",
+      "description": "Deal value in USD"
+    },
+    "close_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Probability of closing (0-100%)"
+    },
+    "expected_value": {
+      "type": "number",
+      "description": "Value * close_probability"
+    },
+    "pipeline_stage": {
+      "type": "string",
+      "enum": [
+        "qualification",
+        "needs_analysis",
+        "proposal",
+        "negotiation",
+        "closed_won",
+        "closed_lost"
+      ],
+      "default": "qualification"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "close_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "forecast_quarter": {
+      "type": "string",
+      "description": "e.g., 2024-Q1"
+    },
+    "automation_state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "complete"
+      ],
+      "default": "pending"
+    },
+    "next_steps": {
+      "type": "string"
+    },
+    "lost_reason": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "value"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

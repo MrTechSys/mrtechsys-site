@@ -1,0 +1,229 @@
+{
+  "name": "PipelineRun",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "pipeline_id": {
+      "type": "string",
+      "description": "Associated Pipeline ID"
+    },
+    "run_number": {
+      "type": "number",
+      "description": "Sequential run number"
+    },
+    "git_sha": {
+      "type": "string",
+      "description": "Git commit SHA"
+    },
+    "git_branch": {
+      "type": "string",
+      "description": "Git branch"
+    },
+    "git_message": {
+      "type": "string",
+      "description": "Commit message"
+    },
+    "git_author": {
+      "type": "string",
+      "description": "Commit author"
+    },
+    "triggered_by": {
+      "type": "string",
+      "description": "User or system that triggered run"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "webhook",
+        "scheduled",
+        "pr_merge"
+      ],
+      "description": "How the run was triggered"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "success",
+        "failed",
+        "cancelled",
+        "skipped"
+      ],
+      "default": "queued"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Total run duration"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string"
+          },
+          "completed_at": {
+            "type": "string"
+          },
+          "duration_seconds": {
+            "type": "number"
+          },
+          "logs_url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Pipeline stages executed"
+    },
+    "build_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Associated Build record IDs"
+    },
+    "release_id": {
+      "type": "string",
+      "description": "Associated Release if deployed"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Build artifacts produced"
+    },
+    "test_results": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "number"
+        },
+        "failed": {
+          "type": "number"
+        },
+        "skipped": {
+          "type": "number"
+        }
+      },
+      "description": "Test execution summary"
+    },
+    "coverage_pct": {
+      "type": "number",
+      "description": "Code coverage percentage"
+    },
+    "quality_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "actual": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Quality gate results"
+    },
+    "environment_vars": {
+      "type": "object",
+      "description": "Non-sensitive env vars used"
+    },
+    "logs_url": {
+      "type": "string"
+    },
+    "error_message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "pipeline_id",
+    "run_number",
+    "git_sha"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

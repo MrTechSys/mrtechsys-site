@@ -1,0 +1,70 @@
+{
+  "name": "TooltipDef",
+  "type": "object",
+  "properties": {
+    "selector": {
+      "type": "string",
+      "description": "CSS selector or element ID"
+    },
+    "text": {
+      "type": "string",
+      "description": "Tooltip content"
+    },
+    "when": {
+      "type": "string",
+      "enum": [
+        "first_run",
+        "always",
+        "role_based",
+        "feature_flag"
+      ],
+      "default": "always"
+    },
+    "role_targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Roles that should see this tooltip"
+    },
+    "module": {
+      "type": "string",
+      "description": "Module this tooltip belongs to"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Display priority"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "selector",
+    "text"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

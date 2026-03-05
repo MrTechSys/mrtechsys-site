@@ -1,0 +1,135 @@
+{
+  "name": "ComplianceControl",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "control_id": {
+      "type": "string",
+      "description": "Control identifier (e.g., PRIV-1.1)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "security",
+        "availability",
+        "integrity",
+        "confidentiality",
+        "privacy"
+      ],
+      "description": "Trust Services Criteria category"
+    },
+    "name": {
+      "type": "string",
+      "description": "Control name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Control owner email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "in_progress",
+        "failed"
+      ],
+      "default": "active"
+    },
+    "implementation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly",
+        "annually"
+      ],
+      "default": "monthly"
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_review": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_required": {
+      "type": "boolean",
+      "default": true
+    },
+    "evidence_count": {
+      "type": "number",
+      "default": 0
+    },
+    "automated": {
+      "type": "boolean",
+      "default": false
+    },
+    "test_procedures": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "control_id",
+    "category",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

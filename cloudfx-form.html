@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mr. TechSys | CloudFX Survey</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0e0e0e;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #ffcc00;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 1.5rem;
+      max-width: 150px;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #ffcc00;
+      text-align: left;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #2c2c2c;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      background: #333;
+    }
+
+    button {
+      background-color: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 0.75rem;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .confirmation {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+      color: #00ff99;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html">
+  <img src="logo.png" alt="Mr. TechSys Logo" class="logo"/>
+</a>
+
+    <h1>Cloud Migration Readiness & Optimization Survey</h1>
+    <form id="cloudSurveyForm">
+      <input type="text" id="businessName" placeholder="Business Name" required />
+      <input type="text" id="techStack" placeholder="Current Tech Stack" required />
+      <input type="text" id="familiarity" placeholder="Cloud Familiarity (Beginner/Intermediate/Advanced)" required />
+      <input type="text" id="tools" placeholder="Automation Tools Used" required />
+      <input type="text" id="painPoint" placeholder="Biggest Pain Point" required />
+      <input type="text" id="goals" placeholder="Migration Goals" required />
+      <input type="email" id="email" placeholder="Contact Email" required />
+      <label style="display: block; text-align: left; font-size: 0.9rem; margin-bottom: 1rem;">
+        <input type="checkbox" id="termsCheckbox" required style="margin-right: 0.5rem;" />
+        I agree to the <a href="terms.html" style="color: #ffcc00;">Terms and Conditions</a>
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+    <div class="confirmation" id="confirmationMessage">
+      ✅ Thank you for trusting MrTechSys Solutions. We'll be in touch soon!
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('cloudSurveyForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      // Normally here you would validate and send data to backend
+      document.getElementById('cloudSurveyForm').style.display = 'none';
+      document.getElementById('confirmationMessage').style.display = 'block';
+    });
+  </script>
+
+  <footer style="margin-top: 4rem; font-size: 0.9rem; color: #aaa;">
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="terms.html">Terms of Use</a> |
+    <a href="cookies.html">Cookie Policy</a>
+  </p>
+  &copy; 2025 Mr. TechSys Solutions – Building Legacies One Stack at a Time.
+</footer>
+
+<script>
+  function navigateWithSpin(target) {
+    const logo = document.getElementById('mainLogo');
+    logo.classList.add('spin');
+    setTimeout(() => {
+      window.location.href = target;
+    }, 1000);
+  }
+
+  function spinAndGo(event, link) {
+    event.preventDefault();
+    navigateWithSpin(link.getAttribute('href'));
+  }
+</script>
+
+</body>
+</html>
+

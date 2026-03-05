@@ -1,0 +1,45 @@
+{
+  "name": "Draft",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key for the draft (e.g., formId, pageUrl)"
+    },
+    "data": {
+      "type": "object",
+      "description": "The draft data content"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who owns this draft"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Type of entity this draft represents"
+    },
+    "last_modified_device": {
+      "type": "string",
+      "description": "Device ID/User Agent string"
+    }
+  },
+  "required": [
+    "key",
+    "data",
+    "user_id"
+  ],
+  "rls": {
+    "read": {
+      "user_id": "{{user.id}}"
+    },
+    "create": {
+      "user_id": "{{user.id}}"
+    },
+    "update": {
+      "user_id": "{{user.id}}"
+    },
+    "delete": {
+      "user_id": "{{user.id}}"
+    }
+  }
+}

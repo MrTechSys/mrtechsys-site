@@ -1,0 +1,117 @@
+{
+  "name": "KBArticle",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "article_id": {
+      "type": "string",
+      "description": "Unique article identifier"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body_md": {
+      "type": "string",
+      "description": "Markdown content"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short summary"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "getting_started",
+        "technical",
+        "billing",
+        "compliance",
+        "devops",
+        "api",
+        "troubleshooting"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "not_helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_indexed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last AI indexing timestamp"
+    },
+    "search_vector": {
+      "type": "string",
+      "description": "Embedding vector for semantic search"
+    },
+    "related_articles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seo_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "title",
+    "body_md"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}",
+          "is_published": true
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

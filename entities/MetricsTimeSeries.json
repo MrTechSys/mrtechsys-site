@@ -1,0 +1,92 @@
+{
+  "name": "MetricsTimeSeries",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "staging",
+        "production"
+      ]
+    },
+    "metric": {
+      "type": "string",
+      "enum": [
+        "req_rate",
+        "error_rate",
+        "latency_p50",
+        "latency_p95",
+        "latency_p99",
+        "cpu",
+        "memory",
+        "iops",
+        "queue_depth",
+        "apdex"
+      ],
+      "description": "Metric type"
+    },
+    "value": {
+      "type": "number"
+    },
+    "labels": {
+      "type": "object",
+      "description": "Additional dimensions"
+    },
+    "demo": {
+      "type": "boolean",
+      "default": false
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "metric",
+    "value"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

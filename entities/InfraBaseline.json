@@ -1,0 +1,149 @@
+{
+  "name": "InfraBaseline",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "environment_type": {
+      "type": "string",
+      "enum": [
+        "on_prem",
+        "hybrid",
+        "cloud_native",
+        "saas_mix"
+      ],
+      "description": "Current infrastructure type"
+    },
+    "server_count": {
+      "type": "number",
+      "description": "Approximate number of servers/endpoints"
+    },
+    "storage_type": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "local",
+          "nas",
+          "san",
+          "cloud_storage",
+          "hybrid_storage"
+        ]
+      },
+      "description": "Storage solutions in use"
+    },
+    "backup_methods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Current backup and recovery methods"
+    },
+    "networking_setup": {
+      "type": "object",
+      "properties": {
+        "vpn_enabled": {
+          "type": "boolean"
+        },
+        "vlan_configured": {
+          "type": "boolean"
+        },
+        "static_ips": {
+          "type": "boolean"
+        },
+        "load_balancing": {
+          "type": "boolean"
+        }
+      }
+    },
+    "security_stack": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "firewall",
+          "mfa",
+          "soc_tools",
+          "encryption",
+          "idp",
+          "siem",
+          "none"
+        ]
+      },
+      "description": "Current security tools"
+    },
+    "automation_level": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "partially_automated",
+        "mostly_automated",
+        "fully_automated"
+      ],
+      "default": "manual"
+    },
+    "current_challenges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Pain points and challenges"
+    }
+  },
+  "required": [
+    "org_id",
+    "environment_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

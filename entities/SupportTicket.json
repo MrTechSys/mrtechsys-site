@@ -1,0 +1,210 @@
+{
+  "name": "SupportTicket",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "ticket_number": {
+      "type": "string",
+      "description": "Unique ticket number"
+    },
+    "requester_id": {
+      "type": "string",
+      "description": "User or contact ID"
+    },
+    "requester_email": {
+      "type": "string"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "web",
+        "email",
+        "chat",
+        "phone",
+        "api"
+      ],
+      "default": "web"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "open",
+        "pending",
+        "resolved",
+        "closed"
+      ],
+      "default": "new"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "billing",
+        "general",
+        "compliance",
+        "devops",
+        "feature"
+      ]
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Support agent user ID"
+    },
+    "sentiment_score": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "-1 (very negative) to 1 (very positive)"
+    },
+    "emotion": {
+      "type": "string",
+      "enum": [
+        "neutral",
+        "happy",
+        "frustrated",
+        "angry",
+        "confused",
+        "excited"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "conversation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "from_name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "is_ai": {
+            "type": "boolean"
+          },
+          "sentiment": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "ai_suggestion_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI suggestions generated"
+    },
+    "kb_article_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Relevant KB articles"
+    },
+    "sla_due_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_response_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "satisfaction_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    }
+  },
+  "required": [
+    "org_id",
+    "subject",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "requester_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

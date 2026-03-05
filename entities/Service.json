@@ -1,0 +1,136 @@
+{
+  "name": "Service",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Unique service identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Service name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "owner_team": {
+      "type": "string",
+      "description": "DevOpsTeam ID"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "runbook": {
+          "type": "string"
+        },
+        "repo": {
+          "type": "string"
+        },
+        "oncall": {
+          "type": "string"
+        },
+        "dashboard": {
+          "type": "string"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Dependent service IDs"
+    },
+    "tech_stack": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "health_status": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "degraded",
+        "down",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "last_deployed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deployment_frequency": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "service_id",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

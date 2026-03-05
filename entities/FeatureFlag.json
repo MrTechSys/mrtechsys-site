@@ -1,0 +1,83 @@
+{
+  "name": "FeatureFlag",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "flag": {
+      "type": "string",
+      "description": "Feature flag name"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "staging",
+        "production",
+        "all"
+      ],
+      "default": "all"
+    },
+    "percentage_rollout": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100,
+      "description": "Percentage of users to enable for"
+    },
+    "tenant_targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific tenant IDs to enable"
+    },
+    "description": {
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "last_modified_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "flag"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

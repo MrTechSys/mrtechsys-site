@@ -1,0 +1,130 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "referrer_client_id": {
+      "type": "string",
+      "description": "Client who made the referral"
+    },
+    "referrer_name": {
+      "type": "string"
+    },
+    "referred_name": {
+      "type": "string",
+      "description": "Name of person referred"
+    },
+    "referred_email": {
+      "type": "string"
+    },
+    "referred_phone": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "contacted",
+        "converted",
+        "declined"
+      ],
+      "default": "pending"
+    },
+    "converted_client_id": {
+      "type": "string",
+      "description": "Client ID if converted"
+    },
+    "converted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "discount",
+        "cash",
+        "credit",
+        "gift",
+        "none"
+      ],
+      "default": "none"
+    },
+    "reward_value": {
+      "type": "number",
+      "description": "Reward amount or percentage"
+    },
+    "reward_claimed": {
+      "type": "boolean",
+      "default": false
+    },
+    "reward_claimed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conversion_value": {
+      "type": "number",
+      "description": "Total value generated from this referral"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "referrer_client_id",
+    "referred_name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

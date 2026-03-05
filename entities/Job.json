@@ -1,0 +1,85 @@
+{
+  "name": "Job",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "quote_id": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "scheduled_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scheduled_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assignees": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs assigned to job"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "canceled"
+      ],
+      "default": "scheduled"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "client_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "read": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "org_id": "{{user.data.current_org_id}}"
+    }
+  }
+}

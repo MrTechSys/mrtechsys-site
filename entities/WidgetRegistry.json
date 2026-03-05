@@ -1,0 +1,103 @@
+{
+  "name": "WidgetRegistry",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique widget identifier"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "compliance",
+        "devops",
+        "business",
+        "crm",
+        "custom"
+      ]
+    },
+    "query_ref": {
+      "type": "string",
+      "description": "Reference to data query function"
+    },
+    "config_schema": {
+      "type": "object",
+      "description": "JSON schema for widget configuration"
+    },
+    "default_size": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
+    },
+    "drilldown_route": {
+      "type": "string",
+      "description": "URL pattern for drill-down"
+    },
+    "chart_type": {
+      "type": "string",
+      "enum": [
+        "line",
+        "bar",
+        "area",
+        "pie",
+        "table",
+        "metric",
+        "heatmap"
+      ]
+    },
+    "permissions_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Permissions needed to use this widget"
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is a system widget"
+    },
+    "created_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "key",
+    "title",
+    "chart_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

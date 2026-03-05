@@ -1,0 +1,195 @@
+{
+  "name": "SignatureRule",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "rule_id": {
+      "type": "string",
+      "description": "Unique signature identifier (e.g., SIG-2024-001)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Rule name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "rule_type": {
+      "type": "string",
+      "enum": [
+        "snort",
+        "suricata",
+        "yara",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Signature format type"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "malware",
+        "exploit",
+        "sql_injection",
+        "xss",
+        "dos",
+        "reconnaissance",
+        "data_exfiltration",
+        "command_injection"
+      ],
+      "description": "Attack category"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Signature pattern or regex"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "http",
+        "https",
+        "tcp",
+        "udp",
+        "icmp",
+        "any"
+      ],
+      "default": "any"
+    },
+    "source_port": {
+      "type": "string",
+      "description": "Source port or range"
+    },
+    "dest_port": {
+      "type": "string",
+      "description": "Destination port or range"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "bidirectional"
+      ],
+      "default": "inbound"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "alert",
+        "block",
+        "log",
+        "bypass"
+      ],
+      "default": "alert"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "false_positive_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Observed false positive rate"
+    },
+    "match_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Times this signature matched"
+    },
+    "last_matched_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "custom_response": {
+      "type": "object",
+      "description": "Custom actions on match",
+      "properties": {
+        "create_alert": {
+          "type": "boolean"
+        },
+        "execute_playbook_id": {
+          "type": "string"
+        },
+        "notify_channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "rule_id",
+    "name",
+    "category",
+    "pattern"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

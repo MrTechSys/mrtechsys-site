@@ -1,0 +1,189 @@
+{
+  "name": "BaselineSnapshot",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "description": "Unique snapshot identifier"
+    },
+    "snapshot_type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "scheduled",
+        "incident_triggered"
+      ],
+      "default": "manual"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "captured_by": {
+      "type": "string",
+      "description": "User or system that triggered snapshot"
+    },
+    "services_state": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "service_id": {
+            "type": "string"
+          },
+          "health_status": {
+            "type": "string"
+          },
+          "metrics": {
+            "type": "object"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "State of all services"
+    },
+    "sla_state": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sla_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "compliance": {
+            "type": "object"
+          },
+          "breaches_count": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "SLA compliance state"
+    },
+    "dora_metrics": {
+      "type": "object",
+      "properties": {
+        "deployment_frequency": {
+          "type": "number"
+        },
+        "lead_time_minutes": {
+          "type": "number"
+        },
+        "change_failure_rate": {
+          "type": "number"
+        },
+        "mttr_minutes": {
+          "type": "number"
+        }
+      },
+      "description": "DORA metrics snapshot"
+    },
+    "incidents_summary": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "by_severity": {
+          "type": "object"
+        },
+        "by_status": {
+          "type": "object"
+        }
+      },
+      "description": "Incident state summary"
+    },
+    "anomalies_active": {
+      "type": "number",
+      "description": "Active anomalies count"
+    },
+    "system_health_pct": {
+      "type": "number",
+      "description": "Overall system health percentage"
+    },
+    "metrics_rollup": {
+      "type": "object",
+      "properties": {
+        "avg_error_rate": {
+          "type": "number"
+        },
+        "avg_latency_p95": {
+          "type": "number"
+        },
+        "total_requests": {
+          "type": "number"
+        }
+      },
+      "description": "Aggregated metrics"
+    },
+    "storage_size_mb": {
+      "type": "number",
+      "description": "Total snapshot data size"
+    },
+    "retention_days": {
+      "type": "number",
+      "default": 90,
+      "description": "How long to retain this snapshot"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "snapshot_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

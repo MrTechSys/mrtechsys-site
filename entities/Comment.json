@@ -1,0 +1,145 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "task",
+        "job",
+        "quote",
+        "deal",
+        "ticket",
+        "contact"
+      ],
+      "description": "Type of entity being commented on"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity"
+    },
+    "author_id": {
+      "type": "string",
+      "description": "User who wrote the comment"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Author's name for display"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text content"
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs mentioned in comment"
+    },
+    "is_edited": {
+      "type": "boolean",
+      "default": false
+    },
+    "edited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "parent_comment_id": {
+      "type": "string",
+      "description": "For threaded replies"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "entity_type",
+    "entity_id",
+    "author_id",
+    "content"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "author_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "author_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

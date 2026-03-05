@@ -1,0 +1,89 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Product SKU"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "unit_price": {
+      "type": "number",
+      "description": "Base price per unit"
+    },
+    "tax_rate": {
+      "type": "number",
+      "description": "Tax rate as decimal (0.08 = 8%)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "unit_price"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

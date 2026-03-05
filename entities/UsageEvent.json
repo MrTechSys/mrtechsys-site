@@ -1,0 +1,94 @@
+{
+  "name": "UsageEvent",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "quote.create",
+        "invoice.send",
+        "email.send",
+        "sms.send",
+        "job.schedule",
+        "ai.tokens",
+        "lead.import"
+      ],
+      "description": "Event type"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "cost_estimate": {
+      "type": "number",
+      "description": "Estimated cost in USD"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "period": {
+      "type": "string",
+      "description": "Billing period (YYYY-MM)"
+    }
+  },
+  "required": [
+    "org_id",
+    "event"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

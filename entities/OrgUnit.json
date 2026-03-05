@@ -1,0 +1,85 @@
+{
+  "name": "OrgUnit",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "unit_name": {
+      "type": "string",
+      "description": "Organizational unit name (e.g., Sales, Engineering)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Unit description"
+    },
+    "parent_unit_id": {
+      "type": "string",
+      "description": "Parent OU for nested structure"
+    },
+    "unit_path": {
+      "type": "string",
+      "description": "Full path (e.g., /Engineering/DevOps)"
+    },
+    "ad_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if synced from Azure AD"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "unit_name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

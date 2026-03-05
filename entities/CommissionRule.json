@@ -1,0 +1,135 @@
+{
+  "name": "CommissionRule",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Rule name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "User ID of agent (optional, if rule is agent-specific)"
+    },
+    "commission_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "flat_rate",
+        "tiered"
+      ],
+      "default": "percentage"
+    },
+    "percentage": {
+      "type": "number",
+      "description": "Commission percentage (e.g., 10 for 10%)"
+    },
+    "flat_rate": {
+      "type": "number",
+      "description": "Flat commission amount per deal"
+    },
+    "tiers": {
+      "type": "array",
+      "description": "Tiered commission structure",
+      "items": {
+        "type": "object",
+        "properties": {
+          "min_amount": {
+            "type": "number"
+          },
+          "max_amount": {
+            "type": "number"
+          },
+          "percentage": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "applies_to": {
+      "type": "string",
+      "enum": [
+        "all_jobs",
+        "specific_categories",
+        "specific_jobs"
+      ],
+      "default": "all_jobs"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Job categories this rule applies to"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "minimum_job_value": {
+      "type": "number",
+      "description": "Minimum job value to qualify for commission"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "commission_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

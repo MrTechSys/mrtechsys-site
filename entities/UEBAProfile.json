@@ -1,0 +1,201 @@
+{
+  "name": "UEBAProfile",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "device",
+        "service_account",
+        "api_client",
+        "agent"
+      ],
+      "description": "Type of entity being profiled"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity being profiled"
+    },
+    "baseline": {
+      "type": "object",
+      "description": "Behavioral baseline",
+      "properties": {
+        "typical_login_hours": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "typical_locations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "typical_ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "typical_devices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avg_daily_actions": {
+          "type": "number"
+        },
+        "avg_session_duration": {
+          "type": "number"
+        },
+        "typical_resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "typical_api_endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "action_frequency_distribution": {
+          "type": "object"
+        }
+      }
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Current risk score"
+    },
+    "risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Active risk factors"
+    },
+    "trust_level": {
+      "type": "string",
+      "enum": [
+        "trusted",
+        "normal",
+        "elevated",
+        "suspicious",
+        "compromised"
+      ],
+      "default": "normal"
+    },
+    "anomaly_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Anomaly classification tags"
+    },
+    "correlation_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "linked_entity_type": {
+            "type": "string"
+          },
+          "linked_entity_id": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Correlation graph links"
+    },
+    "adaptive_thresholds": {
+      "type": "object",
+      "description": "Auto-adjusted thresholds per tenant",
+      "properties": {
+        "action_spike_threshold": {
+          "type": "number"
+        },
+        "geo_distance_threshold": {
+          "type": "number"
+        },
+        "failed_login_threshold": {
+          "type": "number"
+        },
+        "api_burst_threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "last_activity_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "baseline_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profile_maturity": {
+      "type": "string",
+      "enum": [
+        "learning",
+        "established",
+        "mature"
+      ],
+      "default": "learning"
+    },
+    "data_points_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "tenant_id",
+    "entity_type",
+    "entity_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

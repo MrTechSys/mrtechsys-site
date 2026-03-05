@@ -1,0 +1,126 @@
+{
+  "name": "AlertRule",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "error_rate",
+        "latency_p95",
+        "deploy_failed",
+        "quota_exceeded",
+        "anomaly_detected"
+      ]
+    },
+    "threshold": {
+      "type": "number",
+      "description": "Threshold value"
+    },
+    "window_minutes": {
+      "type": "number",
+      "default": 5,
+      "description": "Time window for evaluation"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ],
+      "default": "warning"
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "slack",
+          "email",
+          "pagerduty"
+        ]
+      },
+      "description": "Notification channels"
+    },
+    "runbook_url": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_triggered": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trigger_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "condition",
+    "threshold"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

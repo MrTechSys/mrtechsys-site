@@ -1,0 +1,128 @@
+{
+  "name": "MarketplaceAddon",
+  "type": "object",
+  "properties": {
+    "addon_id": {
+      "type": "string",
+      "description": "Unique addon identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Addon name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "crm",
+        "devops",
+        "security",
+        "compliance",
+        "analytics",
+        "integrations",
+        "automation"
+      ],
+      "description": "Addon category"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "Icon image URL"
+    },
+    "icon_emoji": {
+      "type": "string",
+      "description": "Fallback emoji icon"
+    },
+    "plan_requirement": {
+      "type": "string",
+      "enum": [
+        "free",
+        "starter",
+        "pro",
+        "partner"
+      ],
+      "description": "Minimum plan required"
+    },
+    "price_type": {
+      "type": "string",
+      "enum": [
+        "free",
+        "paid",
+        "premium"
+      ],
+      "default": "free"
+    },
+    "monthly_price": {
+      "type": "number",
+      "description": "Additional monthly cost"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Feature list"
+    },
+    "enablement_script": {
+      "type": "string",
+      "description": "Function to call when enabling"
+    },
+    "config_schema": {
+      "type": "object",
+      "description": "JSON schema for addon configuration"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether addon is available"
+    },
+    "install_count": {
+      "type": "number",
+      "default": 0
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "addon_id",
+    "name",
+    "category",
+    "plan_requirement"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

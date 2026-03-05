@@ -1,0 +1,94 @@
+{
+  "name": "EmailTemplate",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "template_key": {
+      "type": "string",
+      "description": "Unique template identifier"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body_html": {
+      "type": "string",
+      "description": "HTML email body with {{variables}}"
+    },
+    "body_text": {
+      "type": "string",
+      "description": "Plain text fallback"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of variable names used in template"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "transactional",
+        "marketing",
+        "notification",
+        "system"
+      ],
+      "default": "transactional"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "org_id",
+    "template_key",
+    "subject",
+    "body_html"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

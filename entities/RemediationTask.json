@@ -1,0 +1,160 @@
+{
+  "name": "RemediationTask",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "finding_id": {
+      "type": "string",
+      "description": "Associated ComplianceFinding ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Remediation task title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed remediation steps"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "in_progress",
+        "testing",
+        "completed",
+        "blocked"
+      ],
+      "default": "todo"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "User ID of assignee"
+    },
+    "assigned_name": {
+      "type": "string",
+      "description": "Name of assignee"
+    },
+    "estimated_hours": {
+      "type": "number",
+      "description": "Estimated time to complete"
+    },
+    "actual_hours": {
+      "type": "number",
+      "description": "Actual time spent"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Deadline for remediation"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "Why task is blocked"
+    },
+    "verification_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "verified_by": {
+            "type": "string"
+          },
+          "verified_at": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Steps to verify fix"
+    },
+    "test_results": {
+      "type": "object",
+      "description": "Post-fix test results"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "finding_id",
+    "title",
+    "description"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

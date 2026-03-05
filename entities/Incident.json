@@ -1,0 +1,157 @@
+{
+  "name": "Incident",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "incident_id": {
+      "type": "string",
+      "description": "Unique incident identifier"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "sev1",
+        "sev2",
+        "sev3",
+        "sev4"
+      ],
+      "description": "Severity level"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "investigating",
+        "identified",
+        "monitoring",
+        "resolved",
+        "closed"
+      ],
+      "default": "investigating"
+    },
+    "title": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "opened_by": {
+      "type": "string"
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "runbook_ref": {
+      "type": "string"
+    },
+    "comm_channels": {
+      "type": "object",
+      "properties": {
+        "slack": {
+          "type": "string"
+        },
+        "email": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "postmortem_ref": {
+      "type": "string"
+    },
+    "impacted_customers": {
+      "type": "number",
+      "default": 0
+    },
+    "root_cause": {
+      "type": "string"
+    },
+    "mitigation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "incident_id",
+    "severity",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

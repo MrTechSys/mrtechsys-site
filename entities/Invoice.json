@@ -1,0 +1,81 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "subscription_id": {
+      "type": "string"
+    },
+    "number": {
+      "type": "string"
+    },
+    "amount_due": {
+      "type": "number"
+    },
+    "amount_paid": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "paid",
+        "uncollectible",
+        "void"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pdf_url": {
+      "type": "string"
+    },
+    "customer_tax_id": {
+      "type": "string"
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "number",
+    "amount_due"
+  ],
+  "rls": {
+    "read": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "create": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "org_id": "{{user.data.current_org_id}}"
+    }
+  }
+}

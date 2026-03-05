@@ -1,0 +1,152 @@
+{
+  "name": "NurtureEnrollment",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "workflow_id": {
+      "type": "string",
+      "description": "NurtureWorkflow ID"
+    },
+    "lead_id": {
+      "type": "string",
+      "description": "Lead being nurtured"
+    },
+    "current_step": {
+      "type": "number",
+      "description": "Current step in workflow"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed",
+        "exited"
+      ],
+      "default": "active"
+    },
+    "enrolled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_action_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_action_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the next step should execute"
+    },
+    "engagement_score": {
+      "type": "number",
+      "description": "0-100 engagement score based on interactions",
+      "default": 0
+    },
+    "emails_sent": {
+      "type": "number",
+      "default": 0
+    },
+    "emails_opened": {
+      "type": "number",
+      "default": 0
+    },
+    "links_clicked": {
+      "type": "number",
+      "default": 0
+    },
+    "tasks_created": {
+      "type": "number",
+      "default": 0
+    },
+    "exit_reason": {
+      "type": "string",
+      "description": "Why the workflow was exited"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "history": {
+      "type": "array",
+      "description": "Execution history",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "engagement": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "workflow_id",
+    "lead_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

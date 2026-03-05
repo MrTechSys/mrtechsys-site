@@ -1,0 +1,61 @@
+{
+  "name": "RagPolicy",
+  "type": "object",
+  "properties": {
+    "tenantId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Policy name"
+    },
+    "chunk_size": {
+      "type": "number",
+      "default": 800
+    },
+    "chunk_overlap": {
+      "type": "number",
+      "default": 150
+    },
+    "top_k": {
+      "type": "number",
+      "default": 5
+    },
+    "recency_bias": {
+      "type": "number",
+      "default": 0.15,
+      "description": "0..1 strength for recency weighting"
+    },
+    "require_citations": {
+      "type": "boolean",
+      "default": true
+    },
+    "allow_namespaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenantId"
+  ],
+  "rls": {
+    "create": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "read": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "tenantId": "{{user.data.current_org_id}}"
+    }
+  }
+}

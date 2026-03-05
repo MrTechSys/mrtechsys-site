@@ -1,0 +1,145 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client who left the review"
+    },
+    "job_id": {
+      "type": "string",
+      "description": "Associated job"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Star rating (1-5)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Review title"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Review text"
+    },
+    "sentiment_score": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "AI sentiment analysis score"
+    },
+    "key_phrases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI-extracted key phrases"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "published",
+        "flagged",
+        "hidden"
+      ],
+      "default": "pending"
+    },
+    "published_to": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "google",
+          "facebook",
+          "website",
+          "yelp"
+        ]
+      },
+      "description": "Where this review is published"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "response": {
+      "type": "string",
+      "description": "Business owner's response"
+    },
+    "response_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a verified customer review"
+    }
+  },
+  "required": [
+    "org_id",
+    "client_id",
+    "rating"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

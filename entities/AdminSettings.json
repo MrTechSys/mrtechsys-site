@@ -1,0 +1,116 @@
+{
+  "name": "AdminSettings",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "demo_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether demo data generation is enabled"
+    },
+    "production_mode": {
+      "type": "boolean",
+      "default": true,
+      "description": "System-wide production mode flag"
+    },
+    "configuration_locked": {
+      "type": "boolean",
+      "default": true,
+      "description": "Prevents automated configuration changes"
+    },
+    "last_security_audit": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_toggled_by": {
+      "type": "string"
+    },
+    "last_toggled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "telemetry_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "polling_frequency": {
+      "type": "object",
+      "description": "Custom polling intervals (overrides plan defaults)",
+      "properties": {
+        "realtime_minutes": {
+          "type": "number",
+          "description": "Minutes between real-time metric polls"
+        },
+        "operational_minutes": {
+          "type": "number",
+          "description": "Minutes between operational metric polls"
+        },
+        "aggregates_hours": {
+          "type": "number",
+          "description": "Hours between aggregate data refreshes"
+        }
+      }
+    },
+    "usage_quotas_override": {
+      "type": "object",
+      "description": "Custom usage quotas (overrides plan defaults)",
+      "properties": {
+        "live_events_monthly": {
+          "type": "number"
+        },
+        "presence_syncs_monthly": {
+          "type": "number"
+        }
+      }
+    },
+    "api_throttling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "batch_telemetry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use 30-minute batching for telemetry"
+        },
+        "max_events_per_batch": {
+          "type": "number",
+          "default": 50
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "description": "Additional admin settings"
+    }
+  },
+  "required": [
+    "org_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

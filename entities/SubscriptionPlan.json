@@ -1,0 +1,56 @@
+{
+  "name": "SubscriptionPlan",
+  "type": "object",
+  "properties": {
+    "tier_id": {
+      "type": "string",
+      "enum": [
+        "free",
+        "pro",
+        "enterprise"
+      ],
+      "description": "Plan tier identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the plan"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly price in USD"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "products": {
+          "type": "number",
+          "description": "Max products allowed"
+        },
+        "orders_per_month": {
+          "type": "number",
+          "description": "Max orders per month"
+        },
+        "ai_generations": {
+          "type": "number",
+          "description": "Max AI generations per month"
+        },
+        "sms_sends": {
+          "type": "number",
+          "description": "Max SMS sends per month"
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of enabled features"
+    }
+  },
+  "required": [
+    "tier_id",
+    "name",
+    "price_monthly"
+  ]
+}

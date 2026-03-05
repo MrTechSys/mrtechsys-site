@@ -1,0 +1,142 @@
+{
+  "name": "TelemetryEvent",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string",
+      "description": "Tenant/organization identifier"
+    },
+    "module": {
+      "type": "string",
+      "enum": [
+        "crm",
+        "quotes",
+        "jobs",
+        "billing",
+        "dashboard",
+        "readiness",
+        "auth",
+        "ci_cd",
+        "api"
+      ],
+      "description": "CloudFlip module"
+    },
+    "event": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "utm": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "medium": {
+          "type": "string"
+        },
+        "campaign": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "term": {
+          "type": "string"
+        }
+      }
+    },
+    "ip_hash": {
+      "type": "string",
+      "description": "Hashed IP for privacy"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "device_type": {
+      "type": "string",
+      "enum": [
+        "desktop",
+        "mobile",
+        "tablet"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Event-specific data"
+    },
+    "demo": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is demo/synthetic data"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "production",
+        "staging",
+        "demo"
+      ],
+      "default": "production"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "module",
+    "event"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

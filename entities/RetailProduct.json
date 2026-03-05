@@ -1,0 +1,105 @@
+{
+  "name": "RetailProduct",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Tenant ID"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "ai_description": {
+      "type": "string"
+    },
+    "description_source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "ai",
+        "ai_edited",
+        "imported"
+      ],
+      "default": "manual"
+    },
+    "price": {
+      "type": "number"
+    },
+    "cost": {
+      "type": "number"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "barcode": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image_captions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "inventory_count": {
+      "type": "number",
+      "default": 0
+    },
+    "low_stock_threshold": {
+      "type": "number",
+      "default": 5
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "deleted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Soft delete timestamp"
+    },
+    "deleted_by": {
+      "type": "string",
+      "description": "User who deleted the record"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "price"
+  ],
+  "rls": {
+    "read": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "write": {
+      "org_id": "{{user.data.current_org_id}}"
+    }
+  }
+}

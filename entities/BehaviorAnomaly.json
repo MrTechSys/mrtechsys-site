@@ -1,0 +1,251 @@
+{
+  "name": "BehaviorAnomaly",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User being monitored"
+    },
+    "anomaly_type": {
+      "type": "string",
+      "enum": [
+        "unusual_login_pattern",
+        "excessive_data_access",
+        "abnormal_download_volume",
+        "off_hours_activity",
+        "suspicious_api_usage",
+        "geographic_anomaly",
+        "multiple_failed_logins",
+        "privilege_escalation_attempt",
+        "impossible_travel",
+        "data_exfiltration",
+        "suspicious_network",
+        "admin_panel_traversal",
+        "mfa_bypass_attempt",
+        "api_burst"
+      ],
+      "description": "Type of behavioral anomaly"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Severity of the anomaly"
+    },
+    "anomaly_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "AI-calculated anomaly score"
+    },
+    "classification_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Anomaly classification tags (e.g., Insider Threat Pattern, Account Takeover Attempt)"
+    },
+    "baseline_behavior": {
+      "type": "object",
+      "description": "Normal behavior pattern",
+      "properties": {
+        "typical_login_hours": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "typical_locations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avg_daily_requests": {
+          "type": "number"
+        },
+        "typical_resources_accessed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "detected_behavior": {
+      "type": "object",
+      "description": "Anomalous behavior detected",
+      "properties": {
+        "login_time": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "requests_count": {
+          "type": "number"
+        },
+        "resources_accessed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "device_fingerprint": {
+          "type": "string"
+        },
+        "asn": {
+          "type": "string"
+        },
+        "is_tor": {
+          "type": "boolean"
+        },
+        "is_vpn": {
+          "type": "boolean"
+        }
+      }
+    },
+    "deviation_percentage": {
+      "type": "number",
+      "description": "How much behavior deviated from baseline"
+    },
+    "threat_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific threat indicators found"
+    },
+    "ai_analysis": {
+      "type": "object",
+      "properties": {
+        "risk_assessment": {
+          "type": "string"
+        },
+        "likely_cause": {
+          "type": "string"
+        },
+        "recommended_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "similar_incidents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "correlation_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "linked_anomaly_id": {
+            "type": "string"
+          },
+          "linked_user_id": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Links to correlated anomalies"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "investigating",
+        "resolved",
+        "false_positive"
+      ],
+      "default": "active"
+    },
+    "auto_response_taken": {
+      "type": "boolean",
+      "default": false
+    },
+    "response_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Automated responses executed"
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "user_id",
+    "anomaly_type",
+    "anomaly_score"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "name": "BillingSubscription",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "plan_id": {
+      "type": "string",
+      "description": "ID of the SubscriptionPlan"
+    },
+    "plan_tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "starter",
+        "pro",
+        "partner",
+        "enterprise"
+      ],
+      "default": "free"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "past_due",
+        "canceled",
+        "trialing",
+        "incomplete",
+        "dunning"
+      ],
+      "default": "active"
+    },
+    "current_period_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_period_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancel_at_period_end": {
+      "type": "boolean",
+      "default": false
+    },
+    "legal_entity": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "tax_id": {
+          "type": "string"
+        }
+      }
+    },
+    "usage_counts": {
+      "type": "object",
+      "properties": {
+        "ai_generations": {
+          "type": "number",
+          "default": 0
+        },
+        "sms_sends": {
+          "type": "number",
+          "default": 0
+        },
+        "orders_processed": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "plan_tier"
+  ],
+  "rls": {
+    "read": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

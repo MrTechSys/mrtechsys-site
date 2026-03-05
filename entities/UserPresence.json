@@ -1,0 +1,78 @@
+{
+  "name": "UserPresence",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "User display name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "online",
+        "idle",
+        "offline"
+      ],
+      "default": "offline"
+    },
+    "current_page": {
+      "type": "string",
+      "description": "Current page/route user is on"
+    },
+    "current_entity_type": {
+      "type": "string",
+      "description": "Entity type being viewed/edited"
+    },
+    "current_entity_id": {
+      "type": "string",
+      "description": "Specific entity ID being viewed/edited"
+    },
+    "is_editing": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user is actively editing"
+    },
+    "last_active_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Browser session identifier"
+    }
+  },
+  "required": [
+    "user_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

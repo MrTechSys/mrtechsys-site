@@ -1,0 +1,141 @@
+{
+  "name": "Forecast",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "forecast_type": {
+      "type": "string",
+      "enum": [
+        "revenue",
+        "sales",
+        "leads",
+        "conversion_rate",
+        "deal_value"
+      ],
+      "description": "What is being forecasted"
+    },
+    "period_type": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly",
+        "yearly"
+      ],
+      "default": "monthly"
+    },
+    "forecast_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date this forecast is for"
+    },
+    "predicted_value": {
+      "type": "number",
+      "description": "Forecasted value"
+    },
+    "lower_bound": {
+      "type": "number",
+      "description": "Lower confidence interval"
+    },
+    "upper_bound": {
+      "type": "number",
+      "description": "Upper confidence interval"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Model confidence"
+    },
+    "model_type": {
+      "type": "string",
+      "description": "ML model used (linear_regression, arima, etc.)"
+    },
+    "actual_value": {
+      "type": "number",
+      "description": "Actual value once known"
+    },
+    "variance": {
+      "type": "number",
+      "description": "Difference between predicted and actual"
+    },
+    "training_data": {
+      "type": "object",
+      "description": "Historical data used for training"
+    },
+    "factors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "factor": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Contributing factors to forecast"
+    }
+  },
+  "required": [
+    "org_id",
+    "forecast_type",
+    "forecast_date",
+    "predicted_value"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

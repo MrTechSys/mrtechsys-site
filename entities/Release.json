@@ -1,0 +1,153 @@
+{
+  "name": "Release",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "pipeline_id": {
+      "type": "string"
+    },
+    "git_sha": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "staging",
+        "production"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "success",
+        "failed",
+        "rolled_back"
+      ],
+      "default": "pending"
+    },
+    "dora_metrics": {
+      "type": "object",
+      "properties": {
+        "lead_time_minutes": {
+          "type": "number"
+        },
+        "deployment_frequency": {
+          "type": "string"
+        },
+        "mttr_minutes": {
+          "type": "number"
+        },
+        "change_fail_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "commit_url": {
+          "type": "string"
+        },
+        "logs_url": {
+          "type": "string"
+        },
+        "monitoring_url": {
+          "type": "string"
+        }
+      }
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deployed_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "pipeline_id",
+    "version",
+    "environment"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "name": "DirectoryIntegration",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "integration_type": {
+      "type": "string",
+      "enum": [
+        "azure_ad_oidc",
+        "google_workspace",
+        "okta",
+        "onelogin"
+      ],
+      "default": "azure_ad_oidc",
+      "description": "Type of directory integration"
+    },
+    "azure_tenant_id": {
+      "type": "string",
+      "description": "Azure AD tenant ID"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "OAuth client ID"
+    },
+    "client_secret_encrypted": {
+      "type": "string",
+      "description": "Encrypted OAuth client secret"
+    },
+    "redirect_uri": {
+      "type": "string",
+      "description": "OAuth redirect URI"
+    },
+    "integration_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "error",
+        "disabled"
+      ],
+      "default": "pending",
+      "description": "Integration status"
+    },
+    "sync_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable automatic sync"
+    },
+    "sync_frequency": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "daily",
+        "weekly",
+        "manual"
+      ],
+      "default": "daily",
+      "description": "How often to sync"
+    },
+    "last_sync_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last successful sync"
+    },
+    "sync_config": {
+      "type": "object",
+      "properties": {
+        "sync_users": {
+          "type": "boolean",
+          "default": true
+        },
+        "sync_groups": {
+          "type": "boolean",
+          "default": true
+        },
+        "sync_profile_photos": {
+          "type": "boolean",
+          "default": false
+        },
+        "auto_disable_users": {
+          "type": "boolean",
+          "default": true,
+          "description": "Disable users when disabled in AD"
+        }
+      }
+    },
+    "last_error": {
+      "type": "string",
+      "description": "Last error message"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "integration_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

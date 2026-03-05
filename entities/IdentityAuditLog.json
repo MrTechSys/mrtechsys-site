@@ -1,0 +1,91 @@
+{
+  "name": "IdentityAuditLog",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "User who performed the action"
+    },
+    "target_user_id": {
+      "type": "string",
+      "description": "User affected by the action"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "user.created",
+        "user.updated",
+        "user.disabled",
+        "user.enabled",
+        "role.assigned",
+        "role.revoked",
+        "group.created",
+        "group.updated",
+        "group.deleted",
+        "group.member_added",
+        "group.member_removed",
+        "permission.granted",
+        "permission.revoked",
+        "ad.sync_started",
+        "ad.sync_completed",
+        "ad.sync_failed"
+      ],
+      "description": "Action performed"
+    },
+    "resource_type": {
+      "type": "string",
+      "description": "Type of resource (user, role, group, permission)"
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "ID of affected resource"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "action"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

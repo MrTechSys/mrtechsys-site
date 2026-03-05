@@ -1,0 +1,150 @@
+{
+  "name": "CRMSync",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "connected_account_id": {
+      "type": "string",
+      "description": "ConnectedAccount ID for CRM"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "contact",
+        "lead",
+        "deal",
+        "account",
+        "opportunity"
+      ],
+      "description": "Type of entity synced"
+    },
+    "cloudflip_id": {
+      "type": "string",
+      "description": "CloudFlip entity ID"
+    },
+    "external_id": {
+      "type": "string",
+      "description": "External CRM entity ID"
+    },
+    "sync_direction": {
+      "type": "string",
+      "enum": [
+        "import",
+        "export",
+        "bidirectional"
+      ],
+      "default": "bidirectional"
+    },
+    "last_synced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sync_status": {
+      "type": "string",
+      "enum": [
+        "synced",
+        "pending",
+        "error",
+        "conflict"
+      ],
+      "default": "synced"
+    },
+    "cloudflip_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "external_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "field_mappings": {
+      "type": "object",
+      "description": "Maps CloudFlip fields to CRM fields"
+    },
+    "conflict_resolution": {
+      "type": "string",
+      "enum": [
+        "cloudflip_wins",
+        "external_wins",
+        "newest_wins",
+        "manual"
+      ],
+      "default": "newest_wins"
+    },
+    "error_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "resolved": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "entity_type",
+    "cloudflip_id",
+    "external_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "name": "CollaborativeDocument",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Document content (rich text/markdown)"
+    },
+    "doc_type": {
+      "type": "string",
+      "enum": [
+        "proposal",
+        "contract",
+        "notes",
+        "runbook",
+        "documentation"
+      ],
+      "default": "notes"
+    },
+    "related_entity_type": {
+      "type": "string",
+      "description": "Related entity type"
+    },
+    "related_entity_id": {
+      "type": "string",
+      "description": "Related entity ID"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Document owner"
+    },
+    "collaborators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs with edit access"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Document version number"
+    },
+    "last_edited_by": {
+      "type": "string"
+    },
+    "last_edited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Locked for editing"
+    },
+    "locked_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "collaborators": {
+            "$in": [
+              "{{user.id}}"
+            ]
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "owner_id": "{{user.id}}"
+        },
+        {
+          "collaborators": {
+            "$in": [
+              "{{user.id}}"
+            ]
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

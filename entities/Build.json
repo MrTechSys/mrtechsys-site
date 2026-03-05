@@ -1,0 +1,181 @@
+{
+  "name": "Build",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "pipeline_run_id": {
+      "type": "string",
+      "description": "Parent PipelineRun ID"
+    },
+    "build_number": {
+      "type": "string",
+      "description": "Unique build number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "building",
+        "testing",
+        "success",
+        "failed",
+        "cancelled"
+      ],
+      "default": "queued"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_seconds": {
+      "type": "number"
+    },
+    "build_agent": {
+      "type": "string",
+      "description": "Build agent/runner ID"
+    },
+    "build_logs_url": {
+      "type": "string"
+    },
+    "compiler_warnings": {
+      "type": "number",
+      "default": 0
+    },
+    "compiler_errors": {
+      "type": "number",
+      "default": 0
+    },
+    "unit_tests": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "number"
+        },
+        "failed": {
+          "type": "number"
+        },
+        "duration_seconds": {
+          "type": "number"
+        }
+      }
+    },
+    "integration_tests": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "number"
+        },
+        "failed": {
+          "type": "number"
+        },
+        "duration_seconds": {
+          "type": "number"
+        }
+      }
+    },
+    "code_quality": {
+      "type": "object",
+      "properties": {
+        "coverage_pct": {
+          "type": "number"
+        },
+        "complexity_score": {
+          "type": "number"
+        },
+        "code_smells": {
+          "type": "number"
+        },
+        "security_issues": {
+          "type": "number"
+        },
+        "bugs": {
+          "type": "number"
+        }
+      }
+    },
+    "artifact_size_mb": {
+      "type": "number"
+    },
+    "cache_hit": {
+      "type": "boolean",
+      "default": false
+    },
+    "resource_usage": {
+      "type": "object",
+      "properties": {
+        "cpu_seconds": {
+          "type": "number"
+        },
+        "memory_mb": {
+          "type": "number"
+        },
+        "disk_mb": {
+          "type": "number"
+        }
+      }
+    },
+    "error_details": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "pipeline_run_id",
+    "build_number"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

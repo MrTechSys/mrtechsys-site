@@ -1,0 +1,171 @@
+{
+  "name": "SOCAlert",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "alert_id": {
+      "type": "string",
+      "description": "Unique alert identifier"
+    },
+    "linked_security_event_id": {
+      "type": "string",
+      "description": "Reference to originating SecurityEvent"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Alert severity"
+    },
+    "detection_reason": {
+      "type": "string",
+      "description": "Why this alert was generated"
+    },
+    "threat_type": {
+      "type": "string",
+      "enum": [
+        "account_takeover",
+        "privilege_escalation",
+        "data_exfiltration",
+        "api_abuse",
+        "compromised_agent",
+        "credential_abuse",
+        "insider_threat",
+        "external_attack",
+        "policy_violation"
+      ],
+      "description": "Classified threat type"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "AI confidence in threat classification (0-1)"
+    },
+    "auto_action_taken": {
+      "type": "string",
+      "description": "Automated action executed (if any)"
+    },
+    "auto_action_result": {
+      "type": "string",
+      "description": "Result of automated action"
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requires human analyst review"
+    },
+    "created_by": {
+      "type": "string",
+      "enum": [
+        "ai",
+        "agent",
+        "manual",
+        "automated_rule"
+      ],
+      "description": "Alert creation source"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Security analyst assigned to this alert"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "investigating",
+        "contained",
+        "resolved",
+        "false_positive"
+      ],
+      "default": "new",
+      "description": "Alert status"
+    },
+    "investigation_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "analyst": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Investigation activity log"
+    },
+    "related_alerts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of related alerts (correlation)"
+    },
+    "mitigation_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recommended mitigation steps"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When alert was resolved"
+    },
+    "resolution_summary": {
+      "type": "string",
+      "description": "Summary of resolution"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "alert_id",
+    "severity",
+    "detection_reason",
+    "created_by"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

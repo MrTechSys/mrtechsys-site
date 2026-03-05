@@ -1,0 +1,150 @@
+{
+  "name": "OutreachCampaign",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string",
+      "description": "Related Lead ID"
+    },
+    "name": {
+      "type": "string"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms"
+      ],
+      "default": "email"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "scheduled",
+        "sent",
+        "canceled"
+      ],
+      "default": "draft"
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "send_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string"
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "opens": {
+          "type": "number",
+          "default": 0
+        },
+        "clicks": {
+          "type": "number",
+          "default": 0
+        },
+        "replies": {
+          "type": "number",
+          "default": 0
+        },
+        "open_rate": {
+          "type": "number"
+        },
+        "click_rate": {
+          "type": "number"
+        },
+        "reply_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": true
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User ID who approved"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "channel",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

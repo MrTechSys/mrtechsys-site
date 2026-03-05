@@ -1,0 +1,32 @@
+import json
+import openai
+import os
+
+def lambda_handler(event, context):
+    try:
+        body = json.loads(event['body'])
+        user_input = body.get('message', '')
+
+        openai.api_key = os.environ['OPENAI_API_KEY']
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You're MrTechSysGPT, a helpful assistant for business automation, cloud migration, and AI-powered dashboards."},
+                {"role": "user", "content": user_input}
+            ]
+        )
+
+        reply = response['choices'][0]['message']['content']
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"reply": reply})
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }

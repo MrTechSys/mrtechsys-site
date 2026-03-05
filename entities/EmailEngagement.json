@@ -1,0 +1,112 @@
+{
+  "name": "EmailEngagement",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "enrollment_id": {
+      "type": "string",
+      "description": "NurtureEnrollment ID if part of workflow"
+    },
+    "email_draft_id": {
+      "type": "string",
+      "description": "EmailDraft ID"
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "Unique tracking identifier"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "delivered",
+        "opened",
+        "clicked",
+        "bounced",
+        "replied"
+      ],
+      "description": "Type of engagement event"
+    },
+    "link_url": {
+      "type": "string",
+      "description": "URL clicked (for click events)"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "device_type": {
+      "type": "string",
+      "enum": [
+        "desktop",
+        "mobile",
+        "tablet"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "org_id",
+    "lead_id",
+    "event_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

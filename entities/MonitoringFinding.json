@@ -1,0 +1,86 @@
+{
+  "name": "MonitoringFinding",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "app_health",
+        "infrastructure",
+        "security",
+        "traffic",
+        "ui_ux",
+        "expansion"
+      ],
+      "description": "Category of the finding"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ],
+      "description": "Severity level"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short title of the finding"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "suggested_fix": {
+      "type": "string",
+      "description": "AI suggested fix or optimization"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "approved",
+        "rejected",
+        "implemented"
+      ],
+      "default": "pending_review"
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "category",
+    "severity",
+    "title",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

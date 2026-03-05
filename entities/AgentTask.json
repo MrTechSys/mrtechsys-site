@@ -1,0 +1,129 @@
+{
+  "name": "AgentTask",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "agent_type": {
+      "type": "string",
+      "enum": [
+        "qualifier",
+        "scheduler",
+        "negotiator",
+        "escalator",
+        "follow_up"
+      ],
+      "description": "Type of AI agent"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "ticket",
+        "contact",
+        "deal"
+      ],
+      "description": "Entity type being acted upon"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "Entity ID being acted upon"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "done",
+        "error"
+      ],
+      "default": "queued"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Actions taken by agent"
+    },
+    "reward_score": {
+      "type": "number",
+      "description": "ML reward score for reinforcement learning"
+    },
+    "error_message": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "agent_type",
+    "target_type",
+    "target_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

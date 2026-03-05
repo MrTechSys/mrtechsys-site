@@ -1,0 +1,180 @@
+{
+  "name": "DevOpsEpic",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "roadmap_id": {
+      "type": "string",
+      "description": "Parent roadmap"
+    },
+    "epic_id": {
+      "type": "string",
+      "description": "Epic identifier (e.g., EPIC-001)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Epic title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "business_value": {
+      "type": "string",
+      "description": "Value this epic delivers"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "backlog",
+        "planned",
+        "in_progress",
+        "testing",
+        "done",
+        "cancelled"
+      ],
+      "default": "backlog"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Epic owner"
+    },
+    "team_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Teams working on this epic"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "story_points": {
+      "type": "number",
+      "description": "Estimated effort points"
+    },
+    "completed_points": {
+      "type": "number",
+      "default": 0
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "met": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Epic IDs this depends on"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "health": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "at_risk",
+        "blocked"
+      ],
+      "default": "healthy"
+    },
+    "blocked_reason": {
+      "type": "string"
+    },
+    "release_version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "roadmap_id",
+    "epic_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

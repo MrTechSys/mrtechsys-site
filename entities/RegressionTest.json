@@ -1,0 +1,185 @@
+{
+  "name": "RegressionTest",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "test_id": {
+      "type": "string",
+      "description": "Unique test identifier"
+    },
+    "pipeline_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "performance",
+        "functionality",
+        "security",
+        "integration",
+        "api",
+        "ui"
+      ],
+      "description": "Type of regression test"
+    },
+    "baseline_snapshot_id": {
+      "type": "string",
+      "description": "Baseline to compare against"
+    },
+    "test_suite": {
+      "type": "string",
+      "description": "Test suite name"
+    },
+    "metrics_compared": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Which metrics were compared"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "warning",
+        "running"
+      ],
+      "default": "running"
+    },
+    "regression_detected": {
+      "type": "boolean",
+      "default": false
+    },
+    "regressions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "baseline_value": {
+            "type": "number"
+          },
+          "current_value": {
+            "type": "number"
+          },
+          "delta_pct": {
+            "type": "number"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "moderate",
+              "major",
+              "critical"
+            ]
+          },
+          "threshold_exceeded": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Detected regressions"
+    },
+    "improvements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "improvement_pct": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Performance improvements"
+    },
+    "ai_analysis": {
+      "type": "object",
+      "properties": {
+        "root_cause_hypothesis": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number"
+        }
+      },
+      "description": "AI-generated analysis"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_seconds": {
+      "type": "number"
+    },
+    "triggered_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "test_id",
+    "test_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

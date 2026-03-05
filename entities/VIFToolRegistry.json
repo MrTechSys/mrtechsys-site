@@ -1,0 +1,62 @@
+{
+  "name": "VIFToolRegistry",
+  "type": "object",
+  "properties": {
+    "tenantId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique tool name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "input_schema": {
+      "type": "object"
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "allowed_agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "credit_cost": {
+      "type": "number",
+      "default": 1
+    },
+    "retry": {
+      "type": "number",
+      "default": 1
+    },
+    "timeout_ms": {
+      "type": "number",
+      "default": 15000
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "tenantId",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "read": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "update": {
+      "tenantId": "{{user.data.current_org_id}}"
+    },
+    "delete": {
+      "tenantId": "{{user.data.current_org_id}}"
+    }
+  }
+}

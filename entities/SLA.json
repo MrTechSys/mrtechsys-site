@@ -1,0 +1,226 @@
+{
+  "name": "SLA",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "sla_id": {
+      "type": "string",
+      "description": "Unique SLA identifier"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Associated service"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer/stakeholder this SLA applies to"
+    },
+    "contract_ref": {
+      "type": "string",
+      "description": "Contract reference number"
+    },
+    "name": {
+      "type": "string",
+      "description": "SLA name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "slo_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Linked SLO definitions that comprise this SLA"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "SLA effective start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "SLA expiration date"
+    },
+    "review_period": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "quarterly",
+        "annually"
+      ],
+      "default": "quarterly"
+    },
+    "availability_target": {
+      "type": "number",
+      "description": "Uptime target percentage (e.g., 99.9)"
+    },
+    "latency_target_ms": {
+      "type": "number",
+      "description": "Max acceptable latency in ms"
+    },
+    "error_rate_target": {
+      "type": "number",
+      "description": "Max acceptable error rate percentage"
+    },
+    "mttr_target_minutes": {
+      "type": "number",
+      "description": "Max time to restore service"
+    },
+    "current_compliance": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "type": "number",
+          "description": "Current availability %"
+        },
+        "latency_p95": {
+          "type": "number",
+          "description": "Current P95 latency"
+        },
+        "error_rate": {
+          "type": "number",
+          "description": "Current error rate %"
+        },
+        "mttr": {
+          "type": "number",
+          "description": "Current MTTR"
+        }
+      },
+      "description": "Current performance against targets"
+    },
+    "breaches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "breach_type": {
+            "type": "string",
+            "enum": [
+              "availability",
+              "latency",
+              "error_rate",
+              "mttr"
+            ]
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_minutes": {
+            "type": "number"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "resolved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "root_cause": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "SLA breach history"
+    },
+    "penalties": {
+      "type": "object",
+      "properties": {
+        "breach_threshold": {
+          "type": "number",
+          "description": "Breaches before penalty"
+        },
+        "penalty_type": {
+          "type": "string",
+          "enum": [
+            "credit",
+            "refund",
+            "discount"
+          ]
+        },
+        "penalty_amount": {
+          "type": "number"
+        }
+      }
+    },
+    "notification_contacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails to notify on breach"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "breached",
+        "at_risk",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "User responsible for this SLA"
+    }
+  },
+  "required": [
+    "org_id",
+    "sla_id",
+    "service_id",
+    "name",
+    "availability_target"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

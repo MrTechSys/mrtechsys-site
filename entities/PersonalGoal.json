@@ -1,0 +1,122 @@
+{
+  "name": "PersonalGoal",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who owns this goal"
+    },
+    "title": {
+      "type": "string",
+      "description": "Goal title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed goal description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "deals",
+        "tasks",
+        "learning",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Goal category"
+    },
+    "target_value": {
+      "type": "number",
+      "description": "Target number to reach"
+    },
+    "current_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Current progress value"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit of measurement (e.g., deals, tasks, $)"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When goal should be achieved"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "abandoned"
+      ],
+      "default": "active"
+    },
+    "milestone_values": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Milestone checkpoints"
+    },
+    "last_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "title",
+    "target_value"
+  ],
+  "rls": {
+    "create": {
+      "user_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

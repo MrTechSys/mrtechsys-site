@@ -1,0 +1,159 @@
+{
+  "name": "CapacityForecast",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Service being forecasted"
+    },
+    "metric": {
+      "type": "string",
+      "enum": [
+        "req_rate",
+        "storage_tb",
+        "egress_gb",
+        "cpu",
+        "memory",
+        "connections"
+      ],
+      "description": "Metric being forecasted"
+    },
+    "model": {
+      "type": "string",
+      "enum": [
+        "prophet-lite",
+        "ets",
+        "linear",
+        "arima"
+      ],
+      "default": "linear",
+      "description": "Forecasting model used"
+    },
+    "horizon_days": {
+      "type": "number",
+      "enum": [
+        7,
+        30,
+        90
+      ],
+      "description": "Forecast horizon"
+    },
+    "forecast": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Point forecasts"
+    },
+    "upper_bound": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Upper confidence interval"
+    },
+    "lower_bound": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Lower confidence interval"
+    },
+    "current_capacity": {
+      "type": "number",
+      "description": "Current capacity limit"
+    },
+    "projected_usage": {
+      "type": "number",
+      "description": "Projected peak usage"
+    },
+    "headroom_pct": {
+      "type": "number",
+      "description": "Remaining capacity percentage"
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "no_action",
+        "scale_up",
+        "scale_down",
+        "optimize"
+      ],
+      "default": "no_action"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "metric",
+    "horizon_days",
+    "forecast"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

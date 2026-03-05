@@ -1,0 +1,47 @@
+{
+  "name": "ReportDefinition",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "entity": {
+      "type": "string"
+    },
+    "filters": {
+      "type": "object",
+      "description": "JSON object defining query filters"
+    },
+    "visualization": {
+      "type": "string",
+      "enum": [
+        "table",
+        "bar",
+        "line",
+        "pie"
+      ]
+    },
+    "config": {
+      "type": "object",
+      "description": "Additional config like groupBy, dateRange"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "entity"
+  ]
+}

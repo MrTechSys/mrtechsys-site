@@ -1,0 +1,165 @@
+{
+  "name": "OnboardingWizardState",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 1
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "answers": {
+      "type": "object",
+      "properties": {
+        "company_goals": {
+          "type": "object",
+          "properties": {
+            "industry": {
+              "type": "string"
+            },
+            "size": {
+              "type": "string"
+            },
+            "compliance_needs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tech_footprint": {
+          "type": "object",
+          "properties": {
+            "services": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "datastores": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "reliability_targets": {
+          "type": "object",
+          "properties": {
+            "uptime_target": {
+              "type": "number"
+            },
+            "latency_target": {
+              "type": "number"
+            },
+            "error_budget": {
+              "type": "number"
+            }
+          }
+        },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "slack_webhook": {
+              "type": "string"
+            },
+            "email_list": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "oncall_rotation": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "confirmation": {
+          "type": "object",
+          "properties": {
+            "reviewed": {
+              "type": "boolean"
+            },
+            "approved_at": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "bootstrap_executed": {
+      "type": "boolean",
+      "default": false
+    },
+    "bootstrap_results": {
+      "type": "object",
+      "description": "Results from EntityBootstrapper"
+    }
+  },
+  "required": [
+    "org_id",
+    "user_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

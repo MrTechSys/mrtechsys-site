@@ -1,0 +1,150 @@
+{
+  "name": "RetailOrder",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "tax": {
+      "type": "number"
+    },
+    "total": {
+      "type": "number"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "fulfillment_status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "preparing",
+        "ready",
+        "completed",
+        "ready_for_pickup",
+        "shipped",
+        "cancelled",
+        "returned"
+      ],
+      "default": "new"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "shipped",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "Simplified lifecycle for dashboards"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "changed_by_user_id": {
+            "type": "string"
+          },
+          "changed_at": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "sms_notification_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "message_id": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          },
+          "sent_at": {
+            "type": "string"
+          },
+          "retry_count": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deleted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "org_id",
+    "total"
+  ],
+  "rls": {
+    "read": {
+      "org_id": "{{user.data.current_org_id}}"
+    },
+    "write": {
+      "org_id": "{{user.data.current_org_id}}"
+    }
+  }
+}

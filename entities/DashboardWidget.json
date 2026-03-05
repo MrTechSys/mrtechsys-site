@@ -1,0 +1,121 @@
+{
+  "name": "DashboardWidget",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Owner of the widget"
+    },
+    "dashboard_id": {
+      "type": "string",
+      "description": "Parent dashboard"
+    },
+    "widget_type": {
+      "type": "string",
+      "enum": [
+        "metric_card",
+        "line_chart",
+        "bar_chart",
+        "pie_chart",
+        "table",
+        "activity_feed",
+        "ai_insights",
+        "task_list",
+        "team_performance",
+        "revenue_forecast"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "data_source": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "type": "string"
+        },
+        "filters": {
+          "type": "object"
+        },
+        "aggregation": {
+          "type": "string"
+        },
+        "groupBy": {
+          "type": "string"
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "refresh_interval": {
+          "type": "number",
+          "default": 300
+        },
+        "show_legend": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "org_id",
+    "user_id",
+    "widget_type",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_id": "{{user.id}}"
+    },
+    "delete": {
+      "user_id": "{{user.id}}"
+    }
+  }
+}

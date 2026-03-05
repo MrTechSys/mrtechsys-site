@@ -1,0 +1,203 @@
+{
+  "name": "SOCAutomatedResponse",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "response_id": {
+      "type": "string",
+      "description": "Unique response identifier"
+    },
+    "alert_id": {
+      "type": "string",
+      "description": "Triggering SOC alert"
+    },
+    "playbook_id": {
+      "type": "string",
+      "description": "Playbook that triggered response"
+    },
+    "response_type": {
+      "type": "string",
+      "enum": [
+        "account_lockout",
+        "ip_block",
+        "geo_fence",
+        "session_kill",
+        "data_throttle",
+        "mfa_force",
+        "privilege_restrict",
+        "agent_disable",
+        "tenant_freeze",
+        "canary_inject"
+      ],
+      "description": "Type of automated response"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "ip",
+        "session",
+        "api_client",
+        "agent",
+        "tenant"
+      ],
+      "description": "Target entity type"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "Target entity ID"
+    },
+    "trigger_conditions": {
+      "type": "object",
+      "description": "Conditions that triggered this response",
+      "properties": {
+        "risk_score": {
+          "type": "number"
+        },
+        "threat_type": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "anomaly_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "actions_taken": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failed",
+              "pending"
+            ]
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "auto_approved",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "expired"
+      ],
+      "default": "auto_approved"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User who approved (if manual)"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reversion_available": {
+      "type": "boolean",
+      "default": true
+    },
+    "reverted": {
+      "type": "boolean",
+      "default": false
+    },
+    "reverted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reverted_by": {
+      "type": "string"
+    },
+    "impact_summary": {
+      "type": "object",
+      "properties": {
+        "affected_users": {
+          "type": "number"
+        },
+        "affected_sessions": {
+          "type": "number"
+        },
+        "blocked_requests": {
+          "type": "number"
+        },
+        "data_protected": {
+          "type": "string"
+        }
+      }
+    },
+    "compliance_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "SOC2, ISO27001, NIST compliance tags"
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "response_id",
+    "response_type",
+    "target_type",
+    "target_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

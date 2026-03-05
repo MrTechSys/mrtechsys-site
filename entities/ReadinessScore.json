@@ -1,0 +1,159 @@
+{
+  "name": "ReadinessScore",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "overall_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Cloud Maturity Index score"
+    },
+    "dimension_scores": {
+      "type": "object",
+      "properties": {
+        "infrastructure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "security": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "automation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "scalability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "compliance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "readiness_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Identified gaps and recommendations"
+    },
+    "industry_benchmark": {
+      "type": "object",
+      "properties": {
+        "industry_average": {
+          "type": "number"
+        },
+        "percentile": {
+          "type": "number"
+        },
+        "top_performers": {
+          "type": "number"
+        }
+      },
+      "description": "Comparison to industry peers"
+    },
+    "maturity_level": {
+      "type": "string",
+      "enum": [
+        "initial",
+        "developing",
+        "defined",
+        "managed",
+        "optimized"
+      ],
+      "description": "Cloud maturity classification"
+    },
+    "calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "overall_score",
+    "dimension_scores",
+    "maturity_level"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

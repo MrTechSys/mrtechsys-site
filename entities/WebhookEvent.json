@@ -1,0 +1,96 @@
+{
+  "name": "WebhookEvent",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "description": "Tenant that owns this event"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Connected app that sent this event"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier"
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of event (e.g., user.created, job.updated)"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event payload data"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "received",
+        "processing",
+        "completed",
+        "failed",
+        "rejected"
+      ],
+      "default": "received"
+    },
+    "processing_result": {
+      "type": "object",
+      "description": "Result of event processing"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if failed"
+    },
+    "signature_valid": {
+      "type": "boolean",
+      "default": false
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retry_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "tenant_id",
+    "event_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "tenant_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

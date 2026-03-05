@@ -1,0 +1,122 @@
+{
+  "name": "AgentMemory",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "ID of the agent (e.g., 'lead_qualifier', 'support_bot')"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User interacting with the agent"
+    },
+    "memory_type": {
+      "type": "string",
+      "enum": [
+        "short_term",
+        "long_term",
+        "fact",
+        "preference"
+      ],
+      "default": "short_term"
+    },
+    "key": {
+      "type": "string",
+      "description": "Key for the memory item"
+    },
+    "value": {
+      "type": "string",
+      "description": "Value content (JSON stringified if object)"
+    },
+    "context_embedding": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Vector embedding for semantic search"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_accessed": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "org_id",
+    "agent_id",
+    "key",
+    "value"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "data.org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

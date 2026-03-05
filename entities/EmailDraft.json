@@ -1,0 +1,164 @@
+{
+  "name": "EmailDraft",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID"
+    },
+    "related_type": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "contact",
+        "quote",
+        "job",
+        "invoice",
+        "ticket"
+      ],
+      "description": "Type of entity this email relates to"
+    },
+    "related_id": {
+      "type": "string",
+      "description": "ID of related entity"
+    },
+    "recipient_email": {
+      "type": "string",
+      "format": "email"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject line"
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body content"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this was AI-generated"
+    },
+    "generation_context": {
+      "type": "object",
+      "description": "Context used for AI generation",
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "string"
+        },
+        "key_points": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "sentiment_score": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Sentiment analysis of email content"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "failed",
+        "scheduled"
+      ],
+      "default": "draft"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sent_by": {
+      "type": "string",
+      "description": "User ID who sent the email"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "org_id",
+    "related_type",
+    "related_id",
+    "recipient_email",
+    "subject",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

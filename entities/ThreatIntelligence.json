@@ -1,0 +1,152 @@
+{
+  "name": "ThreatIntelligence",
+  "type": "object",
+  "properties": {
+    "ip_address": {
+      "type": "string",
+      "description": "IP address in threat database"
+    },
+    "threat_type": {
+      "type": "string",
+      "enum": [
+        "malware",
+        "botnet",
+        "scanner",
+        "brute_force",
+        "ddos",
+        "spam",
+        "tor_exit_node",
+        "vpn_proxy",
+        "known_attacker"
+      ],
+      "description": "Type of threat"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence in threat classification"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Threat intelligence sources (AbuseIPDB, URLhaus, etc.)"
+    },
+    "geolocation": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "asn": {
+          "type": "string"
+        },
+        "isp": {
+          "type": "string"
+        }
+      }
+    },
+    "reputation_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "IP reputation score (lower is worse)"
+    },
+    "total_reports": {
+      "type": "number",
+      "description": "Number of abuse reports"
+    },
+    "last_reported": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "attack_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "attack_type": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "is_blacklisted": {
+      "type": "boolean",
+      "default": false
+    },
+    "blacklist_reason": {
+      "type": "string"
+    },
+    "blacklisted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "whitelisted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Override for false positives"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "ip_address",
+    "threat_type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "read": {
+      "user_condition": {
+        "$ne": null
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

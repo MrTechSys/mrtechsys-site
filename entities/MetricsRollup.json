@@ -1,0 +1,151 @@
+{
+  "name": "MetricsRollup",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string"
+    },
+    "period": {
+      "type": "string",
+      "description": "Time period (YYYY-MM-DD-HH or YYYY-MM-DD)"
+    },
+    "period_type": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "daily",
+        "weekly",
+        "monthly"
+      ]
+    },
+    "kpis": {
+      "type": "object",
+      "properties": {
+        "total_sessions": {
+          "type": "number"
+        },
+        "unique_users": {
+          "type": "number"
+        },
+        "page_views": {
+          "type": "number"
+        },
+        "avg_session_duration_seconds": {
+          "type": "number"
+        },
+        "bounce_rate": {
+          "type": "number"
+        },
+        "conversion_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "funnels": {
+      "type": "object",
+      "properties": {
+        "lead_to_quote": {
+          "type": "number"
+        },
+        "quote_to_invoice": {
+          "type": "number"
+        },
+        "invoice_to_payment": {
+          "type": "number"
+        }
+      }
+    },
+    "per_module": {
+      "type": "object",
+      "description": "Metrics broken down by module"
+    },
+    "utm_attribution": {
+      "type": "object",
+      "description": "Traffic by UTM source/medium"
+    },
+    "errors": {
+      "type": "object",
+      "properties": {
+        "total_count": {
+          "type": "number"
+        },
+        "error_rate": {
+          "type": "number"
+        },
+        "top_errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "p50_latency_ms": {
+          "type": "number"
+        },
+        "p95_latency_ms": {
+          "type": "number"
+        },
+        "p99_latency_ms": {
+          "type": "number"
+        }
+      }
+    },
+    "demo_included": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether demo data was included in rollup"
+    }
+  },
+  "required": [
+    "org_id",
+    "period",
+    "period_type"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "org_id": "{{user.data.current_org_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
