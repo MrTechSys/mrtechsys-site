@@ -91,16 +91,17 @@
       responseBox.innerHTML = 'Thinking...';
 
       try {
-        const response = await fetch('https://drg21pnoha.execute-api.us-east-1.amazonaws.com/submit-crm', {
+        const response = await fetch('/api/cloudflip/mrtechsysgpt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: input })
         });
 
         const result = await response.json();
-        responseBox.innerHTML = result.message || JSON.stringify(result);
+        const responseBox = document.getElementById('responseBox');
+        responseBox.innerHTML = result.reply || result.error || JSON.stringify(result);
       } catch (err) {
-        responseBox.innerHTML = 'Error reaching MrTechSysGPT.';
+        document.getElementById('responseBox').innerHTML = 'Error reaching MrTechSysGPT.';
       }
     }
   </script>

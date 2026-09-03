@@ -4,6 +4,7 @@ module.exports = {
     content: [
       "./index.html",
       "./*.html",
+      "./src/**/*.{ts,tsx,js,jsx}",
       "./cloudflip/index.html",
       "./cloudflip/src/**/*.{ts,tsx,js,jsx}"
     ],
@@ -17,6 +18,14 @@ module.exports = {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+  			'brand-gold': '#D4AF37',
+  			'brand-gold-warm': '#EAB308',
+  			'brand-gold-bright': '#F1C40F',
+  			'brand-gold-shimmer': '#FDE047',
+  			'brand-gold-deep': '#CA8A04',
+  			'matte-black': '#07090E',
+  			'charcoal': '#0A0A0A',
+  			'slate-cyber': '#0F172A',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -66,6 +75,11 @@ module.exports = {
   				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
+        boxShadow: {
+            'gold': '0 0 12px rgba(212, 175, 55, 0.35), 0 0 25px rgba(212, 175, 55, 0.18)',
+            'gold-glow': '0 0 20px rgba(234, 179, 8, 0.3), 0 0 40px rgba(212, 175, 55, 0.15)',
+            'gold-subtle': '0 0 10px rgba(212, 175, 55, 0.12)',
+        },
   		keyframes: {
   			'accordion-down': {
   				from: {
@@ -82,11 +96,31 @@ module.exports = {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+            'shimmer': {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+            },
+            'gold-pulse': {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.7' },
+            },
+            'float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+            },
+            'pulse-slow': {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.5' },
+            }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+            'shimmer': 'shimmer 4s ease-in-out infinite',
+            'gold-pulse': 'gold-pulse 3s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
   		}
   	}
   },

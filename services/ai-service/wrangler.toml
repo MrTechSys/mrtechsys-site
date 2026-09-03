@@ -1,0 +1,20 @@
+name = "cloudflip-ai-service"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+
+# Cloudflare Workers AI Binding
+[ai]
+binding = "AI"
+
+# KV for caching expensive LLM results or prompt templates
+[[kv_namespaces]]
+binding = "AI_KV"
+id = "AI_KV_ID_PLACEHOLDER"
+
+# Vectorize Index for RAG and similarity search
+[[vectorize]]
+binding = "VECTOR_INDEX"
+index_name = "cloudflip-embeddings"
+
+# Secrets (to be set via wrangler secret put)
+# SERVICE_TOKEN_SECRET = "..."

@@ -2,141 +2,393 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mr. TechSys | CloudFX Survey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>MrTechSys | Small Business Operations & Cloud Assessment</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <meta property="og:image" content="https://mrtechsys.com/logo.png" />
+  <meta property="og:title" content="MrTechSys – Small Business Operations & Cloud Assessment" />
+  <meta name="theme-color" content="#07090E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --bg-dark: #07090e;
+      --card-bg: #0b0f17;
+      --card-hover: #131924;
+      --gold-primary: #D4AF37;
+      --gold-warm: #EAB308;
+      --text-white: #ffffff;
+      --text-muted: #94a3b8;
+      --border-color: rgba(212, 175, 55, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0e0e0e;
-      color: #fff;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      overflow: hidden;
+      padding: 2rem 1rem;
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, #0F172A 0%, #07090E 75%, #05070A 100%);
     }
 
     .container {
-      background: #1a1a1a;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #ffcc00;
-      width: 90%;
-      max-width: 600px;
+      width: 100%;
+      max-width: 760px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.1);
+      backdrop-filter: blur(12px);
     }
 
-    .logo {
-      display: block;
-      margin: 0 auto 1.5rem;
-      max-width: 150px;
-      cursor: pointer;
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1.2rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-white);
+    }
+
+    .brand-logo img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .brand-logo span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      letter-spacing: 2px;
+    }
+
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--gold-primary);
     }
 
     h1 {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      color: #ffcc00;
-      text-align: left;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.6rem;
+      line-height: 1.3;
     }
 
-    input, textarea {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: none;
-      border-radius: 8px;
-      background: #2c2c2c;
-      color: #fff;
-      font-size: 1rem;
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      line-height: 1.5;
     }
 
-    input:focus, textarea:focus {
-      outline: none;
-      background: #333;
+    .form-group {
+      margin-bottom: 2rem;
     }
 
-    button {
-      background-color: #ffcc00;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      padding: 0.75rem;
-      width: 100%;
-      border-radius: 8px;
-      font-size: 1rem;
+    .label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gold-primary);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    .grid-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
       cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
     }
 
-    .confirmation {
+    .option-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(241, 196, 15, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      background: rgba(241, 196, 15, 0.12);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 15px rgba(241, 196, 15, 0.25);
+    }
+
+    .option-icon {
+      font-size: 1.4rem;
+    }
+
+    .option-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .option-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .input-field, textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 10px rgba(241, 196, 15, 0.2);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, #d4af37 100%);
+      color: #000000;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 6px 20px rgba(241, 196, 15, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(241, 196, 15, 0.5);
+    }
+
+    #results-panel {
       display: none;
-      text-align: center;
-      margin-top: 1rem;
-      color: #00ff99;
-      font-size: 1.1rem;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--cyan-accent);
+      border-radius: 14px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .grid-options {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="index.html">
-  <img src="logo.png" alt="Mr. TechSys Logo" class="logo"/>
-</a>
 
-    <h1>Cloud Migration Readiness & Optimization Survey</h1>
-    <form id="cloudSurveyForm">
-      <input type="text" id="businessName" placeholder="Business Name" required />
-      <input type="text" id="techStack" placeholder="Current Tech Stack" required />
-      <input type="text" id="familiarity" placeholder="Cloud Familiarity (Beginner/Intermediate/Advanced)" required />
-      <input type="text" id="tools" placeholder="Automation Tools Used" required />
-      <input type="text" id="painPoint" placeholder="Biggest Pain Point" required />
-      <input type="text" id="goals" placeholder="Migration Goals" required />
-      <input type="email" id="email" placeholder="Contact Email" required />
-      <label style="display: block; text-align: left; font-size: 0.9rem; margin-bottom: 1rem;">
-        <input type="checkbox" id="termsCheckbox" required style="margin-right: 0.5rem;" />
-        I agree to the <a href="terms.html" style="color: #ffcc00;">Terms and Conditions</a>
-      </label>
-      <button type="submit">Submit</button>
-    </form>
-    <div class="confirmation" id="confirmationMessage">
-      ✅ Thank you for trusting MrTechSys Solutions. We'll be in touch soon!
-    </div>
+<div class="container">
+  <div class="header-nav">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="MrTechSys" />
+      <span>MrTechSys</span>
+    </a>
+    <a href="index.html" class="back-link">➔ Back to Home</a>
   </div>
 
-  <script>
-    document.getElementById('cloudSurveyForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      // Normally here you would validate and send data to backend
-      document.getElementById('cloudSurveyForm').style.display = 'none';
-      document.getElementById('confirmationMessage').style.display = 'block';
-    });
-  </script>
-
-  <footer style="margin-top: 4rem; font-size: 0.9rem; color: #aaa;">
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="terms.html">Terms of Use</a> |
-    <a href="cookies.html">Cookie Policy</a>
+  <h1>Small Business Operations & AI Diagnostic</h1>
+  <p class="subtitle">
+    Designed for local business owners. Select your daily operational hurdles to receive an instant, tailored technology roadmap.
   </p>
-  &copy; 2025 Mr. TechSys Solutions – Building Legacies One Stack at a Time.
-</footer>
+
+  <form id="assessment-form">
+    <!-- 1. Industry Vertical -->
+    <div class="form-group">
+      <label class="label">1. What type of business do you run?</label>
+      <div class="grid-options" id="vertical-options">
+        <div class="option-card selected" data-value="trade_services">
+          <span class="option-icon">🔨</span>
+          <span class="option-title">Contractor & Trades</span>
+          <span class="option-desc">HVAC, Plumbing, Electrical, Roofing</span>
+        </div>
+        <div class="option-card" data-value="food_hospitality">
+          <span class="option-icon">🍳</span>
+          <span class="option-title">Food & Hospitality</span>
+          <span class="option-desc">Restaurants, Food Trucks, Catering</span>
+        </div>
+        <div class="option-card" data-value="real_estate">
+          <span class="option-icon">🏡</span>
+          <span class="option-title">Real Estate & Property</span>
+          <span class="option-desc">Agents, Property Managers, Inspectors</span>
+        </div>
+        <div class="option-card" data-value="auto_fleet">
+          <span class="option-icon">🚗</span>
+          <span class="option-title">Auto & Fleet</span>
+          <span class="option-desc">Mechanics, Mobile Detailing, Towing</span>
+        </div>
+        <div class="option-card" data-value="pro_services">
+          <span class="option-icon">💼</span>
+          <span class="option-title">Professional Services</span>
+          <span class="option-desc">Legal, Accounting, Consulting, Agency</span>
+        </div>
+        <div class="option-card" data-value="health_wellness">
+          <span class="option-icon">🌿</span>
+          <span class="option-title">Health & Wellness</span>
+          <span class="option-desc">Clinics, Gyms, Salons, Spas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Primary Bottleneck -->
+    <div class="form-group">
+      <label class="label">2. What eats up most of your time each week?</label>
+      <div class="grid-options" id="bottleneck-options">
+        <div class="option-card selected" data-value="dispatch">
+          <span class="option-icon">📅</span>
+          <span class="option-title">Scheduling & Dispatch</span>
+          <span class="option-desc">Double-bookings & missed appointments</span>
+        </div>
+        <div class="option-card" data-value="invoicing">
+          <span class="option-icon">💳</span>
+          <span class="option-title">Chasing Invoices & Quotes</span>
+          <span class="option-desc">Slow payments & manual estimate drafting</span>
+        </div>
+        <div class="option-card" data-value="leads">
+          <span class="option-icon">📞</span>
+          <span class="option-title">Missed Customer Calls</span>
+          <span class="option-desc">Losing prospective clients when busy</span>
+        </div>
+        <div class="option-card" data-value="inventory">
+          <span class="option-icon">📦</span>
+          <span class="option-title">Inventory & Supply Line</span>
+          <span class="option-desc">Tracking stock, reorders & waste</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Business Details -->
+    <div class="form-group">
+      <label class="label">3. Your Business Name & Location</label>
+      <input type="text" class="input-field" placeholder="e.g. Austin Pro HVAC, Austin TX" required />
+    </div>
+
+    <div class="form-group">
+      <label class="label">4. Best Email to send your AI Operations Blueprint</label>
+      <input type="email" class="input-field" placeholder="owner@yourcompany.com" required />
+    </div>
+
+    <button type="submit" class="submit-btn">
+      <span>⚡ Generate Operations Blueprint</span>
+    </button>
+  </form>
+
+  <div id="results-panel">
+    <h3 style="color: var(--cyan-accent); margin-bottom: 0.5rem; font-family: 'Orbitron', sans-serif;">
+      🚀 Prescribed AI Architecture
+    </h3>
+    <p id="blueprint-text" style="font-size: 0.9rem; line-height: 1.6; color: #e2e8f0;"></p>
+  </div>
+</div>
 
 <script>
-  function navigateWithSpin(target) {
-    const logo = document.getElementById('mainLogo');
-    logo.classList.add('spin');
-    setTimeout(() => {
-      window.location.href = target;
-    }, 1000);
-  }
+  // Multi-selection handling for cards
+  document.querySelectorAll('.grid-options').forEach(group => {
+    group.querySelectorAll('.option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('selected');
+        // Ensure at least one card stays selected
+        if (group.querySelectorAll('.option-card.selected').length === 0) {
+          card.classList.add('selected');
+        }
+      });
+    });
+  });
 
-  function spinAndGo(event, link) {
-    event.preventDefault();
-    navigateWithSpin(link.getAttribute('href'));
-  }
+  // Form submission handler
+  document.getElementById('assessment-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const resultsPanel = document.getElementById('results-panel');
+    const blueprintText = document.getElementById('blueprint-text');
+
+    const selectedVerticals = Array.from(document.querySelectorAll('#vertical-options .selected .option-title'))
+      .map(el => el.innerText)
+      .join(', ');
+
+    const selectedBottlenecks = Array.from(document.querySelectorAll('#bottleneck-options .selected .option-title'))
+      .map(el => el.innerText)
+      .join(', ');
+
+    blueprintText.innerHTML = `
+      <strong>Industries:</strong> ${selectedVerticals}<br/>
+      <strong>Operational Targets:</strong> ${selectedBottlenecks}<br/><br/>
+      ✅ <strong>Prescription:</strong> Deploy <em>CloudFlip Business OS</em> paired with <em>MrTechSys Autonomous Dispatch Core</em>. 
+      Automates 24/7 lead capture, multi-app synchronization, and direct payment routing without changing your daily accounting workflow.
+      <br/><br/>
+      <a href="/cloud-provisioner" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #D4AF37, #EAB308); color: #07090E; font-weight: 700; font-size: 0.85rem; text-decoration: none; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(212,175,55,0.4); margin-top: 10px;">
+        ⚡ Bridge to Cloud Provisioner (Free First) &rarr;
+      </a>
+    `;
+
+    resultsPanel.style.display = 'block';
+    resultsPanel.scrollIntoView({ behavior: 'smooth' });
+  });
 </script>
 
 </body>
 </html>
-

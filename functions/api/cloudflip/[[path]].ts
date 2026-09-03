@@ -1,5 +1,5 @@
 // functions/cloudflipApiRouter.ts
-import { db } from "./db";
+import { createDb } from "./db";
 import { requireAuth, Env } from "./_auth";
 
 export default {
@@ -7,10 +7,21 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
-    const secret = env.JWT_SECRET || "CHANGE_ME_IN_ENV";
+    const secret = env.JWT_SECRET;
+    
+    if (!secret) {
+      return new Response(JSON.stringify({ error: "SOC 2 Violation: JWT_SECRET missing" }), { status: 500 });
+    }
+
+    if (!env.DB) {
+       return new Response(JSON.stringify({ error: "Database binding missing" }), { status: 500 });
+    }
+
+    // Initialize DB with Env binding
+    const db = createDb(env.DB);
 
     // Auth Middleware
-    const auth = await requireAuth(request, secret);
+    const auth = await requireAuth(request, secret, env.DB);
     if (!auth) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
@@ -47,6 +58,9 @@ export default {
         } else {
           // Check for query params for basic filtering
           const queryParams = Object.fromEntries(url.searchParams);
+          // Pass org_id for multi-tenancy filter if the entity supports it
+          // Ideally we check if the entity has an org_id field or if we are admin
+          // For now, assume most entities are tenant-scoped:
           const items = await entity.filter({ ...queryParams, org_id: auth.org_id });
           return new Response(JSON.stringify(items), { status: 200 });
         }
@@ -62,6 +76,7 @@ export default {
       // PUT /api/cloudflip/:entity/:id - Update
       if (method === "PUT" && id) {
         const body = await request.json();
+        // Add check that item belongs to org (in a real app, strict RLS)
         const updatedItem = await entity.update(id, body);
         return new Response(JSON.stringify(updatedItem), { status: 200 });
       }

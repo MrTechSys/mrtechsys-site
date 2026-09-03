@@ -1,0 +1,21 @@
+name = "cloudflip-auth-service"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+
+# KV Namespace for session tokens
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "SESSION_KV_ID_PLACEHOLDER" # Replace with actual ID after creation
+
+# Durable Object for session coordination
+[[durable_objects]]
+binding = "SESSION_MANAGER"
+class_name = "SessionManager"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SessionManager"]
+
+# Internal Secrets (will be set via 'wrangler secret put')
+# JWT_SECRET
+# SERVICE_TOKEN_SECRET

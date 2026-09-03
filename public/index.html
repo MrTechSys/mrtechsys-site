@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>MrTechSys – Systems & Cloud Architecture</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=18.0">
+  <link rel="stylesheet" href="assets/css/animations.css?v=18.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<!-- ========================================================= -->
+<!-- 🎬 MRTECHSYS 21ST-CENTURY CINEMATIC AI BOOT SEQUENCE     -->
+<!-- ========================================================= -->
+<div id="cinema-boot-layer">
+  <!-- Three.js 3D Undulating Obsidian & Gleaming 24k Gold Voxel Matrix -->
+  <canvas id="three-wave-canvas"></canvas>
+
+  <!-- Ambient Holographic Scanlines & Cinematic Vignette -->
+  <div class="cyber-vignette"></div>
+  <div class="cyber-scanlines"></div>
+
+  <!-- HUD Telemetry Diagnostic Terminal -->
+  <div id="hud-telemetry" class="hud-terminal">
+    <div class="hud-header">
+      <span class="hud-dot"></span>
+      <span class="hud-title">MRTECHSYS_AI_KERNEL_v3.2</span>
+    </div>
+    <div id="hud-lines" class="hud-body"></div>
+  </div>
+
+  <!-- Single Unified Hero Stage: Pure Laser Forge (Zero Shadowing) -->
+  <div id="unified-hero-stage">
+    <div class="hero-logo-container" id="hero-logo-wrap">
+      
+      <!-- Direct Logo Laser Forge SVG Engine -->
+      <svg id="logo-forge-svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Tight Texas Silhouette Clip: 100% Cuts Out Cyan Blue Background Under El Paso -->
+          <clipPath id="texas-silhouette-clip">
+            <path d="M322,395 L322,129 L512,129 L512,268 L560,268 L608,284 L656,298 L740,295 L800,301 L842,322 L848,420 L876,462 L882,518 L864,602 L812,636 L755,678 L718,706 L694,748 L688,804 L697,860 L661,875 L613,861 L545,833 L510,777 L478,721 L447,679 L350,600 L241,605 L192,575 L192,485 L142,470 L142,395 L180,395 Z" />
+          </clipPath>
+
+          <!-- Progressive Laser Forge Mask -->
+          <mask id="logo-forge-mask">
+            <rect width="1024" height="1024" fill="black" />
+            
+            <!-- 1. Tight Texas Perimeter Clockwise Forge Path -->
+            <path
+              id="forge-perimeter-mask"
+              d="M322,395 L322,129 L512,129 L512,268 L560,268 L608,284 L656,298 L740,295 L800,301 L842,322 L848,420 L876,462 L882,518 L864,602 L812,636 L755,678 L718,706 L694,748 L688,804 L697,860 L661,875 L613,861 L545,833 L510,777 L478,721 L447,679 L350,600 L241,605 L192,575 L192,485 L142,470 L142,395 L180,395 Z"
+              fill="none"
+              stroke="white"
+              stroke-width="190"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- 2. Ground-Truth Letter-by-Letter Typography & Star Laser Strokes -->
+            <g id="letter-strokes-group" fill="none" stroke="white" stroke-width="95" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Mr. -->
+              <path id="stroke-M" d="M350,365 L350,268 L382,325 L415,268 L415,365" />
+              <path id="stroke-r" d="M438,365 L438,295 Q458,282 478,295" />
+              <path id="stroke-dot" d="M492,352 L492,365" />
+
+              <!-- TECHSYS -->
+              <path id="stroke-T" d="M182,408 L285,408 M233,408 L233,568" />
+              <path id="stroke-E" d="M295,405 L295,565 M295,405 L365,405 M295,482 L345,482 M295,565 L365,565" />
+              <path id="stroke-C" d="M448,418 Q368,410 368,478 Q368,552 448,548" />
+              <path id="stroke-H" d="M455,400 L455,565 M455,478 L535,478 M535,400 L535,565" />
+              <path id="stroke-S1" d="M628,418 Q555,410 555,455 Q555,492 628,498 Q628,558 555,550" />
+              <path id="stroke-Y" d="M645,402 L675,475 L708,402 M675,475 L675,565" />
+              <path id="stroke-S2" d="M808,422 Q735,414 735,458 Q735,495 808,502 Q808,562 735,554" />
+
+              <!-- Texas Lone Star ★ -->
+              <path id="stroke-Star" d="M545,554 L558,584 L586,584 L562,604 L570,638 L545,618 L520,638 L528,604 L504,584 L532,584 Z" />
+
+              <!-- com -->
+              <path id="stroke-c" d="M542,668 Q500,660 500,688 Q500,714 542,710" />
+              <path id="stroke-o" d="M558,688 Q558,660 582,660 Q606,660 606,688 Q606,714 582,714 Q558,714 558,688" />
+              <path id="stroke-m" d="M622,714 L622,668 Q640,658 650,680 Q660,658 678,680 L678,714" />
+            </g>
+
+            <!-- 3. Final Full Unmask Fill -->
+            <circle id="forge-final-fill" cx="512" cy="512" r="0" fill="white" />
+          </mask>
+        </defs>
+
+        <!-- Real Authentic Logo: Strictly clipped to tight silhouette, 100% natural, ZERO shadowing -->
+        <g clip-path="url(#texas-silhouette-clip)">
+          <!-- 100% Natural Brilliant 24k Gold Logo: Laser-welded directly into life -->
+          <image
+            id="forge-logo-image"
+            href="assets/images/logo.png"
+            width="1024"
+            height="1024"
+            mask="url(#logo-forge-mask)"
+          />
+        </g>
+      </svg>
+
+      <!-- Real-Time Pinpoint Micro-Sparks Canvas -->
+      <canvas id="sparks-canvas"></canvas>
+
+      <!-- Precision Pin-Point Arc Welding Torch Tip -->
+      <div id="welding-torch-tip">
+        <div class="torch-core"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 🚀 PUBLIC PLATFORM GATEWAY & STOREFRONT                   -->
+<!-- ========================================================= -->
+
+<!-- Background Galaxy Video -->
+<video autoplay muted loop playsinline id="bgVideo">
+  <source src="https://cdn.coverr.co/videos/coverr-galactic-space-6366/1080p.mp4" type="video/mp4">
+</video>
+
+<!-- Top-Left Clean CloudFlip Platform Access -->
+<div class="header-links" id="header-nav">
+  <a href="https://cloudflip.mrtechsys.com" target="_blank" rel="noreferrer" class="cloudflip-gateway-btn">
+    <span class="btn-sparkle">⚡</span>
+    <span class="btn-text">CloudFlip Platform</span>
+    <span class="btn-arrow">➔</span>
+  </a>
+</div>
+
+<!-- Main Under-Construction Presentation Hub -->
+<div id="main-content">
+  <div class="countdown" id="countdown">Launching in: --:--:--</div>
+  <h1 class="landing-hero-title">MrTechSys</h1>
+  <div class="landing-hero-subtitle">NEXT-GENERATION CLOUD ARCHITECTURE & AI SYSTEMS</div>
+
+  <!-- Orbiting Solar Logo Display (Round Circular Planet Frame) -->
+  <div class="orbit-container">
+    <div class="sun"></div>
+    <div class="planet">
+      <img src="assets/images/logo.png" alt="MrTechSys Core" />
+    </div>
+  </div>
+
+  <!-- Interactive Capabilities Panel -->
+  <div id="dvd-floater">
+    <div class="dvd-content">
+      <div class="dvd-badge">ENTERPRISE CAPABILITIES</div>
+      <ul>
+        <li>🚀 Zero-Downtime Cloud Migrations</li>
+        <li>🤖 Autonomous Virtual DevOps & Dispatch</li>
+        <li>🧠 In-House AI Kernel (TOL-Core)</li>
+        <li>🛡️ Zero-Trust Merkle Compliance</li>
+        <li>🍳 CloudFlip Ops KDS & POS Ingestion</li>
+        <li>🤠 Engineered with Texas Pride</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Clean Footer Legal Navigation -->
+  <div class="footer">
+    <a href="privacy.html">Privacy Policy</a> •
+    <a href="terms.html">Terms of Service</a> •
+    <a href="cookies.html">Cookie Policy</a>
+  </div>
+</div>
+
+<!-- Master Audio-Visual Engine -->
+<script src="assets/js/main.js?v=18.0"></script>
+</body>
+</html>

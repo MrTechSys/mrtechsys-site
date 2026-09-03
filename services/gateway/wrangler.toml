@@ -1,0 +1,26 @@
+name = "cloudflip-gateway"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+
+# Bindings to Internal Services (Service Bindings)
+[[services]]
+binding = "AUTH_SERVICE"
+service = "cloudflip-auth-service"
+
+[[services]]
+binding = "AI_SERVICE"
+service = "cloudflip-ai-service"
+
+[[services]]
+binding = "AUTOMATION_SERVICE"
+service = "cloudflip-automation-service"
+
+# KV Namespaces (Shared State, e.g., Rate Limits, Session tokens)
+# [[kv_namespaces]]
+# binding = "GATEWAY_KV"
+# id = "<kv_id>"
+
+# Public Routes (Traffic Entry Point)
+# routes = [
+#   { pattern = "api.mrtechsys.com/*", zone_name = "mrtechsys.com" }
+# ]

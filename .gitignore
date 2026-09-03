@@ -1,0 +1,36 @@
+# Cloudflare Pages / Workers
+.wrangler/
+.dev.vars
+.env
+.env.local
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build Output
+dist/
+build/
+.output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# D1
+.d1/

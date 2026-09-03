@@ -1,6 +1,6 @@
 // functions/cloudflipAuth.ts
 import bcrypt from "bcryptjs"; // Pure JS implementation
-import { db } from "./db";
+import { createDb } from "./db";
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
 const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -126,6 +126,7 @@ function getCookie(req: Request, name: string): string | null {
 
 export interface Env {
   JWT_SECRET: string;
+  DB: D1Database;
 }
 
 export default {
@@ -133,7 +134,17 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
-    const secret = env.JWT_SECRET || "CHANGE_ME_IN_ENV";
+    const secret = env.JWT_SECRET;
+    
+    if (!secret) {
+      return new Response(JSON.stringify({ error: "SOC 2 Violation: JWT_SECRET missing" }), { status: 500 });
+    }
+
+    if (!env.DB) {
+       return new Response(JSON.stringify({ error: "Database binding missing" }), { status: 500 });
+    }
+
+    const db = createDb(env.DB);
 
     try {
       let body: any = {};
@@ -146,16 +157,16 @@ export default {
       const normalizedPath = isApiPrefix ? path.replace("/api/cloudflip", "") : path;
 
       if (normalizedPath === "/auth/register" && method === "POST") {
-        return await handleRegister(body);
+        return await handleRegister(body, db);
       }
       if (normalizedPath === "/auth/login" && method === "POST") {
-        return await handleLogin(body, secret);
+        return await handleLogin(body, secret, db);
       }
       if (normalizedPath === "/auth/refresh" && method === "POST") {
-        return await handleRefresh(request, secret);
+        return await handleRefresh(request, secret, db);
       }
       if (normalizedPath === "/auth/logout" && method === "POST") {
-        return await handleLogout(request, secret);
+        return await handleLogout(request, secret, db);
       }
 
       return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
@@ -168,7 +179,7 @@ export default {
 
 // ---- Handlers ----
 
-async function handleRegister(body: any): Promise<Response> {
+async function handleRegister(body: any, db: any): Promise<Response> {
   const { email, password, org_id, role } = body;
 
   if (!email || !password || !org_id) {
@@ -195,7 +206,7 @@ async function handleRegister(body: any): Promise<Response> {
   }), { status: 201 });
 }
 
-async function handleLogin(body: any, secret: string): Promise<Response> {
+async function handleLogin(body: any, secret: string, db: any): Promise<Response> {
   const { email, password } = body;
 
   if (!email || !password) {
@@ -205,11 +216,13 @@ async function handleLogin(body: any, secret: string): Promise<Response> {
   const users = await db.users.filter({ email });
   const user = users[0];
   if (!user) {
+    await db.auditLogs.create({ action: "login_failed", details: { email, reason: "user_not_found" }, status: "failure" });
     return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
   }
 
   const valid = await bcrypt.compare(password, user.password_hash);
   if (!valid) {
+    await db.auditLogs.create({ user_id: user.id, org_id: user.org_id, action: "login_failed", details: { email, reason: "invalid_password" }, status: "failure" });
     return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
   }
 
@@ -225,6 +238,8 @@ async function handleLogin(body: any, secret: string): Promise<Response> {
     revoked: false,
   });
 
+  await db.auditLogs.create({ user_id: user.id, org_id: user.org_id, action: "login_success", status: "success" });
+
   const headers = setCookieHeaders(accessToken, refreshToken);
 
   return new Response(
@@ -236,7 +251,7 @@ async function handleLogin(body: any, secret: string): Promise<Response> {
   );
 }
 
-async function handleRefresh(req: Request, secret: string): Promise<Response> {
+async function handleRefresh(req: Request, secret: string, db: any): Promise<Response> {
   const refreshToken = getCookie(req, "cf_refresh_token");
   if (!refreshToken) {
     return new Response(JSON.stringify({ error: "No refresh token" }), { status: 401 });
@@ -263,7 +278,7 @@ async function handleRefresh(req: Request, secret: string): Promise<Response> {
   return new Response(JSON.stringify({ success: true }), { status: 200, headers });
 }
 
-async function handleLogout(req: Request, secret: string): Promise<Response> {
+async function handleLogout(req: Request, secret: string, db: any): Promise<Response> {
   const refreshToken = getCookie(req, "cf_refresh_token");
   if (refreshToken) {
     const decoded = await verifyJWT(refreshToken, secret);
@@ -271,6 +286,13 @@ async function handleLogout(req: Request, secret: string): Promise<Response> {
       const sessions = await db.refreshSessions.filter({ token_id: decoded.jti });
       if (sessions[0]) {
         await db.refreshSessions.update(sessions[0].id, { revoked: true });
+        await db.auditLogs.create({
+            user_id: decoded.sub,
+            org_id: decoded.org_id,
+            action: "logout",
+            entity: "user",
+            status: "success"
+        });
       }
     }
   }
@@ -278,8 +300,8 @@ async function handleLogout(req: Request, secret: string): Promise<Response> {
   return new Response(JSON.stringify({ success: true }), { status: 200, headers: clearAuthCookies() });
 }
 
-// Middleware helper
-export async function requireAuth(req: Request, secret: string) {
+// Middleware helper - Stateless check, but compatible with other usages
+export async function requireAuth(req: Request, secret: string, db?: any) {
   const token = getCookie(req, "cf_access_token") || req.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return null;
 

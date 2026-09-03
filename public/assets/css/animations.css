@@ -1,0 +1,332 @@
+/* ==========================================================================
+   MRTECHSYS 21ST-CENTURY CINEMATIC ANIMATIONS & DIRECT LOGO FORGE ENGINE (v18.0)
+   Zero Pre-Shadowing ➔ Tight El Paso Silhouette ➔ Letter-by-Letter Weld ➔ Master Reveal
+   ========================================================================== */
+
+:root {
+  --gold: #f1c40f;
+  --gold-bright: #ffd700;
+  --cyan-accent: #00f0ff;
+  --ink: #050505;
+  --ease-cinema: cubic-bezier(0.16, 1, 0.3, 1);
+  --z-boot: 99999;
+}
+
+/* ==========================================================================
+   1. CINEMA BOOT CONTAINER & THREE.JS CANVAS
+   ========================================================================== */
+
+#cinema-boot-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--ink);
+  z-index: var(--z-boot);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  touch-action: none;
+  animation: dissolveCinemaBoot 1.2s var(--ease-cinema) 8.8s forwards;
+}
+
+@keyframes dissolveCinemaBoot {
+  0% { opacity: 1; transform: scale(1); }
+  99% { opacity: 0; transform: scale(1.06); pointer-events: none; }
+  100% { opacity: 0; pointer-events: none; visibility: hidden; display: none; }
+}
+
+#three-wave-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   2. SCANLINES & VIGNETTE
+   ========================================================================== */
+
+.cyber-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 35%, rgba(5, 5, 5, 0.95) 90%);
+}
+
+.cyber-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.35) 50%
+  );
+  background-size: 100% 4px;
+  opacity: 0.6;
+  animation: scanDrift 9s linear infinite;
+}
+
+@keyframes scanDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 400px; }
+}
+
+/* ==========================================================================
+   3. HUD TELEMETRY TERMINAL
+   ========================================================================== */
+
+.hud-terminal {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 10;
+  background: rgba(10, 10, 15, 0.85);
+  border: 1px solid rgba(241, 196, 15, 0.4);
+  border-radius: 8px;
+  padding: 12px 18px;
+  max-width: 480px;
+  width: calc(100% - 48px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(241, 196, 15, 0.2);
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(241, 196, 15, 0.2);
+  padding-bottom: 4px;
+}
+
+.hud-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--cyan-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cyan-accent);
+  animation: hudPulse 1.2s infinite alternate;
+}
+
+.hud-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cyan-accent);
+  letter-spacing: 2px;
+}
+
+.hud-body {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--gold);
+  line-height: 1.5;
+  max-height: 110px;
+  overflow-y: hidden;
+}
+
+.hud-line {
+  opacity: 0;
+  animation: lineFadeIn 0.3s forwards;
+}
+
+@keyframes lineFadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes hudPulse {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* ==========================================================================
+   4. SINGLE UNIFIED HERO STAGE (PURE LASER FORGE)
+   ========================================================================== */
+
+#unified-hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  animation: heroStageFadeIn 0.8s ease 1.2s forwards;
+}
+
+@keyframes heroStageFadeIn {
+  to { opacity: 1; }
+}
+
+.hero-logo-container {
+  position: relative;
+  width: min(86vw, 440px);
+  height: min(86vw, 440px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG Direct Logo Laser Forge */
+#logo-forge-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 1. Clockwise Texas Perimeter Forge Mask */
+#forge-perimeter-mask {
+  stroke-dasharray: 2750;
+  stroke-dashoffset: 2750;
+  animation: weldPerimeterMask 2.6s var(--ease-cinema) 1.6s forwards;
+}
+
+@keyframes weldPerimeterMask {
+  0% { stroke-dashoffset: 2750; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* 2. Letter-by-Letter Typography & Star Strokes */
+#letter-strokes-group path {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+}
+
+/* 3. Complete Final Fill Unmask */
+#forge-final-fill {
+  animation: expandFinalFill 1.0s var(--ease-cinema) 6.8s forwards;
+}
+
+@keyframes expandFinalFill {
+  0% { r: 0; opacity: 0; }
+  100% { r: 800; opacity: 1; }
+}
+
+/* Fiery Sparks Canvas */
+#sparks-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Precision Pin-Point Arc Welding Torch Tip */
+#welding-torch-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-100px, -100px, 0);
+  transition: opacity 0.15s ease;
+}
+
+.torch-core {
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px 1.5px #ffffff, 0 0 10px 3px rgba(255, 215, 0, 0.6);
+  transform: translate(-50%, -50%);
+}
+
+/* ==========================================================================
+   5. LANDING PAGE REVEAL TIMING
+   ========================================================================== */
+
+#main-content {
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  animation: revealMainHub 1.2s var(--ease-cinema) 8.8s forwards;
+}
+
+@keyframes revealMainHub {
+  to { opacity: 1; pointer-events: auto; }
+}
+
+#header-nav {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  animation: revealHeaderNav 1.2s var(--ease-cinema) 8.8s forwards;
+}
+
+@keyframes revealHeaderNav {
+  to { opacity: 1; pointer-events: auto; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   6. ORBIT & SPINS
+   ========================================================================== */
+
+.orbit-container {
+  animation: rotateOrbit 24s linear infinite;
+}
+
+.planet img {
+  animation: spin 8s linear infinite;
+}
+
+@keyframes rotateOrbit {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   7. MOBILE RESPONSIVENESS OVERRIDES
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .hero-logo-container {
+    width: min(84vw, 340px);
+    height: min(84vw, 340px);
+  }
+
+  .hud-terminal {
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92vw, 420px);
+    padding: 8px 12px;
+  }
+
+  .hud-body {
+    max-height: 70px;
+    font-size: 0.62rem;
+    line-height: 1.4;
+  }
+
+  .hud-header {
+    margin-bottom: 4px;
+  }
+
+  .hud-title {
+    font-size: 0.65rem;
+  }
+}

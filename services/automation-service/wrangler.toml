@@ -1,0 +1,12 @@
+name = "cloudflip-automation-service"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+
+# Environment Variables
+[vars]
+# The internal/tunnel URL for your Dockerized n8n instance
+N8N_BASE_URL = "http://localhost:5678" 
+
+# Secrets (to be set via wrangler secret put)
+# N8N_API_KEY = "..."
+# SERVICE_TOKEN_SECRET = "..."
