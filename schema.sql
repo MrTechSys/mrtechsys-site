@@ -3154,3 +3154,57 @@ CREATE INDEX IF NOT EXISTS idx_bookings_cancel_token ON bookings(cancel_token);
 CREATE INDEX IF NOT EXISTS idx_bookings_date_status ON bookings(booking_date, status);
 CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(email);
 CREATE INDEX IF NOT EXISTS idx_bookings_cancel_token ON bookings(cancel_token);
+
+-- ==============================================================================
+-- CANONICAL BUSINESS TECHNOLOGY PROFILES (MRTECHSYS ASSESSMENT INTELLIGENCE)
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS business_technology_profiles (
+  id TEXT PRIMARY KEY,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now')),
+  
+  -- Company Context
+  business_name TEXT,
+  contact_name TEXT,
+  contact_email TEXT,
+  contact_phone TEXT,
+  industry TEXT,
+  team_size TEXT,
+  
+  -- Structured Extracted State
+  raw_dialogue_json TEXT,
+  extracted_state_json TEXT,
+  
+  -- Scoring & Diagnostics (0 to 100)
+  health_score INTEGER,
+  operations_score INTEGER,
+  security_score INTEGER,
+  technology_score INTEGER,
+  data_score INTEGER,
+  cx_score INTEGER,
+  financial_score INTEGER,
+  continuity_score INTEGER,
+  
+  -- Identified Economic Inefficiencies
+  identified_inefficiencies_json TEXT,
+  estimated_annual_savings_min INTEGER DEFAULT 1200,
+  estimated_annual_savings_max INTEGER DEFAULT 3600,
+  estimated_hours_recovered_min INTEGER DEFAULT 5,
+  estimated_hours_recovered_max INTEGER DEFAULT 12,
+  
+  -- Actionable Executive Roadmap (NOW / NEXT / LATER)
+  now_actions_json TEXT,
+  next_actions_json TEXT,
+  later_actions_json TEXT,
+  
+  -- Objective Solution Routes
+  recommended_routes_json TEXT,
+  
+  -- Post-Assessment Hand-off
+  consultation_booked BOOLEAN DEFAULT 0,
+  pre_call_brief_generated BOOLEAN DEFAULT 0,
+  pre_call_brief_text TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_btp_email ON business_technology_profiles(contact_email);

@@ -185,26 +185,26 @@ const Hero = () => {
         {/* High-Impact Visual CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-4 text-center">
           <Link 
-            to="/cloud-provisioner"
+            to="/assessment"
             className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] text-[#07090E] font-mono text-xs font-bold uppercase tracking-wider rounded-xl shadow-[0_0_25px_rgba(212,175,55,0.35)] transition-all active:scale-[0.98] cursor-pointer"
           >
             <Zap size={15} className="fill-[#07090E]" />
-            <span>Build Your Cloud Footprint (Free First) &rarr;</span>
+            <span>10-Point Business Tech Assessment &rarr;</span>
+          </Link>
+
+          <Link 
+            to="/cloud-provisioner"
+            className="inline-flex items-center gap-2 px-7 py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white font-mono text-xs font-semibold uppercase tracking-wider rounded-xl border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 transition-all cursor-pointer"
+          >
+            <span>Cloud Provisioner (Free First)</span>
           </Link>
 
           <Link 
             to="/diagnostic"
-            className="inline-flex items-center gap-2 px-7 py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white font-mono text-xs font-semibold uppercase tracking-wider rounded-xl border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 transition-all cursor-pointer"
-          >
-            <span>The Flip Engine Diagnostic</span>
-          </Link>
-
-          <a 
-            href="#cloudflip"
             className="inline-flex items-center gap-1.5 px-5 py-4 text-slate-400 hover:text-[#D4AF37] font-mono text-xs tracking-wider transition-colors"
           >
-            Explore Live Workflows <ChevronRight size={14} />
-          </a>
+            <span>Flip Engine ROI Calculator</span> <ChevronRight size={14} />
+          </Link>
         </div>
 
         {/* Live Metrics Telemetry HUD */}

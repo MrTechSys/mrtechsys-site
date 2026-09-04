@@ -9,7 +9,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Why MrTechSys', path: '/#why' },
-    { name: 'The Flip Engine', path: '/diagnostic' },
+    { name: 'Assessment', path: '/assessment' },
+    { name: 'Flip Engine', path: '/diagnostic' },
     { name: 'CloudFlip OS', path: '/#cloudflip' },
     { name: 'Cloud Provisioner', path: '/cloud-provisioner' },
     { name: 'Foundry & AI', path: '/foundry' },
@@ -45,7 +46,7 @@ const Navbar = () => {
 
 
         {/* Desktop Links (Cinematic Gold HUD style) */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-5">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -59,23 +60,23 @@ const Navbar = () => {
             href="https://cloudflip.mrtechsys.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-1.5 rounded-lg border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37]/15 font-mono text-xs font-bold transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37]/15 font-mono text-xs font-bold transition-all flex items-center gap-1.5"
           >
-            <span>CloudFlip App</span>
+            <span>CloudFlip</span>
             <span className="text-[10px]">&rarr;</span>
           </a>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('mrtechsys-open-booking', { detail: { service: 'General Advisory' } }))}
-            className="px-3.5 py-1.5 rounded-lg border border-[#D4AF37]/40 text-slate-200 hover:text-[#D4AF37] hover:border-[#D4AF37] font-mono text-xs font-semibold transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-lg border border-[#D4AF37]/40 text-slate-200 hover:text-[#D4AF37] hover:border-[#D4AF37] font-mono text-xs font-semibold transition-all cursor-pointer"
           >
             Book Strategy
           </button>
           <Link
-            to="/diagnostic"
-            className="px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] text-[#07090E] font-mono text-xs font-bold rounded shadow-[0_0_20px_rgba(212,175,55,0.35)] transition-all uppercase tracking-wider"
+            to="/assessment"
+            className="px-3.5 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] text-[#07090E] font-mono text-xs font-bold rounded shadow-[0_0_20px_rgba(212,175,55,0.35)] transition-all uppercase tracking-wider"
           >
-            Launch Diagnostic
+            Free Assessment
           </Link>
         </div>
 
@@ -118,11 +119,11 @@ const Navbar = () => {
               Book Strategy Session
             </button>
             <Link
-              to="/diagnostic"
+              to="/assessment"
               onClick={() => setIsOpen(false)}
               className="block text-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] text-[#07090E] font-mono text-xs font-bold rounded uppercase tracking-wider"
             >
-              Launch Diagnostic
+              Free Assessment (Health Score)
             </Link>
           </div>
         </motion.div>

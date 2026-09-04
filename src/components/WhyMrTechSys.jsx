@@ -7,13 +7,13 @@ const PIPELINE_STAGES = [
   {
     step: '01',
     label: 'DIAGNOSE',
-    title: 'The Flip Engine',
-    metric: 'Quantifies Drag',
-    desc: 'Calculates wasted hours & revenue leakage across missed calls, scheduling, and billing.',
+    title: 'Tech Health Assessment',
+    metric: 'Health Score 0–100',
+    desc: 'Evaluates 10 business dimensions in plain English to pinpoint security gaps, software waste, and lost revenue.',
     icon: Gauge,
-    cta: 'Launch Diagnostic &rarr;',
-    link: '/diagnostic',
-    bullets: ['Calculates payroll drag', 'Uncovers lost leads', 'Custom transition blueprint']
+    cta: 'Start 10-Point Assessment &rarr;',
+    link: '/assessment',
+    bullets: ['Deterministic 0–100 score', 'NOW/NEXT/LATER roadmap', 'Zero IT jargon required']
   },
   {
     step: '02',
