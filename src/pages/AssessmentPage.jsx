@@ -17,6 +17,7 @@ const BUSINESS_PROFILES = [
 
 export default function AssessmentPage() {
   const [stage, setStage] = useState('profile'); // 'profile' | 'interactive' | 'report'
+  const [assessmentMode, setAssessmentMode] = useState('guided'); // 'guided' | 'checklist' | 'print'
   const [selectedProfile, setSelectedProfile] = useState('contractor');
   const [businessName, setBusinessName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
@@ -75,18 +76,29 @@ export default function AssessmentPage() {
         context: {
           businessName: businessName || 'Small Business',
           email: contactEmail || '',
-          question: `Business Technology Health Assessment (${reportData?.evaluation?.healthScore || 72}/100) — Inefficiencies: ${reportData?.evaluation?.inefficiencies?.map(i => i.title).join(', ')}`
+          question: `Business Technology Health Assessment (${reportData?.evaluation?.healthScore || 72}/100) — Profile: ${reportData?.evaluation?.profileName || selectedProfile} — Inefficiencies: ${reportData?.evaluation?.inefficiencies?.map(i => i.title).join(', ')}`
         }
       }
     }));
   };
+
+  const FRICTION_ITEMS = [
+    { key: 'missed_calls', icon: '📞', title: 'Missed Calls / Phone Tag', desc: 'When the phone rings during a busy job, calls roll to unmonitored voicemail where leads go cold.' },
+    { key: 'manual_scheduling', icon: '📅', title: 'Manual Scheduling Friction', desc: 'Staff coordinates times over phone calls and text messages instead of automated self-scheduling.' },
+    { key: 'paper_invoicing', icon: '💳', title: 'Invoices Drafted Days Later', desc: 'Technicians finish work on-site, but invoices are handwritten or drafted days later in accounting.' },
+    { key: 'former_employee_access', icon: '🔐', title: 'Old Logins Still Active', desc: 'Former employees or past contractors might still have passwords to company email, drives, or apps.' },
+    { key: 'mfa_enabled', icon: '🛡️', title: '2-Step Verification (MFA) Active', desc: 'Staff must enter a code from their phone when logging into email, banking, or business software.', inverted: true },
+    { key: 'single_computer_risk', icon: '💻', title: 'Single Computer Dependency', desc: 'If one specific office computer or laptop died tomorrow, critical business work would freeze.' },
+    { key: 'backup_verified', icon: '💾', title: 'Verified Automated Off-Site Backups', desc: 'You have automated cloud backups running and have tested restoring them in the last 6 months.', inverted: true },
+    { key: 'duplicate_data_entry', icon: '📋', title: 'Re-Typing Data Between Apps', desc: 'Customer info is copied by hand between forms, calendars, spreadsheets, and accounting software.' },
+  ];
 
   return (
     <div className="pt-28 pb-24 min-h-screen px-4 md:px-6 relative font-sans text-slate-100">
       <div className="max-w-4xl mx-auto">
         
         {/* Top Header Badge */}
-        <div className="text-center mb-8 space-y-3">
+        <div className="text-center mb-6 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] font-mono text-[10px] tracking-wider uppercase font-bold">
             <Sparkles size={12} className="animate-spin" />
             <span>MRTECHSYS TECHNOLOGY ADVISORY SYSTEM</span>
@@ -97,10 +109,96 @@ export default function AssessmentPage() {
           <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
             Practical technology advisory for small businesses that don't have a technology department. Evaluate your 10 critical operational dimensions in plain English.
           </p>
+
+          {/* Assessment Mode Switcher (Dual-Track: Guided AI vs Rapid 60-Sec Checklist vs Printable Sheet) */}
+          <div className="inline-flex p-1 rounded-xl bg-black/60 border border-white/10 mt-2">
+            <button
+              type="button"
+              onClick={() => { setAssessmentMode('guided'); setStage('profile'); }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                assessmentMode === 'guided'
+                  ? 'bg-gradient-to-r from-[#D4AF37] to-[#EAB308] text-[#07090E]'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              🤖 Guided Advisor
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAssessmentMode('checklist'); setStage('interactive'); }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                assessmentMode === 'checklist'
+                  ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              ⚡ 60-Sec Checklist
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAssessmentMode('print'); }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                assessmentMode === 'print'
+                  ? 'bg-white/20 text-white border border-white/30'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              🖨️ Field Worksheet
+            </button>
+          </div>
         </div>
 
-        {/* STAGE 1: PROFILE SELECTOR */}
-        {stage === 'profile' && (
+        {/* MODE: PRINTABLE FIELD AUDIT WORKSHEET */}
+        {assessmentMode === 'print' && (
+          <div className="bg-white text-slate-900 rounded-2xl p-8 sm:p-10 shadow-2xl space-y-6">
+            <div className="border-b-2 border-slate-900 pb-4 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-mono font-bold uppercase tracking-widest text-amber-700">MRTECHSYS CONSULTING FIELD AUDIT WORKSHEET</span>
+                <h2 className="text-2xl font-black text-slate-900 mt-1">10-Point Business Technology Health Audit</h2>
+                <p className="text-xs text-slate-600">Confidential on-site diagnostic &amp; operational friction evaluation rubric.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-slate-900 text-white font-mono text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                Print / Save PDF
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+              <div className="border border-slate-300 p-2.5 rounded">Business Name: ____________________________</div>
+              <div className="border border-slate-300 p-2.5 rounded">Primary Industry: _________________________</div>
+              <div className="border border-slate-300 p-2.5 rounded">Owner / Key Contact: ______________________</div>
+              <div className="border border-slate-300 p-2.5 rounded">Staff / Truck Count: ______________________</div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1">10 Core Operational Friction Dimensions</h3>
+              {FRICTION_ITEMS.map((item, idx) => (
+                <div key={item.key} className="p-3 border border-slate-200 rounded-lg flex items-start justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-xs text-slate-900">{idx + 1}. {item.title}</span>
+                    <p className="text-[11px] text-slate-600">{item.desc}</p>
+                    <div className="text-[10px] font-mono text-slate-400 mt-1">Notes: ___________________________________________________________</div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0 pt-1 font-mono text-xs font-bold">
+                    <span className="px-2 py-1 border border-slate-300 rounded">[ &nbsp; ] OK</span>
+                    <span className="px-2 py-1 border border-red-300 bg-red-50 text-red-700 rounded">[ &nbsp; ] RISK</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500">
+              <span>Audited by: The MrTechSys Advisory Team</span>
+              <span>mrtechsys.com · 30-Min Strategy Review</span>
+            </div>
+          </div>
+        )}
+
+        {/* STAGE 1: PROFILE SELECTOR (When in Guided Mode) */}
+        {assessmentMode !== 'print' && stage === 'profile' && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="bg-[#0B0F17] border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
             <div>
               <span className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider font-bold">Step 1 of 2 · Identify Your Business Type</span>
@@ -166,12 +264,14 @@ export default function AssessmentPage() {
           </motion.div>
         )}
 
-        {/* STAGE 2: INTERACTIVE 10-DIMENSION DIAGNOSTIC */}
-        {stage === 'interactive' && (
+        {/* STAGE 2: INTERACTIVE 10-DIMENSION DIAGNOSTIC OR 60-SEC CHECKLIST */}
+        {assessmentMode !== 'print' && stage === 'interactive' && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="bg-[#0B0F17] border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div>
-                <span className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider font-bold">Step 2 of 2 · Operational Friction Check</span>
+                <span className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider font-bold">
+                  {assessmentMode === 'checklist' ? '⚡ 60-Second Rapid Audit' : 'Step 2 of 2 · Operational Friction Check'}
+                </span>
                 <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">Which of these happen in your day-to-day operations?</h2>
               </div>
               <button
@@ -183,17 +283,29 @@ export default function AssessmentPage() {
               </button>
             </div>
 
+            {/* Profile Quick Pill in Checklist Mode */}
+            {assessmentMode === 'checklist' && (
+              <div className="flex flex-wrap items-center gap-2 pb-2">
+                <span className="text-xs font-mono text-slate-400">Selected Archetype:</span>
+                {BUSINESS_PROFILES.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setSelectedProfile(p.id)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all ${
+                      selectedProfile === p.id
+                        ? 'bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] font-bold'
+                        : 'bg-white/[0.03] border border-white/10 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {p.icon} {p.title}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="space-y-3">
-              {[
-                { key: 'missed_calls', icon: '📞', title: 'Missed Calls / Phone Tag', desc: 'When the phone rings during a busy job, calls often roll to unmonitored voicemail where leads go cold.' },
-                { key: 'manual_scheduling', icon: '📅', title: 'Manual Scheduling Friction', desc: 'Staff coordinates times over phone calls and text messages instead of automated online booking.' },
-                { key: 'paper_invoicing', icon: '💳', title: 'Invoices Drafted Days Later', desc: 'Technicians finish work on-site, but invoices are handwritten or drafted days later in QuickBooks.' },
-                { key: 'former_employee_access', icon: '🔐', title: 'Old Logins Still Active', desc: 'Former employees or past contractors might still have passwords to company email, drives, or apps.' },
-                { key: 'mfa_enabled', icon: '🛡️', title: '2-Step Verification (MFA) Active', desc: 'Staff must enter a code from their phone when logging into email, banking, or business software.', inverted: true },
-                { key: 'single_computer_risk', icon: '💻', title: 'Single Computer Dependency', desc: 'If one specific office computer or laptop died tomorrow, critical business work would freeze.' },
-                { key: 'backup_verified', icon: '💾', title: 'Verified Automated Off-Site Backups', desc: 'You have automated cloud backups running and have tested restoring them in the last 6 months.', inverted: true },
-                { key: 'duplicate_data_entry', icon: '📋', title: 'Re-Typing Data Between Apps', desc: 'Customer info is copied by hand between forms, calendars, spreadsheets, and accounting software.' },
-              ].map((item) => {
+              {FRICTION_ITEMS.map((item) => {
                 const isTriggered = item.inverted ? !answers[item.key] : answers[item.key];
                 return (
                   <div
@@ -234,7 +346,7 @@ export default function AssessmentPage() {
               {analyzing ? (
                 <>
                   <RefreshCw size={15} className="animate-spin" />
-                  <span>Running Diagnostic Rules Engine...</span>
+                  <span>Running Tailored Diagnostic Rules Engine...</span>
                 </>
               ) : (
                 <span>Generate Business Technology Report &rarr;</span>
@@ -372,7 +484,7 @@ export default function AssessmentPage() {
               <div className="pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
                   <h4 className="text-sm font-bold text-white">Want help implementing your roadmap?</h4>
-                  <p className="text-xs text-slate-400">Review your findings live with Eric &amp; the MrTechSys team in a private strategy session.</p>
+                  <p className="text-xs text-slate-400">Review your findings live with the MrTechSys advisory team in a private strategy session.</p>
                 </div>
                 <button
                   type="button"

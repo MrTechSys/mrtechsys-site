@@ -25,8 +25,99 @@ interface DiagnosticState {
   offline_readiness_hours?: number;
 }
 
+// ─── DYNAMIC INDUSTRY-SPECIFIC ROADMAP & BENCHMARK MATRIX ────────────────────
+const INDUSTRY_PROFILES: Record<string, {
+  name: string;
+  defaultLeadLeakAction: string;
+  defaultPaymentAction: string;
+  defaultSchedulingAction: string;
+  defaultSecurityAction: string;
+  defaultContinuityAction: string;
+  strategicLaterActions: string[];
+  savingsRange: string;
+  hoursRange: string;
+}> = {
+  contractor: {
+    name: 'Contractor & Field Trades',
+    defaultLeadLeakAction: 'Deploy an automated 24/7 missed-call text back with emergency job booking so homeowners don’t call the next plumber or electrician on Google.',
+    defaultPaymentAction: 'Equip field technicians with mobile photo-to-quote and instant tap-to-pay so payment is collected in the driveway before pulling away.',
+    defaultSchedulingAction: 'Implement real-time 2-hour arrival window booking synced directly to technician service trucks.',
+    defaultSecurityAction: 'Audit technician mobile device access and immediately revoke former apprentice/subcontractor logins to work order drives.',
+    defaultContinuityAction: 'Migrate price books, part supplier logs, and customer records from local office PCs into encrypted cloud storage with daily snapshots.',
+    strategicLaterActions: [
+      'Institute automated 6-month seasonal service inspection reminders (AC in Spring, Heating in Fall) for recurring service agreements.',
+      'Deploy route-clustered mobile dispatch to shave 15-20% off weekly vehicle fuel expenses and drive time.',
+      'Launch a customer portal for warranty certificates, equipment install receipts, and filter size tracking.'
+    ],
+    savingsRange: '$3,600 – $9,600 / year',
+    hoursRange: '8 – 16 hours / week'
+  },
+  pro_service: {
+    name: 'Professional Practice (Legal, Accounting, Consulting)',
+    defaultLeadLeakAction: 'Add instant confidential consultation booking directly to your website so high-value prospective clients lock in meetings immediately.',
+    defaultPaymentAction: 'Automate milestone retainer billing and digital ACH settlement to stop chasing unpaid 30-day net invoices.',
+    defaultSchedulingAction: 'Provide clients with automated calendar scheduling that respects your billable prep buffers and time-zone rules.',
+    defaultSecurityAction: 'Enforce MFA and immediate access revocation for former paralegals, associates, or contractors across client document vaults and email.',
+    defaultContinuityAction: 'Eliminate single-workstation dependency by transitioning practice management records to zero-trust encrypted cloud vaults.',
+    strategicLaterActions: [
+      'Automate client document onboarding, NDA e-signing, and KYC identity verification workflows.',
+      'Implement passive billable time tracking synchronized against matter and case retainers.',
+      'Deploy encrypted client-facing portal for secure tax return and legal deliverable exchange.'
+    ],
+    savingsRange: '$4,200 – $11,000 / year',
+    hoursRange: '6 – 14 hours / week'
+  },
+  auto_fleet: {
+    name: 'Auto & Fleet Services',
+    defaultLeadLeakAction: 'Capture every towing, roadside, or mobile repair inquiry instantly with automated SMS dispatch qualification.',
+    defaultPaymentAction: 'Deploy mobile digital inspection reports with tap-to-approve estimates and immediate credit/debit settlement upon vehicle handover.',
+    defaultSchedulingAction: 'Add bay/technician scheduling with estimated vehicle turnaround windows to prevent lot congestion.',
+    defaultSecurityAction: 'Lock down diagnostic scan tool accounts, parts catalog logins, and dealer portal credentials against unmonitored shared passwords.',
+    defaultContinuityAction: 'Automate off-site cloud backups for repair order databases, parts catalogs, and customer inspection archives.',
+    strategicLaterActions: [
+      'Integrate vehicle telematics and automated mileage-triggered preventative maintenance notifications.',
+      'Deploy automated supplier parts price comparison to cut procurement markup by 8-12%.',
+      'Launch automated inspection text updates with video walkthrough links for customer repair approvals.'
+    ],
+    savingsRange: '$5,000 – $14,000 / year',
+    hoursRange: '10 – 20 hours / week'
+  },
+  solo_pro: {
+    name: 'Solo Operator / Independent Consultant',
+    defaultLeadLeakAction: 'Stop letting phone tag interrupt deep client work; route missed calls to an automated text-back booking calendar.',
+    defaultPaymentAction: 'Eliminate manual late-night invoicing by requiring card on file or 50% deposit upon project booking.',
+    defaultSchedulingAction: 'Automate all consultation booking with strict daily capacity caps so you never overbook your calendar.',
+    defaultSecurityAction: 'Turn on 2-step verification (MFA) across your master Google/Microsoft account and password manager to secure your livelihood.',
+    defaultContinuityAction: 'Ensure your lone work laptop is continuously mirrored to cloud backup so a spilled coffee doesn’t destroy your business.',
+    strategicLaterActions: [
+      'Automate recurring monthly subscription/retainer charges through Stripe without manual invoicing.',
+      'Deploy automated post-service review request sequence to build 5-star Google reputation on autopilot.',
+      'Connect lead capture forms directly to your bookkeeping tool to eliminate weekend data entry.'
+    ],
+    savingsRange: '$1,800 – $3,600 / year',
+    hoursRange: '5 – 10 hours / week'
+  },
+  growing_smb: {
+    name: 'Growing Small Business (5–25 Employees)',
+    defaultLeadLeakAction: 'Route inbound leads into a unified multi-user inbox with automated owner alerts so quotes are submitted within 15 minutes.',
+    defaultPaymentAction: 'Eliminate duplicate accounting entry by synchronizing point-of-sale or web payments directly into QuickBooks/Xero.',
+    defaultSchedulingAction: 'Implement role-based team calendar scheduling with automated round-robin distribution to available team members.',
+    defaultSecurityAction: 'Institute centralized Identity & Access Management (IAM) to enforce MFA and instantly offboard departing employees across all apps.',
+    defaultContinuityAction: 'Establish an automated business continuity runbook with tested 1-hour cloud restoration for accounting and operational databases.',
+    strategicLaterActions: [
+      'Audit existing SaaS subscriptions to eliminate duplicate software licenses across departments.',
+      'Build internal operations dashboard tracking live quote closure rates and team response speeds.',
+      'Standardize employee operating procedures (SOPs) into a searchable internal team knowledge base.'
+    ],
+    savingsRange: '$6,000 – $18,000 / year',
+    hoursRange: '12 – 25 hours / week'
+  }
+};
+
 // ─── JOB 3: DETERMINISTIC DIAGNOSTIC RULES ENGINE ────────────────────────────
-function runDiagnosticRules(state: DiagnosticState) {
+function runDiagnosticRules(state: DiagnosticState, profileKey: string = 'contractor') {
+  const profileConfig = INDUSTRY_PROFILES[profileKey] || INDUSTRY_PROFILES.contractor;
+
   let operations = 75;
   let security = 80;
   let technology = 70;
@@ -38,7 +129,7 @@ function runDiagnosticRules(state: DiagnosticState) {
   const inefficiencies: any[] = [];
   const nowActions: string[] = [];
   const nextActions: string[] = [];
-  const laterActions: string[] = [];
+  const laterActions: string[] = [...profileConfig.strategicLaterActions];
   const recommendedRoutes: string[] = [];
 
   // Rule 1: Former Employee Access & MFA
@@ -48,17 +139,17 @@ function runDiagnosticRules(state: DiagnosticState) {
     inefficiencies.push({
       id: 'SEC-01',
       severity: 'CRITICAL',
-      title: 'Active Former Employee Logins',
-      desc: 'Former staff or past contractors may retain active access to company emails, files, or bookkeeping.',
+      title: 'Unrevoked Former Staff Logins',
+      desc: 'Former employees or past contractors may retain active access to company emails, shared drives, or financial portals.',
       dimension: 'Security & Access'
     });
-    nowActions.push('Audit and revoke all former employee and contractor logins across Google, Microsoft, and accounting platforms.');
-    recommendedRoutes.push('PROCESS_FIX');
+    nowActions.push(profileConfig.defaultSecurityAction);
+    recommendedRoutes.push('SECURITY_OFFBOARDING');
   }
 
   if (!state.mfa_enabled) {
     security -= 25;
-    nowActions.push('Enforce 2-step verification (MFA) on master emails, banking portals, and accounting software.');
+    nowActions.push('Enforce 2-step verification (MFA) across primary email, banking portals, and accounting software.');
     recommendedRoutes.push('SECURITY_REMEDIATION');
   }
 
@@ -69,12 +160,12 @@ function runDiagnosticRules(state: DiagnosticState) {
     inefficiencies.push({
       id: 'REV-01',
       severity: 'HIGH',
-      title: 'Lead Capture Leakage',
-      desc: 'Unanswered calls during peak operating hours roll to unmonitored voicemail, causing customers to call competitors.',
+      title: 'Inbound Lead Leakage & Phone Tag',
+      desc: 'Unanswered calls during busy jobs roll to voicemail, prompting high-intent customers to immediately call competitors.',
       dimension: 'Customer Experience'
     });
-    nowActions.push('Deploy instant automated missed-call auto-reply with a direct online scheduling link to capture urgent leads.');
-    recommendedRoutes.push('CLOUDFLIP_OR_VOICE');
+    nowActions.push(profileConfig.defaultLeadLeakAction);
+    recommendedRoutes.push('LEAD_CAPTURE_ENGINE');
   }
 
   // Rule 3: Manual Invoicing & Payment Drag
@@ -84,12 +175,12 @@ function runDiagnosticRules(state: DiagnosticState) {
     inefficiencies.push({
       id: 'FIN-01',
       severity: 'MEDIUM',
-      title: 'Delayed Invoicing & Cash Flow Drag',
-      desc: 'Waiting to invoice customers days after job completion adds an average 14–21 day delay to cash collection.',
+      title: 'Delayed Invoicing & Cash Flow Friction',
+      desc: 'Writing paper invoices or drafting them days later creates an avoidable 14–28 day lag in bank account cash collection.',
       dimension: 'Financial Efficiency'
     });
-    nextActions.push('Implement mobile driveway tap-to-pay and photo-to-quote so technicians collect payment upon job completion.');
-    recommendedRoutes.push('CLOUDFLIP_OR_STRIPE');
+    nextActions.push(profileConfig.defaultPaymentAction);
+    recommendedRoutes.push('PAYMENT_ACCELERATION');
   }
 
   // Rule 4: Manual Scheduling Phone Tag
@@ -100,19 +191,26 @@ function runDiagnosticRules(state: DiagnosticState) {
       id: 'OPS-01',
       severity: 'MEDIUM',
       title: 'Manual Scheduling Friction',
-      desc: 'Staff spends 5–10 hours per week playing phone tag coordinating appointment times manually.',
+      desc: 'Coordinating appointments via phone tag and manual texting wastes 5–15 administrative hours every week.',
       dimension: 'Operations & Workflow'
     });
-    nextActions.push('Add instant customer self-scheduling to your website with real-time arrival windows and buffer rules.');
-    recommendedRoutes.push('AUTOMATION');
+    nextActions.push(profileConfig.defaultSchedulingAction);
+    recommendedRoutes.push('SMART_SCHEDULING');
   }
 
   // Rule 5: Duplicate Data Entry
   if (state.duplicate_data_entry) {
     operations -= 15;
     data -= 25;
-    nextActions.push('Connect web inquiries directly to your customer CRM list to eliminate re-typing customer names and addresses.');
-    recommendedRoutes.push('INTEGRATION');
+    inefficiencies.push({
+      id: 'OPS-02',
+      severity: 'MEDIUM',
+      title: 'Manual Duplicate Data Re-entry',
+      desc: 'Re-typing client names and addresses between contact forms, spreadsheets, and accounting software invites human errors.',
+      dimension: 'Operations & Workflow'
+    });
+    nextActions.push('Connect online inquiry forms directly to your customer records to permanently eliminate double data entry.');
+    recommendedRoutes.push('SYSTEMS_INTEGRATION');
   }
 
   // Rule 6: Continuity & Single Computer Hazard
@@ -122,20 +220,15 @@ function runDiagnosticRules(state: DiagnosticState) {
     inefficiencies.push({
       id: 'CONT-01',
       severity: 'CRITICAL',
-      title: 'Unverified Backups & Single Machine Hazard',
-      desc: 'Critical company records or software reside on local hardware without verified off-site cloud backups.',
+      title: 'Single-Point Hardware Failure & Unverified Backups',
+      desc: 'Core operational files or accounting software reside on local hardware without tested off-site cloud disaster recovery.',
       dimension: 'Business Continuity'
     });
-    nowActions.push('Set up automated off-site cloud backups with a verified 1-click disaster recovery restoration test.');
-    recommendedRoutes.push('CLOUD_BACKUP');
+    nowActions.push(profileConfig.defaultContinuityAction);
+    recommendedRoutes.push('CLOUD_BACKUP_DISASTER_RECOVERY');
   }
 
-  // Default Fallbacks for Strategic Scale
-  laterActions.push('Launch a dedicated customer portal for repeat client appointment history and receipt downloads.');
-  laterActions.push('Deploy route-clustered mobile dispatch to minimize technician drive time and vehicle fuel expenses.');
-  laterActions.push('Institute automated 6-month seasonal service reminders to drive predictable recurring revenue.');
-
-  // Normalize scores between 20 and 95
+  // Normalize scores between 25 and 95
   const normalize = (val: number) => Math.max(25, Math.min(95, Math.round(val)));
   operations = normalize(operations);
   security = normalize(security);
@@ -158,6 +251,9 @@ function runDiagnosticRules(state: DiagnosticState) {
 
   return {
     healthScore,
+    profileName: profileConfig.name,
+    savingsRange: profileConfig.savingsRange,
+    hoursRange: profileConfig.hoursRange,
     categories: {
       operations,
       security,
@@ -243,7 +339,7 @@ Keep your response short (1 to 2 sentences max). Then suggest 3 to 4 quick butto
 
     // ─── ACTION 2: REPORT GENERATION & PERSISTENCE (Job 3, 4, 5) ─────────────
     if (action === 'generate_report') {
-      const evaluation = runDiagnosticRules(state);
+      const evaluation = runDiagnosticRules(state, profile);
       const profileId = `btp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
       // Save canonical business technology profile to D1
@@ -291,8 +387,8 @@ Keep your response short (1 to 2 sentences max). Then suggest 3 to 4 quick butto
         success: true,
         profileId,
         evaluation,
-        savingsRange: "$1,200 – $3,600 / year",
-        hoursRange: "5 – 12 hours / week",
+        savingsRange: evaluation.savingsRange,
+        hoursRange: evaluation.hoursRange,
         healthRating: evaluation.healthScore >= 80 ? "STRONG" : evaluation.healthScore >= 60 ? "MODERATE (EFFICIENCY DRAG)" : "HIGH RISK & CASH LEAKAGE"
       }), { headers: { 'Content-Type': 'application/json' } });
     }

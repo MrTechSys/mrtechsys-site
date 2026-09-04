@@ -122,14 +122,14 @@ const seedData = {
     date: "2025-11-03",
   },
   sessions: [
-    { id: generateId(), title: "Opening Remarks", speaker: "Eric Zepeda", status: "uploaded", notes: "Welcome + agenda", assets: [{ name: "opening.pdf", type: "pdf" }], duration: 10 },
-    { id: generateId(), title: "AI in the Field: Zero-Downtime Ops", speaker: "Clancy (maybe)", status: "missing", notes: "TBD", assets: [], duration: 25 },
-    { id: generateId(), title: "Texas-Scale Cloud Modernization", speaker: "Juan (Keynote)", status: "needs-fix", notes: "Embedded video too large", assets: [{ name: "keynote.pptx", type: "pptx" }], duration: 35 },
+    { id: generateId(), title: "Opening Remarks", speaker: "Lead Systems Architect", status: "uploaded", notes: "Welcome + agenda", assets: [{ name: "opening.pdf", type: "pdf" }], duration: 10 },
+    { id: generateId(), title: "AI in the Field: Zero-Downtime Ops", speaker: "Principal Engineer", status: "missing", notes: "TBD", assets: [], duration: 25 },
+    { id: generateId(), title: "Texas-Scale Cloud Modernization", speaker: "Consulting Partner", status: "needs-fix", notes: "Embedded video too large", assets: [{ name: "keynote.pptx", type: "pptx" }], duration: 35 },
   ],
   roster: [
-    { id: generateId(), name: "Eric Zepeda", email: "eric@mrtechsys.com" },
-    { id: generateId(), name: "Juan CEO", email: "juan@org.com" },
-    { id: generateId(), name: "Clancy (Twin)", email: "clancy@shadow.gov" },
+    { id: generateId(), name: "Lead Systems Architect", email: "team@mrtechsys.com" },
+    { id: generateId(), name: "Executive Advisor", email: "advisory@mrtechsys.com" },
+    { id: generateId(), name: "Field Solutions Engineer", email: "field@mrtechsys.com" },
   ],
 };
 
