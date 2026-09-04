@@ -70,21 +70,21 @@ const VERTICALS = [
   },
   {
     id: 'food',
-    title: 'Food & Hospitality',
-    badge: 'Restaurants • Catering • Commercial Kitchens',
+    title: 'CloudFlip Ops (Kitchen Display)',
+    badge: 'Restaurants • Catering • Food Trucks • Ghost Kitchens',
     icon: Utensils,
-    headline: 'Sub-Second Kitchen Orchestration & Live Labor Telemetry.',
+    headline: 'Sub-Second Kitchen Orchestration & Live Device KDS.',
     stat: '99.4% Order Accuracy',
-    description: 'No kitchen chaos. Sync dine-in tickets and delivery orders into a unified kitchen display (KDS), automate real-time recipe ingredient depletion, and trigger supplier purchase orders before inventory runs out.',
+    description: 'Turn your existing iPads, Android tablets, or smart TV screens into a low-latency Kitchen Display System (KDS). CloudFlip Ops unifies walk-up POS tickets with DoorDash, UberEats, and catering orders in one queue—eliminating thousands in proprietary terminal fees while automating live ingredient depletion.',
     simulator: {
       type: 'kds-screen',
-      header: 'CloudFlip Kitchen Display (KDS)',
+      header: 'CloudFlip Ops · Bring-Your-Own-Device KDS',
       job: 'Table 14 & UberEats Aggregator Mesh',
       customer: '4 Orders in Priority Line',
       steps: [
-        { label: 'Unified POS & Delivery Ingest', status: 'Dine-In + DoorDash synced', badge: 'Live Sync', icon: Sparkles },
-        { label: 'Recipe & Ingredient Depletion', status: 'Brisket & Ribs inventory -2', badge: 'Auto-Updated', icon: CheckCircle2 },
-        { label: 'Automated Supplier PO Trigger', status: 'Supplier Sysco re-order alert', badge: 'Sent', icon: Send }
+        { label: 'Unified POS & Delivery Ingest', status: 'Square + Toast + DoorDash synced', badge: 'Live Sync', icon: Sparkles },
+        { label: 'Live Recipe & Ingredient Depletion', status: 'Brisket & Ribs inventory -2', badge: 'Auto-Updated', icon: CheckCircle2 },
+        { label: 'Automated Supplier Re-Order PO', status: 'Sysco / US Foods re-order alert', badge: 'Dispatched', icon: Send }
       ]
     }
   }
@@ -103,7 +103,7 @@ const VerticalFabric = () => {
           {/* Executive Subtitle Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-[#D4AF37]/25 bg-[#D4AF37]/5 text-[#D4AF37] font-mono text-[11px] tracking-wider uppercase mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-            03 · THE FLAGSHIP SAAS PRODUCT &bull; CLOUDFLIP OS
+            03 · FLAGSHIP SAAS PRODUCT &bull; CLOUDFLIP OS
           </div>
 
           <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
@@ -112,11 +112,11 @@ const VerticalFabric = () => {
 
           {/* Multi-Industry Scope Reassurance Banner */}
           <div className="p-3.5 rounded-xl bg-white/[0.02] border border-[#D4AF37]/20 max-w-3xl mx-auto mb-6 text-xs text-slate-300 font-mono">
-            <span className="text-[#D4AF37] font-bold">MULTI-INDUSTRY FABRIC:</span> Configured for Field Services, Professional Practices, Hospitality, Healthcare &amp; Beyond. If your business handles appointments, clients, and invoices, CloudFlip unifies your world.
+            <span className="text-[#D4AF37] font-bold">MULTI-VERTICAL ARCHITECTURE:</span> Built to unify Trades &amp; Field Ops, Subcontractor JobNetwork™ Compliance, Commercial Zero-Trust Portals, and <span className="text-white font-bold">CloudFlip Ops Bring-Your-Own-Device KDS for Restaurants</span>.
           </div>
 
           <p className="text-slate-400 text-sm md:text-base leading-relaxed">
-            Select a capability module below to preview live field operations, compliance automation, and JobNetwork routing.
+            Select a live capability module below to preview real-time field dispatch, subcontractor compliance, client document intake, or kitchen ticket orchestration.
           </p>
         </div>
 

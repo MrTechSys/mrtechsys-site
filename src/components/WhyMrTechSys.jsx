@@ -7,35 +7,35 @@ const PIPELINE_STAGES = [
   {
     step: '01',
     label: 'DIAGNOSE',
-    title: 'Tech Health Assessment',
-    metric: 'Health Score 0–100',
-    desc: 'Evaluates 10 business dimensions in plain English to pinpoint security gaps, software waste, and lost revenue.',
+    title: 'Technology Health Audit',
+    metric: '10-Dimension Rubric',
+    desc: 'Audits your security posture, software sprawl, single-computer risks, and cash flow leaks in plain English.',
     icon: Gauge,
     cta: 'Start 10-Point Assessment &rarr;',
     link: '/assessment',
-    bullets: ['Deterministic 0–100 score', 'NOW/NEXT/LATER roadmap', 'Zero IT jargon required']
+    bullets: ['Deterministic 0–100 score', 'NOW / NEXT / LATER roadmap', 'Zero IT jargon or sales pitch']
   },
   {
     step: '02',
     label: 'CONNECT',
-    title: 'CloudFlip OS',
-    metric: 'Unified Hub',
-    desc: 'Unifies phone dispatch, mobile photo-to-quote, and tap-to-pay without changing your accounting.',
+    title: 'Systems & Workflow Integration',
+    metric: 'Zero Drag Ops',
+    desc: 'Connects your inquiry forms, calendars, and customer data to eliminate dual data entry and telephone tag.',
     icon: Cpu,
-    cta: 'Explore Platform &rarr;',
-    link: '#cloudflip',
-    bullets: ['24/7 AI Voice Dispatch', 'Driveway Tap-to-Pay', 'Zero app switching']
+    cta: 'Calculate Payroll Drag &rarr;',
+    link: '/diagnostic',
+    bullets: ['Eliminate dual data entry', 'Connected customer flow', 'Works alongside QuickBooks']
   },
   {
     step: '03',
     label: 'SCALE',
-    title: 'Zero-Dollar Cloud',
-    metric: '$0/mo Primitives',
-    desc: 'Deploys your modern cloud footprint on Cloudflare + AWS free tiers with $0 hard budget tripwires.',
+    title: 'Unbiased Multi-Cloud Infrastructure',
+    metric: 'Zero Vendor Lock-In',
+    desc: 'Architects your footprint across Cloudflare, AWS, Azure, and GCP using permanent zero-dollar free tiers and strict budget alarms.',
     icon: Cloud,
-    cta: 'Build Cloud Footprint &rarr;',
+    cta: 'Explore Cloud Provisioner &rarr;',
     link: '/cloud-provisioner',
-    bullets: ['Cloudflare Edge Global Speed', 'AWS Serverless Lambda', 'Zero surprise bills']
+    bullets: ['Cloudflare Edge & AWS Lambda', 'Azure M365 & GCP Data', '$0 hard budget tripwires']
   }
 ];
 
@@ -48,13 +48,14 @@ const WhyMrTechSys = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-[#D4AF37]/25 bg-[#D4AF37]/5 text-[#D4AF37] font-mono text-[11px] tracking-wider uppercase mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-            01 · THE 3-STAGE TRANSFORMATION
+            01 · ADVISORY METHODOLOGY &bull; THE 3-STAGE TRANSFORMATION
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-            From Fragmented Chaos to <span className="text-gold-gradient">Connected Cloud</span>.
+            Practical Engineering for Businesses <br />
+            <span className="text-gold-gradient">Without an IT Department</span>.
           </h2>
           <p className="text-slate-400 text-sm md:text-base leading-relaxed">
-            Most IT companies sell isolated software tickets. MrTechSys delivers a complete 3-step operational continuum.
+            Most IT providers sell confusing monthly maintenance tickets. MrTechSys delivers an objective, 3-stage transformation framework designed for small business realities.
           </p>
         </div>
 

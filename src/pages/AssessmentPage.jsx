@@ -36,9 +36,52 @@ export default function AssessmentPage() {
 
   const [analyzing, setAnalyzing] = useState(false);
   const [reportData, setReportData] = useState(null);
+  const [dispatchingEmail, setDispatchingEmail] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null); // { sent: boolean, message: string }
+  const [reportEmailInput, setReportEmailInput] = useState('');
 
   const toggleAnswer = (key) => {
     setAnswers(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSendReportEmail = async (overrideEmail) => {
+    const targetEmail = (overrideEmail || reportEmailInput || contactEmail || '').trim();
+    if (!targetEmail || !targetEmail.includes('@')) {
+      setEmailStatus({ sent: false, message: 'Please enter a valid email address.' });
+      return;
+    }
+    setDispatchingEmail(true);
+    try {
+      const res = await fetch('/api/assessment-advisor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send_report_email',
+          profile: selectedProfile,
+          email: targetEmail,
+          businessName: businessName || 'My Business',
+          contactName: 'Business Leader',
+          state: {
+            ...answers,
+            business_name: businessName || 'My Business',
+            contact_email: targetEmail
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEmailStatus({
+          sent: true,
+          message: data.emailSent
+            ? `Report successfully dispatched to ${targetEmail}!`
+            : `Report generated & recorded for ${targetEmail}. (Email service queued)`
+        });
+      }
+    } catch (e) {
+      setEmailStatus({ sent: false, message: 'Could not dispatch email. Please try again.' });
+    } finally {
+      setDispatchingEmail(false);
+    }
   };
 
   const handleGenerateReport = async () => {
@@ -60,6 +103,9 @@ export default function AssessmentPage() {
       const data = await res.json();
       if (data.evaluation) {
         setReportData(data);
+        if (data.emailSent) {
+          setEmailStatus({ sent: true, message: `Detailed playbook automatically dispatched to ${contactEmail}!` });
+        }
         setStage('report');
       }
     } catch (e) {
@@ -477,6 +523,141 @@ export default function AssessmentPage() {
                       </li>
                     ))}
                   </ul>
+                </div>
+              </div>
+
+              {/* UNBIASED MULTI-CLOUD LAUNCHPAD */}
+              <div className="p-5 sm:p-6 rounded-xl bg-black/50 border border-[#D4AF37]/30 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="text-[10px] font-mono text-[#D4AF37] uppercase tracking-wider font-bold">Unbiased Architecture Advisory</span>
+                    <h4 className="text-base font-bold text-white">Recommended Zero-Cost Cloud Primitives</h4>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/30 self-start sm:self-auto">
+                    Multi-Cloud &bull; Zero Vendor Lock-in
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  As an objective cloud architecture consultancy, MrTechSys configures solutions across the top tier providers so you never suffer vendor lock-in. Activate your permanent free-tier allocations:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <strong className="text-white text-xs">Cloudflare Edge</strong>
+                        <span className="text-[9px] font-mono text-[#D4AF37] bg-[#D4AF37]/10 px-1.5 py-0.5 rounded">Edge CDN &amp; D1 SQL</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Unlimited requests, Edge SSL, Pages static hosting, 5GB D1 SQL, and R2 zero egress fees.</p>
+                    </div>
+                    <a
+                      href="https://dash.cloudflare.com/sign-up"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-mono font-bold transition-all"
+                    >
+                      <span>Setup Cloudflare &rarr;</span>
+                    </a>
+                  </div>
+
+                  <div className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <strong className="text-white text-xs">Amazon Web Services (AWS)</strong>
+                        <span className="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">Serverless Lambda</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">1M Lambda requests/mo, 25GB DynamoDB NoSQL, and 5GB S3 asset storage permanently free.</p>
+                    </div>
+                    <a
+                      href="https://aws.amazon.com/free"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-mono font-bold transition-all"
+                    >
+                      <span>Setup AWS Free Tier &rarr;</span>
+                    </a>
+                  </div>
+
+                  <div className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <strong className="text-white text-xs">Microsoft Azure</strong>
+                        <span className="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">Entra ID &amp; M365</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">$200 initial credit, Entra ID identity for 50k MAU, and 1M Azure Functions monthly free.</p>
+                    </div>
+                    <a
+                      href="https://azure.microsoft.com/free"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/40 text-blue-400 text-xs font-mono font-bold transition-all"
+                    >
+                      <span>Setup Azure Free Tier &rarr;</span>
+                    </a>
+                  </div>
+
+                  <div className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <strong className="text-white text-xs">Google Cloud (GCP)</strong>
+                        <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">Cloud Run &amp; AI</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">$300 credits, 2M Cloud Run calls/mo, Firestore NoSQL, and 1TB/mo free BigQuery SQL.</p>
+                    </div>
+                    <a
+                      href="https://cloud.google.com/free"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono font-bold transition-all"
+                    >
+                      <span>Setup Google Cloud &rarr;</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* EMAIL REPORT DISPATCH CARD */}
+              <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText size={16} className="text-[#D4AF37]" />
+                    <h4 className="text-sm font-bold text-white">Receive Complete PDF &amp; Playbook via Email</h4>
+                  </div>
+                  {emailStatus && (
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                      emailStatus.sent ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    }`}>
+                      {emailStatus.sent ? 'Dispatched ✓' : 'Notice'}
+                    </span>
+                  )}
+                </div>
+
+                {emailStatus?.message ? (
+                  <p className="text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-lg">
+                    {emailStatus.message}
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-400">
+                    Send this executive briefing, 10-point audit scores, and direct activation links directly to your inbox or operations manager:
+                  </p>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <input
+                    type="email"
+                    value={reportEmailInput || contactEmail}
+                    onChange={(e) => setReportEmailInput(e.target.value)}
+                    placeholder="Enter recipient email..."
+                    className="flex-grow bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-[#D4AF37]"
+                  />
+                  <button
+                    type="button"
+                    disabled={dispatchingEmail}
+                    onClick={() => handleSendReportEmail()}
+                    className="px-5 py-2.5 bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#D4AF37] border border-[#D4AF37]/40 font-mono text-xs font-bold rounded-xl transition-all disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                  >
+                    {dispatchingEmail ? 'Sending...' : 'Email Report &rarr;'}
+                  </button>
                 </div>
               </div>
 
