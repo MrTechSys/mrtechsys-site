@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "pages:dev": "wrangler pages dev --compatibility-date=2024-04-01",
-    "pages:deploy": "wrangler pages deploy dist"
+    "pages:deploy": "wrangler pages deploy dist",
+    "session": "node scripts/session-manager.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
