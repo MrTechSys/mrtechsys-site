@@ -12,14 +12,14 @@ const STORAGE_KEY_STATE = 'mrtechsys_chat_state_v1';
 const INITIAL_MESSAGE = {
   id: 'welcome-init',
   role: 'assistant',
-  text: "Howdy! I am your MrTechSysGPT Assistant. How can I help streamline your operations or build your free-first cloud footprint today?",
+  text: "Welcome to MrTechSys. I am your Senior Technology Advisor. How can I assist with evaluating your operational systems or designing your cloud architecture today?",
   timestamp: new Date().toISOString()
 };
 
 const SUGGESTED_PROMPTS = [
-  "⚡ How to start cloud for $0?",
+  "⚡ Deploy cloud stack for $0",
   "📱 What is CloudFlip OS?",
-  "🔨 Field dispatch & invoicing"
+  "📋 10-Point Tech Assessment"
 ];
 
 const ROUTE_RULES = [
@@ -180,7 +180,10 @@ const TexasBot = () => {
       const res = await fetch("/api/mrtechsysgpt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: queryText })
+        body: JSON.stringify({ 
+          message: queryText,
+          history: messages.slice(-4).map(m => ({ role: m.role, text: m.text }))
+        })
       });
 
       if (res.ok) {
@@ -202,7 +205,7 @@ const TexasBot = () => {
           {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
-            text: "MrTechSysGPT Assistant is online. Contact MrTechSys directly for specialized multi-cloud architectures.",
+            text: "MrTechSys Technology Advisory is online. Contact MrTechSys directly for specialized multi-cloud architectures.",
             timestamp: new Date().toISOString()
           }
         ]);
@@ -213,7 +216,7 @@ const TexasBot = () => {
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          text: "MrTechSysGPT Assistant online. Run our Cloud Provisioner Wizard or Flip Engine for instant blueprints.",
+          text: "MrTechSys Technology Advisory online. Run our Cloud Provisioner Wizard or Business Assessment for instant blueprints.",
           timestamp: new Date().toISOString()
         }
       ]);
@@ -242,7 +245,7 @@ const TexasBot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] font-mono">
+    <div className="fixed bottom-6 right-6 z-50 font-sans">
       
       {/* Minimized Docked Bar */}
       <AnimatePresence>
@@ -257,7 +260,7 @@ const TexasBot = () => {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <img src="/logo.png" alt="MrTechSys" className="w-4 h-4 object-contain" />
-              <span className="text-xs font-bold text-white tracking-wider">MrTechSysGPT &bull; Active</span>
+              <span className="text-xs font-bold text-white tracking-wider">MrTechSys &bull; Advisor Online</span>
             </div>
             <span className="text-[10px] text-[#D4AF37] bg-[#D4AF37]/15 px-2 py-0.5 rounded font-semibold">
               Click to restore
@@ -276,8 +279,8 @@ const TexasBot = () => {
             transition={{ duration: 0.2 }}
             className={`absolute bottom-16 right-0 bg-[#07090E] border border-[#D4AF37]/35 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col transition-all ${
               isExpanded 
-                ? 'w-[90vw] sm:w-[540px] h-[620px]' 
-                : 'w-[330px] sm:w-[380px] h-[500px]'
+                ? 'w-[94vw] sm:w-[600px] h-[680px]' 
+                : 'w-[94vw] sm:w-[420px] h-[560px]'
             }`}
           >
             {/* Header (Clean, Professional & No Tacky Badges) */}
@@ -376,13 +379,42 @@ const TexasBot = () => {
                     </div>
 
                     <div 
-                      className={`max-w-[88%] p-3 rounded-xl leading-relaxed whitespace-pre-line relative ${
+                      className={`max-w-[88%] p-3 rounded-xl leading-relaxed whitespace-pre-line relative text-xs ${
                         isUser 
                           ? 'bg-gradient-to-r from-[#D4AF37] to-[#EAB308] text-[#07090E] font-medium font-sans rounded-tr-none shadow-[0_4px_12px_rgba(212,175,55,0.2)]' 
                           : 'bg-[#0B0F17] border border-[#D4AF37]/30 text-slate-200 rounded-tl-none'
                       }`}
                     >
-                      {m.text}
+                      {/* Render text with clickable markdown links [Label](url) */}
+                      {(() => {
+                        if (isUser) return m.text;
+                        const parts = [];
+                        const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+                        let lastIndex = 0;
+                        let match;
+                        while ((match = linkRegex.exec(m.text)) !== null) {
+                          if (match.index > lastIndex) {
+                            parts.push(m.text.slice(lastIndex, match.index));
+                          }
+                          parts.push(
+                            <a
+                              key={match.index}
+                              href={match[2]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#D4AF37] underline font-bold hover:text-white inline-flex items-center gap-0.5"
+                            >
+                              <span>{match[1]}</span>
+                              <span className="text-[10px]">&rarr;</span>
+                            </a>
+                          );
+                          lastIndex = linkRegex.lastIndex;
+                        }
+                        if (lastIndex < m.text.length) {
+                          parts.push(m.text.slice(lastIndex));
+                        }
+                        return parts.length > 0 ? parts : m.text;
+                      })()}
 
                       {/* 1-Click Copy on Assistant Messages */}
                       {!isUser && (

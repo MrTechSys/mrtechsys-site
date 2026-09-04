@@ -127,14 +127,38 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
       // Build checklist sections for HTML email
       let playbooksHtml = '';
+      
+      // Direct CSP Setup Links
+      const CSP_DIRECT_URLS: Record<string, string> = {
+        cloudflare: "https://dash.cloudflare.com/sign-up",
+        aws: "https://aws.amazon.com/free",
+        azure: "https://azure.microsoft.com/free",
+        gcp: "https://cloud.google.com/free"
+      };
+
+      const directLinksHtml = payload.selectedCsps.map(cspKey => {
+        const url = CSP_DIRECT_URLS[cspKey] || "https://mrtechsys.com";
+        const name = CSP_NAMES[cspKey] || cspKey.toUpperCase();
+        return `
+          <a href="${url}" target="_blank" style="display: inline-block; margin: 4px 6px 4px 0; padding: 8px 14px; background: rgba(212,175,55,0.12); border: 1px solid rgba(212,175,55,0.4); border-radius: 6px; color: #D4AF37; font-family: monospace; font-size: 11px; font-weight: bold; text-decoration: none;">
+            🚀 Open ${name} Free Tier &rarr;
+          </a>
+        `;
+      }).join('');
+
       payload.selectedCsps.forEach(cspKey => {
         const steps = CSP_PLAYBOOKS[cspKey];
         if (steps) {
           playbooksHtml += `
             <div style="margin-top: 24px; padding: 18px; border-radius: 8px; background-color: #0E131F; border: 1px solid rgba(212, 175, 55, 0.3);">
-              <h3 style="color: #D4AF37; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                ${CSP_NAMES[cspKey] || cspKey.toUpperCase()} &bull; 10-Point Activation Playbook
-              </h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                <h3 style="color: #D4AF37; margin: 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  ${CSP_NAMES[cspKey] || cspKey.toUpperCase()} &bull; 10-Point Activation Playbook
+                </h3>
+                <a href="${CSP_DIRECT_URLS[cspKey] || '#'}" target="_blank" style="color: #10B981; font-family: monospace; font-size: 11px; font-weight: bold; text-decoration: underline;">
+                  Direct Setup Link &rarr;
+                </a>
+              </div>
               <table style="width: 100%; border-collapse: collapse;">
                 ${steps.map(s => `
                   <tr>
@@ -174,7 +198,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                 </div>
 
                 <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
-                  Howdy ${userFirstName},
+                  Hello ${userFirstName},
                 </p>
                 <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
                   Here is your official <strong>MrTechSys Cloud Blueprint &amp; Self-Deployment Playbook</strong>. Based on your workload selection, 100% of your stack is engineered to deploy on permanent zero-cost developer allocations before ever paying a dollar.
@@ -184,6 +208,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                   <div style="font-size: 12px; font-family: monospace; color: #94A3B8;">WORKLOADS: <span style="color: #FFFFFF; font-weight: bold;">${workloadsFormatted}</span></div>
                   <div style="font-size: 12px; font-family: monospace; color: #94A3B8; margin-top: 4px;">TARGET PROVIDERS: <span style="color: #D4AF37; font-weight: bold;">${cspListFormatted}</span></div>
                   <div style="font-size: 12px; font-family: monospace; color: #94A3B8; margin-top: 4px;">COST PROFILE: <span style="color: #10B981; font-weight: bold;">$0.00 / month (Free Tier First with Hard Tripwire Safeguards)</span></div>
+                </div>
+
+                <!-- Instant Activation Buttons -->
+                <div style="margin: 20px 0; padding: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+                  <span style="display: block; font-family: monospace; font-size: 10px; color: #94A3B8; text-transform: uppercase; margin-bottom: 8px; font-weight: bold;">
+                    DIRECT CSP REGISTRATION &amp; ACTIVATION LINKS:
+                  </span>
+                  <div>
+                    ${directLinksHtml}
+                  </div>
                 </div>
 
                 ${playbooksHtml}
