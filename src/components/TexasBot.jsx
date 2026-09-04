@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   X, Send, Minus, Maximize2, Minimize2, RotateCcw, 
-  Copy, Check, Sparkles, Compass, ArrowUpRight
+  Copy, Check, Sparkles, Compass, ArrowUpRight, Calendar
 } from 'lucide-react';
 
 const STORAGE_KEY_MESSAGES = 'mrtechsys_chat_history_v1';
@@ -299,6 +299,17 @@ const TexasBot = () => {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('mrtechsys-open-booking', {
+                      detail: { service: 'AI Automation', context: { question: message || 'Consultation from TexasBot chat' } }
+                    }));
+                  }}
+                  title="Book 1-on-1 strategy session"
+                  className="p-1.5 rounded hover:bg-[#D4AF37]/20 text-[#D4AF37] transition-colors cursor-pointer"
+                >
+                  <Calendar size={13} />
+                </button>
                 <button 
                   onClick={handleClearHistory}
                   title="Reset conversation"

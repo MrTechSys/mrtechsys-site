@@ -34,3 +34,5 @@ logs/
 
 # D1
 .d1/
+cloudflared-config.yaml
+temp_logo.png

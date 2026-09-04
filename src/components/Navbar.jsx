@@ -64,6 +64,13 @@ const Navbar = () => {
             <span>CloudFlip App</span>
             <span className="text-[10px]">&rarr;</span>
           </a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('mrtechsys-open-booking', { detail: { service: 'General Advisory' } }))}
+            className="px-3.5 py-1.5 rounded-lg border border-[#D4AF37]/40 text-slate-200 hover:text-[#D4AF37] hover:border-[#D4AF37] font-mono text-xs font-semibold transition-all cursor-pointer"
+          >
+            Book Strategy
+          </button>
           <Link
             to="/diagnostic"
             className="px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] text-[#07090E] font-mono text-xs font-bold rounded shadow-[0_0_20px_rgba(212,175,55,0.35)] transition-all uppercase tracking-wider"
@@ -99,7 +106,17 @@ const Navbar = () => {
               {link.name}
             </Link>
           ))}
-          <div className="pt-2 border-t border-white/[0.08]">
+          <div className="pt-2 border-t border-white/[0.08] space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                window.dispatchEvent(new CustomEvent('mrtechsys-open-booking', { detail: { service: 'General Advisory' } }));
+              }}
+              className="w-full text-center py-2.5 border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37]/10 font-mono text-xs font-bold rounded uppercase tracking-wider cursor-pointer"
+            >
+              Book Strategy Session
+            </button>
             <Link
               to="/diagnostic"
               onClick={() => setIsOpen(false)}

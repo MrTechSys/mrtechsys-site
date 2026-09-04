@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Bot, ArrowRight, ShieldCheck, CheckCircle2, Cpu, X, Send } from 'lucide-react';
+import { Sparkles, Bot, ArrowRight, ShieldCheck, CheckCircle2, Cpu, X, Send, Calendar } from 'lucide-react';
 
 const ConsultationModal = ({
   isOpen,
@@ -170,7 +170,7 @@ const ConsultationModal = ({
             />
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -179,6 +179,29 @@ const ConsultationModal = ({
               <Bot size={15} />
               <span>{isSubmitting ? 'Syncing Architecture...' : 'Launch AI Architecture Advisory →'}</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                window.dispatchEvent(new CustomEvent('mrtechsys-open-booking', {
+                  detail: {
+                    service: 'General Advisory',
+                    context: {
+                      name,
+                      businessName,
+                      email,
+                      question
+                    }
+                  }
+                }));
+              }}
+              className="w-full py-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.1] hover:border-[#D4AF37]/50 text-slate-300 hover:text-[#D4AF37] font-mono text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Calendar size={13} />
+              <span>Or Book Live 1-on-1 Strategy Session &rarr;</span>
+            </button>
+
             <div className="flex items-center justify-center gap-2 mt-2.5 text-[10px] font-mono text-slate-500">
               <ShieldCheck size={11} className="text-emerald-400" />
               <span>Private &bull; Zero Spam &bull; Immediate Live Synthesis</span>

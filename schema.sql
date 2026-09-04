@@ -3083,3 +3083,74 @@ CREATE TABLE IF NOT EXISTS zero_trust_policies (
     last_violation_at TEXT
 );
 
+
+-- ============================================================
+-- MRTECHSYS SMART BOOKING ENGINE
+-- ============================================================
+
+-- Defines available working days/hours for MrTechSys consultations
+CREATE TABLE IF NOT EXISTS booking_availability (
+  id TEXT PRIMARY KEY,
+  day_of_week INTEGER NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  slot_duration_options TEXT DEFAULT '["30","45","60"]',
+  buffer_minutes INTEGER DEFAULT 15,
+  timezone TEXT DEFAULT 'America/Chicago',
+  max_daily_bookings INTEGER DEFAULT 8,
+  advance_notice_hours INTEGER DEFAULT 24,
+  is_active BOOLEAN DEFAULT 1,
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO booking_availability (id, day_of_week, start_time, end_time)
+VALUES
+  ('avail-mon', 1, '09:00', '19:00'),
+  ('avail-tue', 2, '09:00', '19:00'),
+  ('avail-wed', 3, '09:00', '19:00'),
+  ('avail-thu', 4, '09:00', '19:00'),
+  ('avail-fri', 5, '09:00', '19:00'),
+  ('avail-sat', 6, '09:00', '17:00');
+
+CREATE TABLE IF NOT EXISTS bookings (
+  id TEXT PRIMARY KEY,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now')),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  business_name TEXT,
+  phone TEXT,
+  service_type TEXT,
+  industry TEXT,
+  problem_summary TEXT,
+  budget_range TEXT,
+  timeline TEXT,
+  ai_plan_summary TEXT,
+  buy_in_detected BOOLEAN DEFAULT 0,
+  booking_date TEXT NOT NULL,
+  booking_time TEXT NOT NULL,
+  duration_minutes INTEGER DEFAULT 60,
+  timezone TEXT DEFAULT 'America/Chicago',
+  meeting_type TEXT DEFAULT 'zoom',
+  meeting_link TEXT,
+  status TEXT DEFAULT 'confirmed',
+  cancelled_at TEXT,
+  cancellation_reason TEXT,
+  rescheduled_from TEXT,
+  cloudflip_tenant_id TEXT,
+  cloudflip_provisioned BOOLEAN DEFAULT 0,
+  cloudflip_invite_sent BOOLEAN DEFAULT 0,
+  cloudflip_otp_sent BOOLEAN DEFAULT 0,
+  confirmation_sent BOOLEAN DEFAULT 0,
+  owner_alert_sent BOOLEAN DEFAULT 0,
+  ip_address TEXT,
+  cancel_token TEXT,
+  source TEXT DEFAULT 'mrtechsys_booking'
+);
+
+CREATE INDEX IF NOT EXISTS idx_bookings_date_status ON bookings(booking_date, status);
+CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(email);
+CREATE INDEX IF NOT EXISTS idx_bookings_cancel_token ON bookings(cancel_token);
+CREATE INDEX IF NOT EXISTS idx_bookings_date_status ON bookings(booking_date, status);
+CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(email);
+CREATE INDEX IF NOT EXISTS idx_bookings_cancel_token ON bookings(cancel_token);

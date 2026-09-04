@@ -25,7 +25,7 @@ export const onRequest: PagesFunction<{ JWT_SECRET: string, DB: D1Database }> = 
   }
 
   // SOC 2 Posture: Ensure JWT_SECRET is present when accessing protected routes
-  const isPublicRoute = url.pathname.includes("mrtechsysgpt") || url.pathname.includes("blueprint-submit") || url.pathname.includes("consult-submit") || url.pathname.startsWith("/api/public");
+  const isPublicRoute = url.pathname.includes("mrtechsysgpt") || url.pathname.includes("blueprint-submit") || url.pathname.includes("consult-submit") || url.pathname.includes("booking-availability") || url.pathname.includes("booking-submit") || url.pathname.includes("booking-cancel") || url.pathname.startsWith("/api/public");
   if (!env.JWT_SECRET && !isPublicRoute && (url.pathname.startsWith("/api/cloudflip") || host === "cloudflip.mrtechsys.com")) {
     console.error("SOC 2 Violation: JWT_SECRET environment variable is missing.");
     return new Response(JSON.stringify({ error: "Configuration Error" }), { status: 500 });
