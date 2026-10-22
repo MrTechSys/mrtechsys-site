@@ -2,10 +2,13 @@ name = "mrtechsys-site"
 pages_build_output_dir = "dist"
 compatibility_date = "2024-04-01"
 
+# The site's own database. It used to bind CloudFlip's production database (cloudflip-db), which gave this public site
+# read and write access to every CloudFlip table; its five tables now live here (migrations/).
 [[d1_databases]]
 binding = "DB"
-database_name = "cloudflip-db"
-database_id = "03af9f85-87c2-4473-a073-872c0dcb84c5"
+database_name = "mrtechsys-site-db"
+database_id = "f01976b1-bbf3-40ab-ac74-247b567df52a"
+migrations_dir = "migrations"
 
 [ai]
 binding = "AI"
