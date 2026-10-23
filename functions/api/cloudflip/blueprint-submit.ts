@@ -1,6 +1,7 @@
 // functions/api/cloudflip/blueprint-submit.ts
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../../shared/emailSafety';
+import { consumeLimits, emailLimits, limitResponse } from '../../../shared/rateLimit';
 
 interface Env {
   DB?: any;
@@ -86,6 +87,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         headers: { "Content-Type": "application/json" }
       });
     }
+
+    // Per IP, per recipient and site-wide, before anything is stored or sent (shared/rateLimit.ts).
+    const limited = await consumeLimits(env.DB, await emailLimits(request, payload.email));
+    if (!limited.ok) return limitResponse(limited);
 
     const timestamp = new Date().toISOString();
     const leadId = crypto.randomUUID();

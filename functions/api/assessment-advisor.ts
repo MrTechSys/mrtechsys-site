@@ -2,6 +2,7 @@
 // MrTechSysGPT Consultant Agent & Deterministic Assessment Engine
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
+import { consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
 
 interface Env {
   AI?: any;
@@ -415,6 +416,8 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
       if (!isSingleEmail(recipientEmail)) {
         return new Response(JSON.stringify({ error: 'One valid email address required' }), { status: 400 });
       }
+      const limited = await consumeLimits(env.DB, await emailLimits(request, recipientEmail));
+      if (!limited.ok) return limitResponse(limited);
 
       const evaluation = runDiagnosticRules(state, profile);
       const leadId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
