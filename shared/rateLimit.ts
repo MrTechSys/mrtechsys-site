@@ -40,6 +40,8 @@ export async function sha256Hex(text: string): Promise<string> {
 // one connection usually owns the whole prefix and could otherwise rotate addresses within it.
 export const clientIp = (request: Request) => {
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const mapped = ip.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i); // IPv4-mapped IPv6 counts as its IPv4
+  if (mapped) return mapped[1];
   if (!ip.includes(':')) return ip;
   const [head, tail = ''] = ip.split('::');
   const left = head ? head.split(':') : [];
