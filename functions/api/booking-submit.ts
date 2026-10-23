@@ -1,6 +1,9 @@
 // functions/api/booking-submit.ts
 // POST /api/booking-submit
 
+import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
+import { LIMITS, clientIp, consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
+
 interface Env {
   DB?: D1Database;
   RESEND_API_KEY?: string;
@@ -73,15 +76,15 @@ async function sendUserConfirmation(env: Env, payload: any, bookingId: string, m
   <div style="border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:16px;margin-bottom:24px;">
     <span style="font-family:monospace;font-size:11px;color:#D4AF37;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;">⚡ MRTECHSYS · BOOKING CONFIRMED</span>
     <h1 style="color:#fff;font-size:22px;margin:8px 0 4px;font-weight:800;">Your Strategy Session is Locked In</h1>
-    <p style="color:#94A3B8;font-size:13px;margin:0;">Prepared for <strong>${payload.businessName || payload.name}</strong></p>
+    <p style="color:#94A3B8;font-size:13px;margin:0;">Prepared for <strong>${escapeHtml(payload.businessName || payload.name)}</strong></p>
   </div>
-  <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">Howdy ${firstName},</p>
+  <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">Howdy ${escapeHtml(firstName)},</p>
   <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">Your MrTechSys strategy session is confirmed. Here are your booking details:</p>
   <div style="background:#121824;border-left:3px solid #D4AF37;padding:14px 18px;margin:20px 0;border-radius:0 8px 8px 0;">
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;">DATE: <span style="color:#fff;font-weight:bold;">${formatBookingDate(payload.bookingDate)}</span></div>
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">TIME: <span style="color:#D4AF37;font-weight:bold;">${formatTime12(payload.bookingTime)}</span></div>
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">DURATION: <span style="color:#fff;font-weight:bold;">${payload.duration || 60} minutes</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">TOPIC: <span style="color:#fff;font-weight:bold;">${payload.serviceType || 'Strategy Consultation'}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">TOPIC: <span style="color:#fff;font-weight:bold;">${escapeHtml(payload.serviceType || 'Strategy Consultation')}</span></div>
   </div>
   ${meetingSection}
   <div style="margin:24px 0;padding:18px;background:#0E131F;border-radius:8px;border:1px solid rgba(255,255,255,0.08);">
@@ -118,24 +121,24 @@ async function sendOwnerAlert(env: Env, payload: any, bookingId: string) {
   <h2 style="color:#fff;font-size:20px;margin:8px 0 4px;">New Strategy Session Booked</h2>
   <div style="background:#121824;border-left:3px solid #D4AF37;padding:14px 18px;margin:20px 0;border-radius:0 8px 8px 0;">
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;">BOOKING ID: <span style="color:#fff;">${bookingId}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">NAME: <span style="color:#fff;font-weight:bold;">${payload.name}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">EMAIL: <span style="color:#D4AF37;">${payload.email}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">BUSINESS: <span style="color:#fff;">${payload.businessName || 'N/A'}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">PHONE: <span style="color:#fff;">${payload.phone || 'Not provided'}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">NAME: <span style="color:#fff;font-weight:bold;">${escapeHtml(payload.name)}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">EMAIL: <span style="color:#D4AF37;">${escapeHtml(payload.email)}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">BUSINESS: <span style="color:#fff;">${escapeHtml(payload.businessName || 'N/A')}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">PHONE: <span style="color:#fff;">${escapeHtml(payload.phone || 'Not provided')}</span></div>
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;">DATE/TIME: <span style="color:#D4AF37;font-weight:bold;">${formatBookingDate(payload.bookingDate)} at ${formatTime12(payload.bookingTime)}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">SERVICE: <span style="color:#fff;">${payload.serviceType || 'General'}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">INDUSTRY: <span style="color:#fff;">${payload.industry || 'N/A'}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">BUDGET: <span style="color:#fff;">${payload.budgetRange || 'N/A'}</span></div>
-    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">TIMELINE: <span style="color:#fff;">${payload.timeline || 'N/A'}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">SERVICE: <span style="color:#fff;">${escapeHtml(payload.serviceType || 'General')}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">INDUSTRY: <span style="color:#fff;">${escapeHtml(payload.industry || 'N/A')}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">BUDGET: <span style="color:#fff;">${escapeHtml(payload.budgetRange || 'N/A')}</span></div>
+    <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">TIMELINE: <span style="color:#fff;">${escapeHtml(payload.timeline || 'N/A')}</span></div>
     <div style="font-size:12px;font-family:monospace;color:#94A3B8;margin-top:4px;">BUY-IN DETECTED: <span style="color:${payload._buyInDetected ? '#10B981' : '#94A3B8'};font-weight:bold;">${payload._buyInDetected ? 'YES → CloudFlip OTP dispatched' : 'NO → CloudFlip invite link sent'}</span></div>
   </div>
   <div style="background:#0E131F;border-radius:8px;padding:14px 18px;margin-top:8px;">
     <h4 style="color:#D4AF37;margin:0 0 8px;font-size:12px;">PROBLEM SUMMARY:</h4>
-    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;">${payload.problemSummary || 'Not provided'}</p>
+    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;white-space:pre-wrap;">${escapeHtml(payload.problemSummary || 'Not provided')}</p>
   </div>
   <div style="background:#0E131F;border-radius:8px;padding:14px 18px;margin-top:8px;">
     <h4 style="color:#D4AF37;margin:0 0 8px;font-size:12px;">AI PLAN SHOWN TO USER:</h4>
-    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;white-space:pre-wrap;">${payload.aiPlanSummary || 'Not captured'}</p>
+    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;white-space:pre-wrap;">${escapeHtml(payload.aiPlanSummary || 'Not captured')}</p>
   </div>
 </td></tr>
 </table>
@@ -160,7 +163,7 @@ async function sendCloudFlipInvite(env: Env, payload: any) {
 <tr><td>
   <span style="font-family:monospace;font-size:11px;color:#D4AF37;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;">⚡ CLOUDFLIP OS</span>
   <h2 style="color:#fff;font-size:20px;margin:8px 0 12px;">Your Free Workspace is Ready When You Are</h2>
-  <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">Hey ${firstName},</p>
+  <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">Hey ${escapeHtml(firstName)},</p>
   <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">As a follow-up to your upcoming strategy session, I wanted to let you know that a CloudFlip OS workspace is available to you — completely free to start. No pressure at all.</p>
   <p style="font-size:14px;color:#CBD5E1;line-height:1.6;">If you're curious to explore before we meet, you can activate your workspace at any time:</p>
   <div style="text-align:center;margin:28px 0;">
@@ -168,7 +171,7 @@ async function sendCloudFlipInvite(env: Env, payload: any) {
       Explore CloudFlip OS (Free) →
     </a>
   </div>
-  <p style="font-size:12px;color:#64748B;line-height:1.6;">No obligation. You can sign up with this same email address (${payload.email}) and everything will be ready for our session. Or simply show up and we'll set it up together — whatever works best for you.</p>
+  <p style="font-size:12px;color:#64748B;line-height:1.6;">No obligation. You can sign up with this same email address (${escapeHtml(payload.email)}) and everything will be ready for our session. Or simply show up and we'll set it up together — whatever works best for you.</p>
   <div style="margin-top:28px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">
     <p style="font-size:11px;color:#64748B;font-family:monospace;margin:0;">MrTechSys Digital Transformation · Texas-Rooted Simplicity · Free First, Scale Smart</p>
   </div>
@@ -219,9 +222,22 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   let payload: any;
   try {
-    payload = await request.json();
-  } catch {
-    return json({ error: 'Invalid JSON body.' }, 400);
+    const raw = await readJsonBody(request);
+    // Public and unauthenticated: every text field is plain, single-line (except the summaries) and capped before it is
+    // stored, put into an email (escaped there) or sent on to CloudFlip.
+    const text = (v: unknown, max: number) => cleanText(v, max) || undefined;
+    const multiline = (v: unknown, max: number) => (String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]+/g, ' ').trim().slice(0, max) || undefined);
+    payload = {
+      ...raw,
+      name: text(raw?.name, 100), email: String(raw?.email ?? '').trim(), businessName: text(raw?.businessName, 100),
+      phone: text(raw?.phone, 40), serviceType: text(raw?.serviceType, 80), industry: text(raw?.industry, 60),
+      budgetRange: text(raw?.budgetRange, 60), timeline: text(raw?.timeline, 60), meetingType: text(raw?.meetingType, 20),
+      bookingDate: text(raw?.bookingDate, 10), bookingTime: text(raw?.bookingTime, 5),
+      problemSummary: multiline(raw?.problemSummary, 2000), aiPlanSummary: multiline(raw?.aiPlanSummary, 4000),
+      duration: Number.isInteger(raw?.duration) && raw.duration > 0 && raw.duration <= 240 ? raw.duration : 60,
+    };
+  } catch (err: any) {
+    return json({ error: err?.status === 413 ? 'Request too large.' : 'Invalid JSON body.' }, err?.status === 413 ? 413 : 400);
   }
 
   // Required field validation
@@ -231,7 +247,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   // Email format
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+  if (!isSingleEmail(payload.email)) {
     return json({ error: 'Invalid email address.' }, 400);
   }
 
@@ -239,6 +255,17 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(payload.bookingDate)) {
     return json({ error: 'Invalid bookingDate format. Use YYYY-MM-DD.' }, 400);
   }
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(payload.bookingTime)) {
+    return json({ error: 'Invalid bookingTime format. Use HH:MM.' }, 400);
+  }
+
+  // Bookings per IP, and the email limits for the confirmation (per IP, per recipient, site-wide), before the slot
+  // is taken, anything is stored, any email is sent or CloudFlip is asked to send a sign-in code (shared/rateLimit.ts).
+  const limited = await consumeLimits(env.DB, [
+    { bucket: `booking:ip:${clientIp(request)}`, ...LIMITS.bookingPerIp },
+    ...(await emailLimits(request, payload.email)),
+  ]);
+  if (!limited.ok) return limitResponse(limited);
 
   const bookingId = crypto.randomUUID();
   const cancelToken = crypto.randomUUID();

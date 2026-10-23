@@ -303,7 +303,8 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
         setSubmitError('That slot was just taken — please go back and choose another time.');
         setStep(4);
       } else {
-        setSubmitError(data.error || 'Booking failed. Please try again.');
+        // Limits and outages return a code in `error` and the text to show in `message`.
+        setSubmitError(data.message || data.error || 'Booking failed. Please try again.');
       }
     } catch {
       setSubmitError('Network error. Please try again.');
