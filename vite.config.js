@@ -32,6 +32,13 @@ export default defineConfig({
         cloudfx_form: path.resolve(__dirname, 'cloudfx-form.html'),
         form_pyscript: path.resolve(__dirname, 'form_pyscript.html'),
         explore_solutions: path.resolve(__dirname, 'explore_solutions_pyscript.html'),
+      },
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-icons': ['lucide-react']
+        }
       }
     }
   }

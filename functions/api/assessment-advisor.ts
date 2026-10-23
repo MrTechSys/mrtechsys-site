@@ -5,6 +5,8 @@ interface Env {
   AI?: any;
   DB: D1Database;
   OPENAI_API_KEY?: string;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
 }
 
 interface DiagnosticState {
@@ -392,6 +394,235 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
         healthRating: evaluation.healthScore >= 80 ? "STRONG" : evaluation.healthScore >= 60 ? "MODERATE (EFFICIENCY DRAG)" : "HIGH RISK & CASH LEAKAGE"
       }), { headers: { 'Content-Type': 'application/json' } });
     }
+
+    // ─── ACTION 3: EMAIL REPORT DISPATCH VIA RESEND ─────────────────────────
+    if (action === 'send_report_email') {
+      const recipientEmail = (body.email || state.contact_email || '').trim();
+      const targetBusinessName = (body.businessName || state.business_name || 'Valued Business').trim();
+      const targetContactName = (body.contactName || state.contact_name || 'Executive Leader').trim();
+
+      if (!recipientEmail || !recipientEmail.includes('@')) {
+        return new Response(JSON.stringify({ error: 'Valid email address required' }), { status: 400 });
+      }
+
+      const evaluation = runDiagnosticRules(state, profile);
+      const leadId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const timestamp = new Date().toISOString();
+
+      // 1. Log to D1 database if present
+      if (env.DB) {
+        try {
+          await env.DB.prepare(`
+            INSERT INTO business_technology_profiles (
+              id, business_name, contact_name, contact_email, contact_phone,
+              industry, team_size, raw_dialogue_json, extracted_state_json,
+              health_score, operations_score, security_score, technology_score,
+              data_score, cx_score, financial_score, continuity_score,
+              identified_inefficiencies_json, now_actions_json, next_actions_json,
+              later_actions_json, recommended_routes_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).bind(
+            leadId,
+            targetBusinessName,
+            targetContactName,
+            recipientEmail,
+            state.contact_phone || null,
+            profile,
+            state.team_size || '1-10',
+            JSON.stringify(body.dialogueHistory || []),
+            JSON.stringify(state),
+            evaluation.healthScore,
+            evaluation.categories.operations,
+            evaluation.categories.security,
+            evaluation.categories.technology,
+            evaluation.categories.data,
+            evaluation.categories.cx,
+            evaluation.categories.financial,
+            evaluation.categories.continuity,
+            JSON.stringify(evaluation.inefficiencies),
+            JSON.stringify(evaluation.nowActions),
+            JSON.stringify(evaluation.nextActions),
+            JSON.stringify(evaluation.laterActions),
+            JSON.stringify(evaluation.recommendedRoutes)
+          ).run();
+        } catch (dbErr) {
+          console.warn('[D1 EMAIL LOG WARNING]', dbErr);
+        }
+      }
+
+      // 2. Dispatch via Resend API
+      let emailSent = false;
+      let emailError: string | null = null;
+
+      if (env.RESEND_API_KEY) {
+        const fromEmail = env.RESEND_FROM_EMAIL || 'notifications@mrtechsys.com';
+        const ratingColor = evaluation.healthScore >= 80 ? '#10B981' : evaluation.healthScore >= 60 ? '#F59E0B' : '#EF4444';
+
+        const inefficienciesHtml = evaluation.inefficiencies.map((item: any) => `
+          <div style="margin-bottom: 12px; padding: 12px 14px; background: rgba(239,68,68,0.06); border-left: 3px solid #EF4444; border-radius: 0 6px 6px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <strong style="color: #F87171; font-size: 13px;">${item.title}</strong>
+              <span style="font-family: monospace; font-size: 10px; color: #FCA5A5; background: rgba(239,68,68,0.2); padding: 2px 6px; border-radius: 4px;">${item.severity}</span>
+            </div>
+            <p style="color: #CBD5E1; font-size: 12px; margin: 0; line-height: 1.4;">${item.desc}</p>
+          </div>
+        `).join('');
+
+        const nowActionsHtml = evaluation.nowActions.map((act: string, idx: number) => `
+          <div style="margin-bottom: 8px; padding: 10px 12px; background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.2); border-radius: 6px;">
+            <span style="display: inline-block; font-family: monospace; font-size: 10px; font-weight: bold; color: #D4AF37; margin-right: 6px;">STEP 0${idx + 1}</span>
+            <span style="color: #E2E8F0; font-size: 12px;">${act}</span>
+          </div>
+        `).join('');
+
+        const emailHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 20px; background-color: #07090E; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #E2E8F0;">
+  <table style="max-width: 650px; margin: 0 auto; background-color: #0B0F17; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.35); overflow: hidden; padding: 32px;">
+    <tr>
+      <td>
+        <div style="text-align: left; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px;">
+          <span style="font-family: monospace; font-size: 11px; color: #D4AF37; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold;">
+            ⚡ MRTECHSYS &bull; EXECUTIVE SYSTEMS BRIEFING
+          </span>
+          <h1 style="color: #FFFFFF; font-size: 24px; margin: 8px 0 4px 0; font-weight: 800;">
+            10-Point Operational Diagnostic Report
+          </h1>
+          <p style="color: #94A3B8; font-size: 13px; margin: 0;">
+            Prepared for <strong>${targetBusinessName}</strong> &bull; Profile: ${evaluation.profileName}
+          </p>
+        </div>
+
+        <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
+          Hello ${targetContactName},
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
+          Here is your executive operational briefing synthesized by the MrTechSys Diagnostic Engine. Your baseline scores and prioritized recovery actions are summarized below.
+        </p>
+
+        <!-- Executive Score Badge -->
+        <div style="background-color: #121824; border-left: 4px solid ${ratingColor}; padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <div>
+              <span style="font-size: 11px; font-family: monospace; color: #94A3B8; text-transform: uppercase;">Technology Health Score</span>
+              <div style="font-size: 32px; font-weight: 800; color: #D4AF37; margin-top: 2px;">
+                ${evaluation.healthScore} <span style="font-size: 14px; color: #94A3B8; font-weight: normal;">/ 100</span>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 11px; font-family: monospace; color: #94A3B8; text-transform: uppercase;">Estimated Savings</span>
+              <div style="font-size: 15px; font-weight: 700; color: #10B981; margin-top: 2px;">${evaluation.savingsRange}</div>
+              <div style="font-size: 11px; font-family: monospace; color: #94A3B8;">${evaluation.hoursRange} recoverable</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flagged Inefficiencies -->
+        ${evaluation.inefficiencies.length > 0 ? `
+          <div style="margin: 24px 0;">
+            <h3 style="color: #FFFFFF; font-size: 15px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+              ⚠️ Critical Friction Points Identified
+            </h3>
+            ${inefficienciesHtml}
+          </div>
+        ` : ''}
+
+        <!-- Recommended Immediate Actions -->
+        <div style="margin: 24px 0;">
+          <h3 style="color: #D4AF37; font-size: 15px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+            ⚡ Phase 1: High-Priority Operational Fixes (Days 1–30)
+          </h3>
+          ${nowActionsHtml}
+        </div>
+
+        <!-- Unbiased Cloud Providers -->
+        <div style="margin: 28px 0; padding: 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+          <h4 style="color: #FFFFFF; margin: 0 0 6px 0; font-size: 14px;">Recommended Zero-Cost Cloud Primitives</h4>
+          <p style="color: #94A3B8; font-size: 12px; margin: 0 0 12px 0; line-height: 1.4;">
+            As an objective architecture consultancy, MrTechSys configures systems across top-tier providers so you never suffer vendor lock-in:
+          </p>
+          <div style="font-size: 11px; font-family: monospace;">
+            <a href="https://dash.cloudflare.com/sign-up" target="_blank" style="display: inline-block; margin: 4px 6px 4px 0; padding: 6px 12px; background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.4); border-radius: 4px; color: #D4AF37; text-decoration: none; font-weight: bold;">
+              Cloudflare Free Tier &rarr;
+            </a>
+            <a href="https://aws.amazon.com/free" target="_blank" style="display: inline-block; margin: 4px 6px 4px 0; padding: 6px 12px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 4px; color: #F59E0B; text-decoration: none; font-weight: bold;">
+              AWS Free Tier &rarr;
+            </a>
+            <a href="https://azure.microsoft.com/free" target="_blank" style="display: inline-block; margin: 4px 6px 4px 0; padding: 6px 12px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); border-radius: 4px; color: #60A5FA; text-decoration: none; font-weight: bold;">
+              Azure Free Tier &rarr;
+            </a>
+            <a href="https://cloud.google.com/free" target="_blank" style="display: inline-block; margin: 4px 6px 4px 0; padding: 6px 12px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); border-radius: 4px; color: #34D399; text-decoration: none; font-weight: bold;">
+              Google Cloud Free Tier &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Strategy Review CTA -->
+        <div style="margin-top: 32px; padding: 22px; background-color: #0E131F; border-radius: 8px; border: 1px solid rgba(212,175,55,0.3); text-align: center;">
+          <h4 style="color: #FFFFFF; margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">Want Help Implementing Your Roadmap?</h4>
+          <p style="color: #94A3B8; font-size: 12px; margin: 0 0 16px 0; line-height: 1.5;">
+            Review your findings live with the MrTechSys advisory team in a private, 30-minute strategy session. Zero sales pitch, zero lock-in.
+          </p>
+          <a href="https://mrtechsys.com/assessment" style="display: inline-block; background: linear-gradient(135deg, #D4AF37, #EAB308); color: #07090E; font-weight: bold; font-family: monospace; font-size: 12px; text-decoration: none; padding: 12px 24px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">
+            Book Strategy Session on MrTechSys &rarr;
+          </a>
+        </div>
+
+        <div style="margin-top: 28px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+          <p style="font-size: 11px; color: #64748B; font-family: monospace; margin: 0;">
+            MrTechSys Digital Transformation Ecosystem &bull; Texas-Rooted Simplicity &bull; Free First, Scale Smart
+          </p>
+        </div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+        try {
+          const resendRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${env.RESEND_API_KEY}`
+            },
+            body: JSON.stringify({
+              from: `MrTechSys Advisory <${fromEmail}>`,
+              to: [recipientEmail],
+              bcc: [env.ADMIN_ALERT_EMAIL || 'direct@mrtechsys.com'],
+              reply_to: 'direct@mrtechsys.com',
+              subject: `Diagnostic Briefing: ${targetBusinessName} (${evaluation.healthScore}/100 Health Score)`,
+              html: emailHtml
+            })
+          });
+
+          if (resendRes.ok) {
+            emailSent = true;
+          } else {
+            emailError = await resendRes.text();
+            console.warn('[RESEND ASSESSMENT ERROR]', emailError);
+          }
+        } catch (rErr: any) {
+          emailError = rErr.message;
+          console.warn('[RESEND FETCH ERROR]', rErr);
+        }
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        emailSent,
+        recipientEmail,
+        emailError,
+        message: emailSent
+          ? `Briefing successfully dispatched to ${recipientEmail}.`
+          : emailError
+            ? `Briefing saved. Email delivery notice: ${emailError}`
+            : `Briefing saved and queued for ${recipientEmail}.`,
+        timestamp
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
 
     return new Response(JSON.stringify({ error: 'Invalid action' }), { status: 400 });
   } catch (err: any) {

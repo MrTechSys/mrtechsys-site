@@ -254,6 +254,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
           body: JSON.stringify({
             from: `MrTechSys Notifications <${fromEmail}>`,
             to: [payload.email],
+            bcc: [env.ADMIN_ALERT_EMAIL || "direct@mrtechsys.com"],
+            reply_to: "direct@mrtechsys.com",
             subject: `Your Cloud Architecture Blueprint: ${payload.businessName} (10-Point Playbook)`,
             html: emailHtml
           })

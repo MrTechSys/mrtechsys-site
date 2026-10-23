@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ChevronRight, ChevronLeft, Bot, Calendar, Clock,
   Video, Phone, Sparkles, CheckCircle2, ShieldCheck,
-  Loader2, Zap, AlertCircle
+  Loader2, Zap, AlertCircle, Cpu, Cloud, Settings, Shield,
+  Layers, Link as LinkIcon, Compass
 } from 'lucide-react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const SERVICE_TYPES = [
-  { id: 'AI Automation', label: 'AI Automation', emoji: '🤖', desc: 'AI agents, voice dispatch, lead capture' },
-  { id: 'Cloud Migration', label: 'Cloud Migration', emoji: '☁️', desc: 'Move workloads to zero-cost cloud stack' },
-  { id: 'DevOps Setup', label: 'DevOps Setup', emoji: '⚙️', desc: 'CI/CD, pipelines, container orchestration' },
-  { id: 'Security Audit', label: 'Security Audit', emoji: '🔐', desc: 'Zero-trust, compliance, SOC 2 posture' },
-  { id: 'Custom Build', label: 'Custom Build', emoji: '🏗️', desc: 'Full-stack application from scratch' },
-  { id: 'CloudFlip Setup', label: 'CloudFlip Setup', emoji: '⚡', desc: 'Launch your CloudFlip OS workspace' },
-  { id: 'Enterprise Integration', label: 'Enterprise Integration', emoji: '🔗', desc: 'Connect your existing tools and APIs' },
-  { id: 'General Advisory', label: 'General Advisory', emoji: '🧭', desc: 'Strategy, architecture review, roadmap' },
+  { id: 'AI Automation', label: 'AI Automation', icon: Cpu, desc: 'AI agents, voice dispatch, lead capture' },
+  { id: 'Cloud Migration', label: 'Cloud Migration', icon: Cloud, desc: 'Move workloads to zero-cost cloud stack' },
+  { id: 'DevOps Setup', label: 'DevOps Setup', icon: Settings, desc: 'CI/CD, pipelines, container orchestration' },
+  { id: 'Security Audit', label: 'Security Audit', icon: Shield, desc: 'Zero-trust, compliance, SOC 2 posture' },
+  { id: 'Custom Build', label: 'Custom Build', icon: Layers, desc: 'Full-stack application from scratch' },
+  { id: 'CloudFlip Setup', label: 'CloudFlip Setup', icon: Zap, desc: 'Launch your CloudFlip OS workspace' },
+  { id: 'Enterprise Integration', label: 'Enterprise Integration', icon: LinkIcon, desc: 'Connect your existing tools and APIs' },
+  { id: 'General Advisory', label: 'General Advisory', icon: Compass, desc: 'Strategy, architecture review, roadmap' },
 ];
 
 const INDUSTRIES = [
@@ -128,13 +129,72 @@ const SmartBookingModal = ({ isOpen, onClose, prefillService = null, prefillCont
   const [meetingType, setMeetingType] = useState('zoom');
   const [availableSlots, setAvailableSlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
-  const [name, setName] = useState(prefillContext?.name || '');
-  const [email, setEmail] = useState(prefillContext?.email || '');
-  const [businessName, setBusinessName] = useState(prefillContext?.businessName || '');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState(() => {
+    return prefillContext?.name || (() => {
+      try { return localStorage.getItem('mrtechsys_cached_name') || ''; } catch { return ''; }
+    })();
+  });
+  const [email, setEmail] = useState(() => {
+    return prefillContext?.email || (() => {
+      try { return localStorage.getItem('mrtechsys_cached_email') || ''; } catch { return ''; }
+    })();
+  });
+  const [businessName, setBusinessName] = useState(() => {
+    return prefillContext?.businessName || (() => {
+      try { return localStorage.getItem('mrtechsys_cached_business_name') || ''; } catch { return ''; }
+    })();
+  });
+  const [phone, setPhone] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_phone') || ''; } catch { return ''; }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
   const [submitError, setSubmitError] = useState('');
+
+  const modalContentRef = useRef(null);
+
+  // Sync prefillContext updates when modal opens or context changes
+  useEffect(() => {
+    if (prefillService) setServiceType(prefillService);
+    if (prefillContext?.name) setName(prefillContext.name);
+    if (prefillContext?.email) setEmail(prefillContext.email);
+    if (prefillContext?.businessName) setBusinessName(prefillContext.businessName);
+    if (prefillContext?.question) setProblemSummary(prefillContext.question);
+  }, [prefillService, prefillContext, isOpen]);
+
+  // Persist contact details to cache for faster prefills
+  useEffect(() => {
+    if (email && email.includes('@')) {
+      try { localStorage.setItem('mrtechsys_cached_email', email.trim()); } catch {}
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (businessName) {
+      try { localStorage.setItem('mrtechsys_cached_business_name', businessName.trim()); } catch {}
+    }
+  }, [businessName]);
+
+  useEffect(() => {
+    if (name) {
+      try { localStorage.setItem('mrtechsys_cached_name', name.trim()); } catch {}
+    }
+  }, [name]);
+
+  useEffect(() => {
+    if (phone) {
+      try { localStorage.setItem('mrtechsys_cached_phone', phone.trim()); } catch {}
+    }
+  }, [phone]);
+
+  // Viewport Auto-Scroll: Ensure modal viewport is scrolled to top on step transitions
+  useEffect(() => {
+    if (modalContentRef.current) {
+      modalContentRef.current.scrollTop = 0;
+    }
+    // Also scroll window to top in case mobile virtual keyboard shifted viewport
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
 
   const availableDates = getDates(21);
 
@@ -269,6 +329,7 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
   return (
     <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
       <motion.div
+        ref={modalContentRef}
         initial={{ opacity: 0, scale: 0.95, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
@@ -311,22 +372,28 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
                 <h3 className="text-sm font-semibold text-white mb-1">What can I help you with?</h3>
                 <p className="text-xs text-slate-400 mb-4">Choose the primary focus for your strategy session.</p>
                 <div className="grid grid-cols-2 gap-2.5">
-                  {SERVICE_TYPES.map(svc => (
-                    <button
-                      key={svc.id}
-                      type="button"
-                      onClick={() => setServiceType(svc.id)}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                        serviceType === svc.id
-                          ? 'bg-[#D4AF37]/10 border-[#D4AF37]/60 shadow-[0_0_12px_rgba(212,175,55,0.1)]'
-                          : 'bg-white/[0.02] border-white/[0.07] hover:border-[#D4AF37]/30'
-                      }`}
-                    >
-                      <div className="text-base mb-1">{svc.emoji}</div>
-                      <div className={`text-xs font-semibold mb-0.5 ${serviceType === svc.id ? 'text-[#D4AF37]' : 'text-white'}`}>{svc.label}</div>
-                      <div className="text-[10px] text-slate-500 leading-relaxed">{svc.desc}</div>
-                    </button>
-                  ))}
+                  {SERVICE_TYPES.map(svc => {
+                    const SvcIcon = svc.icon;
+                    const isSelected = serviceType === svc.id;
+                    return (
+                      <button
+                        key={svc.id}
+                        type="button"
+                        onClick={() => setServiceType(svc.id)}
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#D4AF37]/10 border-[#D4AF37]/60 shadow-[0_0_14px_rgba(212,175,55,0.15)]'
+                            : 'bg-white/[0.02] border-white/[0.07] hover:border-[#D4AF37]/30'
+                        }`}
+                      >
+                        <div className="p-1.5 rounded-lg bg-white/[0.04] text-[#D4AF37] w-fit mb-2">
+                          <SvcIcon size={16} />
+                        </div>
+                        <div className={`text-xs font-semibold mb-0.5 ${isSelected ? 'text-[#D4AF37]' : 'text-white'}`}>{svc.label}</div>
+                        <div className="text-[10px] text-slate-400 leading-relaxed">{svc.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
