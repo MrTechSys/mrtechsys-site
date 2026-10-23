@@ -7,13 +7,17 @@
  * visitor's IP; tokens are single-use and expire after 5 minutes. Any failure refuses the request (fails closed):
  * a missing or invalid token is 403, a siteverify outage or timeout is 503.
  *
- * Production uses TURNSTILE_SECRET_KEY (a Pages secret) and accepts only tokens issued on the production hostnames.
- * Preview and local builds, which have no secret, use Cloudflare's documented always-pass test secret; their pages
- * render the matching test site key (src/components/TurnstileWidget.jsx). A test-key token never passes the real secret.
+ * The secret is only ever TURNSTILE_SECRET_KEY from the environment (a Pages secret on Production); without it every
+ * request is refused (503). It is never chosen by hostname: production also answers on per-deployment
+ * <id>.mrtechsys-site.pages.dev URLs, which a hostname rule would have let through with a test secret. So preview
+ * deployments (no secret) refuse these forms, and local development sets Cloudflare's always-pass test secret
+ * explicitly in .dev.vars (TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA). With the real secret only tokens
+ * issued on the production hostnames count; pages elsewhere render the test site key (src/components/TurnstileWidget.jsx),
+ * whose tokens never pass the real secret.
  */
 
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-const TEST_SECRET = '1x0000000000000000000000000000000AA'; // Cloudflare's always-pass test secret
+const TEST_SECRET = '1x0000000000000000000000000000000AA'; // Cloudflare's always-pass test secret (local .dev.vars only)
 export const PRODUCTION_HOSTS = new Set(['mrtechsys.com', 'www.mrtechsys.com', 'mrtechsys-site.pages.dev']);
 
 export type TurnstileResult = { ok: true } | { ok: false; response: Response };
@@ -24,8 +28,7 @@ const refuse = (status: number, error: string, message: string): TurnstileResult
 });
 
 export async function verifyTurnstile(env: { TURNSTILE_SECRET_KEY?: string }, request: Request, token: unknown): Promise<TurnstileResult> {
-  const host = new URL(request.url).hostname;
-  const secret = env.TURNSTILE_SECRET_KEY || (PRODUCTION_HOSTS.has(host) ? '' : TEST_SECRET);
+  const secret = env.TURNSTILE_SECRET_KEY;
   if (!secret) return refuse(503, 'VERIFICATION_UNAVAILABLE', 'This form is temporarily unavailable. Please try again shortly.');
   if (typeof token !== 'string' || !token || token.length > 2048) {
     return refuse(403, 'VERIFICATION_REQUIRED', 'Please complete the verification and try again.');
@@ -51,7 +54,7 @@ export async function verifyTurnstile(env: { TURNSTILE_SECRET_KEY?: string }, re
     return refuse(403, 'VERIFICATION_FAILED', 'Verification failed. Please try again.');
   }
   // With the real secret, only tokens issued on the production site count (not one solved on another site's widget).
-  if (env.TURNSTILE_SECRET_KEY && !PRODUCTION_HOSTS.has(String(data.hostname || ''))) {
+  if (secret !== TEST_SECRET && !PRODUCTION_HOSTS.has(String(data.hostname || ''))) {
     console.warn('[turnstile] token for an unexpected hostname:', data.hostname);
     return refuse(403, 'VERIFICATION_FAILED', 'Verification failed. Please try again.');
   }

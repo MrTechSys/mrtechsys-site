@@ -418,7 +418,8 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
       if (!isSingleEmail(recipientEmail)) {
         return new Response(JSON.stringify({ error: 'One valid email address required' }), { status: 400 });
       }
-      // The page sends a Turnstile token when this action is turned on; until then nothing reaches here.
+      // Prerequisite for REPORT_EMAIL_ENABLED=true: AssessmentPage must render TurnstileWidget and send turnstileToken,
+      // or every report email is refused here (403).
       const human = await verifyTurnstile(env, request, body.turnstileToken);
       if (!human.ok) return human.response;
       const limited = await consumeLimits(env.DB, await emailLimits(request, recipientEmail));

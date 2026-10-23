@@ -1,8 +1,9 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 // Cloudflare Turnstile for the public forms that send email (checked on the server: shared/turnstile.ts).
-// Production hostnames use the site's widget; preview and local builds use Cloudflare's always-pass test key,
-// which the server pairs with the test secret there. Tokens are single-use: the parent calls reset() after a submit.
+// Production hostnames use the site's widget; elsewhere the page renders Cloudflare's always-pass test key (only useful
+// locally, where .dev.vars sets the matching test secret; previews have no secret and the server refuses). Tokens are
+// single-use: the parent calls reset() after a submit.
 const SITE_KEY = '0x4AAAAAAFjCeYVf5QMufrhl';
 const TEST_SITE_KEY = '1x00000000000000000000AA';
 const PRODUCTION_HOSTS = ['mrtechsys.com', 'www.mrtechsys.com', 'mrtechsys-site.pages.dev'];
@@ -30,6 +31,7 @@ const TurnstileWidget = forwardRef(function TurnstileWidget({ onToken, className
   const widgetId = useRef(null);
   const onTokenRef = useRef(onToken);
   onTokenRef.current = onToken;
+  const [problem, setProblem] = useState('');
 
   useImperativeHandle(ref, () => ({
     reset() {
@@ -46,19 +48,26 @@ const TurnstileWidget = forwardRef(function TurnstileWidget({ onToken, className
       widgetId.current = turnstile.render(container.current, {
         sitekey,
         theme: 'dark',
-        callback: (token) => onTokenRef.current?.(token),
+        callback: (token) => { setProblem(''); onTokenRef.current?.(token); },
         'expired-callback': () => onTokenRef.current?.(null),
-        'error-callback': () => onTokenRef.current?.(null),
+        'timeout-callback': () => { onTokenRef.current?.(null); setProblem('Verification timed out. Please try again.'); },
+        'error-callback': () => { onTokenRef.current?.(null); setProblem('Verification could not complete. Please refresh the page.'); },
       });
-    }).catch(() => onTokenRef.current?.(null));
+    }).catch(() => { onTokenRef.current?.(null); setProblem('Verification could not load. Please refresh the page.'); });
     return () => {
       cancelled = true;
+      onTokenRef.current?.(null); // a token belongs to its widget; never leave one behind for the next widget
       if (window.turnstile && widgetId.current !== null) window.turnstile.remove(widgetId.current);
       widgetId.current = null;
     };
   }, []);
 
-  return <div ref={container} className={className} />;
+  return (
+    <div>
+      <div ref={container} className={className} />
+      {problem && <p className="text-xs text-red-300 text-center mt-1">{problem}</p>}
+    </div>
+  );
 });
 
 export default TurnstileWidget;
