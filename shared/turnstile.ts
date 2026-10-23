@@ -30,6 +30,12 @@ const refuse = (status: number, error: string, message: string): TurnstileResult
 export async function verifyTurnstile(env: { TURNSTILE_SECRET_KEY?: string }, request: Request, token: unknown): Promise<TurnstileResult> {
   const secret = env.TURNSTILE_SECRET_KEY;
   if (!secret) return refuse(503, 'VERIFICATION_UNAVAILABLE', 'This form is temporarily unavailable. Please try again shortly.');
+  // The always-pass test secret is for local development only; if it were ever set as a Pages secret, the production
+  // hostnames refuse rather than accept every token.
+  if (secret === TEST_SECRET && PRODUCTION_HOSTS.has(new URL(request.url).hostname)) {
+    console.error('[turnstile] the test secret is configured on a production hostname; refusing');
+    return refuse(503, 'VERIFICATION_UNAVAILABLE', 'This form is temporarily unavailable. Please try again shortly.');
+  }
   if (typeof token !== 'string' || !token || token.length > 2048) {
     return refuse(403, 'VERIFICATION_REQUIRED', 'Please complete the verification and try again.');
   }
