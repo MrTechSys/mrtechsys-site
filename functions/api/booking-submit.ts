@@ -134,7 +134,7 @@ async function sendOwnerAlert(env: Env, payload: any, bookingId: string) {
   </div>
   <div style="background:#0E131F;border-radius:8px;padding:14px 18px;margin-top:8px;">
     <h4 style="color:#D4AF37;margin:0 0 8px;font-size:12px;">PROBLEM SUMMARY:</h4>
-    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;">${escapeHtml(payload.problemSummary || 'Not provided')}</p>
+    <p style="color:#CBD5E1;font-size:12px;margin:0;line-height:1.6;white-space:pre-wrap;">${escapeHtml(payload.problemSummary || 'Not provided')}</p>
   </div>
   <div style="background:#0E131F;border-radius:8px;padding:14px 18px;margin-top:8px;">
     <h4 style="color:#D4AF37;margin:0 0 8px;font-size:12px;">AI PLAN SHOWN TO USER:</h4>
@@ -255,7 +255,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(payload.bookingDate)) {
     return json({ error: 'Invalid bookingDate format. Use YYYY-MM-DD.' }, 400);
   }
-  if (!/^\d{2}:\d{2}$/.test(payload.bookingTime)) {
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(payload.bookingTime)) {
     return json({ error: 'Invalid bookingTime format. Use HH:MM.' }, 400);
   }
 
