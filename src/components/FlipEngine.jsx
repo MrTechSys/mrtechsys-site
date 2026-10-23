@@ -1,18 +1,20 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { 
   Building2, Wrench, Utensils, Briefcase, Truck, 
   ArrowRight, CheckCircle2, RefreshCw, 
-  DollarSign, Clock, TrendingDown
+  DollarSign, Clock, TrendingDown, FileText, Download
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 import ConsultationModal from './ConsultationModal';
 
 const INDUSTRIES = [
-  { id: 'trades', name: 'Trades & Field Services', icon: Wrench, defaultTeam: 8, avgJobValue: 1200, desc: 'HVAC, Electrical, Plumbing, Roofing' },
-  { id: 'food', name: 'Food & Hospitality', icon: Utensils, defaultTeam: 14, avgJobValue: 45, desc: 'Restaurants, Commercial Kitchens, Catering' },
-  { id: 'commercial', name: 'Commercial & Real Estate', icon: Building2, defaultTeam: 10, avgJobValue: 2400, desc: 'Property Mgmt, Brokerages, Facility Ops' },
-  { id: 'professional', name: 'Professional Services', icon: Briefcase, defaultTeam: 6, avgJobValue: 3500, desc: 'Accounting, Legal, Consulting, Agencies' },
-  { id: 'fleet', name: 'Auto & Logistics', icon: Truck, defaultTeam: 12, avgJobValue: 850, desc: 'Fleet Operations, Towing, Mobile Repair' }
+  { id: 'trades', name: 'Trades & Field Services', icon: Wrench, defaultTeam: 1, avgJobValue: 350, desc: 'HVAC, Electrical, Plumbing, Roofing, Lawn Care' },
+  { id: 'food', name: 'Food & Hospitality', icon: Utensils, defaultTeam: 8, avgJobValue: 45, desc: 'Restaurants, Commercial Kitchens, Catering' },
+  { id: 'commercial', name: 'Commercial & Real Estate', icon: Building2, defaultTeam: 6, avgJobValue: 1800, desc: 'Property Mgmt, Brokerages, Facility Ops' },
+  { id: 'professional', name: 'Solo Pro & Services', icon: Briefcase, defaultTeam: 1, avgJobValue: 600, desc: 'Independent Consulting, Legal, Bookkeeping' },
+  { id: 'fleet', name: 'Auto & Logistics', icon: Truck, defaultTeam: 6, avgJobValue: 650, desc: 'Fleet Operations, Towing, Mobile Repair' }
 ];
 
 const FRICTION_POINTS = [
@@ -55,10 +57,10 @@ const BLUEPRINTS = {
 const FlipEngine = () => {
   const [step, setStep] = useState(1);
   const [selectedIndustry, setSelectedIndustry] = useState(INDUSTRIES[0]);
-  const [teamSize, setTeamSize] = useState(8);
+  const [teamSize, setTeamSize] = useState(1);
   const [selectedFrictions, setSelectedFrictions] = useState(['missed_calls', 'manual_dispatch', 'duplicate_entry']);
-  const [hourlyWage, setHourlyWage] = useState(32);
-  const [monthlyRevenue, setMonthlyRevenue] = useState(75000);
+  const [hourlyWage, setHourlyWage] = useState(28);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(4000);
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
 
   const toggleFriction = (id) => {
@@ -69,15 +71,23 @@ const FlipEngine = () => {
 
   const calculations = useMemo(() => {
     const activeFrictions = FRICTION_POINTS.filter(f => selectedFrictions.includes(f.id));
-    const totalWeeklyHoursLost = activeFrictions.reduce((acc, curr) => acc + curr.impactHours, 0);
+    const rawHours = activeFrictions.reduce((acc, curr) => acc + curr.impactHours, 0);
+    
+    // For solopreneurs (1 person), hours are capped realistically at 5-8 hrs/wk total
+    // For larger teams, it scales moderately with employee count
+    const totalWeeklyHoursLost = teamSize === 1 
+      ? Math.min(8, Math.max(3, Math.round(rawHours * 0.18)))
+      : Math.min(teamSize * 3, Math.round(rawHours * 0.22 * teamSize));
+      
     const annualHoursLost = totalWeeklyHoursLost * 50;
     const annualWastedPayroll = annualHoursLost * hourlyWage;
     
-    const combinedRevLeakagePct = Math.min(0.35, activeFrictions.reduce((acc, curr) => acc + curr.revImpactPct, 0));
+    // Solopreneurs / small businesses realistically lose 4-8% to missed calls and delayed quoting
+    const combinedRevLeakagePct = Math.min(0.08, activeFrictions.reduce((acc, curr) => acc + (curr.revImpactPct * 0.25), 0));
     const annualRevenueLeakage = (monthlyRevenue * 12) * combinedRevLeakagePct;
     
     const totalCostOfInaction = annualWastedPayroll + annualRevenueLeakage;
-    const projectedSavings = totalCostOfInaction * 0.68; // 68% recovery benchmark
+    const projectedSavings = totalCostOfInaction * 0.65; // realistic recovery benchmark
 
     return {
       totalWeeklyHoursLost,
@@ -87,7 +97,213 @@ const FlipEngine = () => {
       totalCostOfInaction,
       projectedSavings
     };
-  }, [selectedFrictions, hourlyWage, monthlyRevenue]);
+  }, [selectedFrictions, hourlyWage, monthlyRevenue, teamSize]);
+
+  // Viewport Auto-Scroll: Resets scroll to top of diagnostic engine on step advancement
+  useEffect(() => {
+    const el = document.getElementById('readiness-engine');
+    if (el) {
+      const topOffset = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+  }, [step]);
+
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const generateExecutivePDF = () => {
+    try {
+      setIsGeneratingPDF(true);
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4'
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
+      let y = 48;
+
+      // Background Tone
+      doc.setFillColor(7, 9, 14); // #07090E
+      doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+      // Top Decorative Accent Line (Metallic Gold)
+      doc.setFillColor(212, 175, 55); // #D4AF37
+      doc.rect(margin, y, pageWidth - (margin * 2), 2, 'F');
+      y += 18;
+
+      // Header Tagline & Brand
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(212, 175, 55); // Gold
+      doc.text('MRTECHSYS // CLOUDFLIP ARCHITECTURE BLUEPRINT', margin, y);
+
+      const timestamp = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(148, 163, 184); // slate-400
+      doc.text(`DATE: ${timestamp.toUpperCase()} | CONFIDENTIAL`, pageWidth - margin, y, { align: 'right' });
+      y += 24;
+
+      // Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`Executive Transformation Blueprint: ${selectedIndustry.name}`, margin, y);
+      y += 18;
+
+      // Subtitle
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(148, 163, 184);
+      doc.text(`Operating Baseline: ${teamSize} Full-Time Personnel | $${monthlyRevenue.toLocaleString()}/mo Revenue Profile`, margin, y);
+      y += 26;
+
+      // Card 1: Quantified Cost of Inaction (COI)
+      doc.setFillColor(15, 23, 42); // slate-900 / #0F172A
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 94, 4, 4, 'F');
+      doc.setDrawColor(212, 175, 55);
+      doc.setLineWidth(0.75);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 94, 4, 4, 'S');
+
+      // COI Headers
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(212, 175, 55);
+      doc.text('QUANTIFIED ANNUAL FRICTION & LEAKAGE (PRE-FLIP)', margin + 14, y + 20);
+
+      // 4 Metric Columns inside COI Box
+      const colWidth = (pageWidth - (margin * 2) - 28) / 4;
+      const metrics = [
+        { label: 'Weekly Hours Lost', value: `${calculations.totalWeeklyHoursLost} hrs/wk` },
+        { label: 'Wasted Payroll Drag', value: `$${Math.round(calculations.annualWastedPayroll).toLocaleString()}/yr` },
+        { label: 'Inbound Revenue Drag', value: `$${Math.round(calculations.annualRevenueLeakage).toLocaleString()}/yr` },
+        { label: 'Total Inaction Cost', value: `$${Math.round(calculations.totalCostOfInaction).toLocaleString()}/yr` }
+      ];
+
+      metrics.forEach((m, idx) => {
+        const colX = margin + 14 + (idx * colWidth);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(m.label, colX, y + 42);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(idx === 3 ? 245 : 255, idx === 3 ? 158 : 255, idx === 3 ? 11 : 255); // Amber for total
+        doc.text(m.value, colX, y + 62);
+      });
+
+      y += 114;
+
+      // Section: Projected Post-Flip Recovery
+      doc.setFillColor(212, 175, 55, 0.08);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 48, 4, 4, 'F');
+      doc.setDrawColor(245, 158, 11); // Amber
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 48, 4, 4, 'S');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(212, 175, 55);
+      doc.text('ESTIMATED 12-MONTH POTENTIAL RECOVERY (BENCHMARK: 65%)*', margin + 14, y + 20);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(253, 224, 71); // Yellow accent
+      doc.text(`+$${Math.round(calculations.projectedSavings).toLocaleString()} / year`, margin + 14, y + 38);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text('Reclaimed across dispatch routing, instant photo-quoting, and automated lead capture.*', pageWidth - margin - 14, y + 36, { align: 'right' });
+
+      y += 66;
+
+      // Section: Recommended Architecture Modules
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text('RECOMMENDED CLOUDFLIP ARCHITECTURE MODULES', margin, y);
+      y += 16;
+
+      const activeModules = BLUEPRINTS[selectedIndustry.id] || BLUEPRINTS.trades;
+      activeModules.forEach((mod, idx) => {
+        doc.setFillColor(15, 23, 42);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 52, 4, 4, 'F');
+        doc.setDrawColor(51, 65, 85);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 52, 4, 4, 'S');
+
+        // Module Tag
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(212, 175, 55);
+        doc.text(`MODULE 0${idx + 1} // [${mod.tag.toUpperCase()}]`, margin + 14, y + 16);
+
+        // Module Title
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10.5);
+        doc.setTextColor(255, 255, 255);
+        doc.text(mod.title, margin + 14, y + 30);
+
+        // Module Description
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(mod.desc, margin + 14, y + 43);
+
+        y += 60;
+      });
+
+      y += 8;
+
+      // Phased Execution Timeline
+      doc.setFillColor(10, 14, 22);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 62, 4, 4, 'F');
+      doc.setDrawColor(212, 175, 55);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 62, 4, 4, 'S');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(212, 175, 55);
+      doc.text('3-STAGE ZERO-DOWNTIME ROLLOUT TIMELINE', margin + 14, y + 18);
+
+      const phases = [
+        { phase: 'STAGE 1 (Days 1-7)', desc: 'Zero-downtime shadow capture & data schema mapping' },
+        { phase: 'STAGE 2 (Days 8-14)', desc: 'Edge MCP daemon & CloudFlip dispatch deployment' },
+        { phase: 'STAGE 3 (Days 15+)', desc: 'Live cutover, staff enablement & telemetry verification' }
+      ];
+
+      const pColWidth = (pageWidth - (margin * 2) - 28) / 3;
+      phases.forEach((p, idx) => {
+        const pX = margin + 14 + (idx * pColWidth);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(255, 255, 255);
+        doc.text(p.phase, pX, y + 34);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(148, 163, 184);
+        doc.text(p.desc, pX, y + 46, { maxWidth: pColWidth - 8 });
+      });
+
+      // Footer
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text('Architected by MrTechSys // Austin, Texas // https://mrtechsys.com // Enterprise Systems & Edge Cloud Architecture', margin, pageHeight - 24);
+
+      // Save PDF
+      doc.save(`MrTechSys-Executive-Blueprint-${selectedIndustry.id}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF blueprint:', err);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   return (
     <section id="readiness-engine" className="py-24 bg-[#07090E] relative border-t border-b border-white/[0.06] overflow-hidden">
@@ -195,12 +411,12 @@ const FlipEngine = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/[0.06]">
                   <div>
                     <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
-                      Team Size (Field Staff & Admin)
+                      Team Size (1 = Solo Operator, 2+ = Crew / Staff)
                     </label>
                     <div className="flex items-center gap-4">
                       <input 
                         type="range" 
-                        min="2" 
+                        min="1" 
                         max="50" 
                         value={teamSize}
                         onChange={(e) => setTeamSize(Number(e.target.value))}
@@ -212,14 +428,14 @@ const FlipEngine = () => {
 
                   <div>
                     <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
-                      Estimated Monthly Revenue ($USD)
+                      Estimated Monthly Revenue / Cash Flow ($USD)
                     </label>
                     <div className="flex items-center gap-4">
                       <input 
                         type="range" 
-                        min="15000" 
-                        max="500000" 
-                        step="5000"
+                        min="2000" 
+                        max="250000" 
+                        step="1000"
                         value={monthlyRevenue}
                         onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
                         className="w-full accent-[#D4AF37] bg-slate-800"
@@ -493,12 +709,16 @@ const FlipEngine = () => {
                     </ul>
 
                     <div className="pt-4 border-t border-white/[0.08] text-xs font-mono text-slate-400 flex justify-between">
-                      <span>PROJECTED RECOVERED VALUE:</span>
+                      <span>ESTIMATED ANNUAL UPLIFT*:</span>
                       <span className="text-[#D4AF37] font-bold">+${Math.round(calculations.projectedSavings).toLocaleString()} /yr</span>
                     </div>
                   </div>
 
                 </div>
+
+                <p className="text-[10px] text-slate-500 font-mono text-center max-w-2xl mx-auto leading-relaxed">
+                  *Illustrative estimate based on small trade operational benchmarks (average solo recovery of $600–$1,200/mo in saved administrative time and captured appointments). Results vary by trade volume and adoption.
+                </p>
 
                 <div className="flex items-center justify-between pt-4">
                   <button
@@ -535,8 +755,19 @@ const FlipEngine = () => {
                       Recommended CloudFlip Architecture for {selectedIndustry.name}
                     </h3>
                   </div>
-                  <div className="px-4 py-2 rounded bg-white/[0.03] border border-[#D4AF37]/20 font-mono text-xs text-slate-300">
-                    Profile: {teamSize} staff &bull; ${monthlyRevenue.toLocaleString()}/mo
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="px-3.5 py-1.5 rounded bg-white/[0.03] border border-[#D4AF37]/20 font-mono text-xs text-slate-300">
+                      Profile: {teamSize} staff &bull; ${monthlyRevenue.toLocaleString()}/mo
+                    </div>
+                    <button
+                      type="button"
+                      onClick={generateExecutivePDF}
+                      disabled={isGeneratingPDF}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 text-[#D4AF37] font-mono text-xs font-semibold rounded border border-[#D4AF37]/40 transition-all cursor-pointer shadow-[0_0_15px_rgba(212,175,55,0.15)] disabled:opacity-50"
+                    >
+                      <Download size={13} />
+                      {isGeneratingPDF ? 'Compiling Blueprint...' : 'Download Executive PDF'}
+                    </button>
                   </div>
                 </div>
 
@@ -567,13 +798,22 @@ const FlipEngine = () => {
                       MrTechSys will map your existing data, deploy your customized CloudFlip modules, and verify live telemetry with zero operational downtime.
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <a
-                      href="/cloud-provisioner"
+                  <div className="flex flex-wrap items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={generateExecutivePDF}
+                      disabled={isGeneratingPDF}
+                      className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 font-mono text-xs font-semibold rounded border border-white/20 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <Download size={13} className="text-[#D4AF37]" />
+                      Download Blueprint (PDF)
+                    </button>
+                    <Link
+                      to={`/cloud-provisioner?industry=${selectedIndustry.id}&workload=web,api,database,automation,messaging`}
                       className="px-5 py-2.5 bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#D4AF37] font-mono text-xs font-semibold rounded border border-[#D4AF37]/40 transition-all"
                     >
-                      ⚡ Cloud Provisioner (Free First) &rarr;
-                    </a>
+                      ⚡ Cloud Provisioner (Pre-Populated) &rarr;
+                    </Link>
                     <button
                       type="button"
                       onClick={() => setIsConsultModalOpen(true)}
@@ -583,6 +823,10 @@ const FlipEngine = () => {
                     </button>
                   </div>
                 </div>
+
+                <p className="text-[10px] text-slate-500 font-mono text-center max-w-3xl mx-auto leading-relaxed">
+                  *Illustrative diagnostic estimates based on operational benchmarks for small service contractors. Results vary based on individual business volume and operational variables. Not an express guarantee of revenue or profit.
+                </p>
 
                 <div className="flex justify-start pt-2">
                   <button

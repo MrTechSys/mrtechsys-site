@@ -17,9 +17,10 @@ const INITIAL_MESSAGE = {
 };
 
 const SUGGESTED_PROMPTS = [
-  "⚡ Deploy cloud stack for $0",
-  "📱 What is CloudFlip OS?",
-  "📋 10-Point Tech Assessment"
+  "⚡ Check Live DevOps Health",
+  "🛡️ Audit Cloudflare + AWS Zero-Cost Stack",
+  "📊 Calculate Payroll Operational Drag",
+  "🗺️ Generate Systems Architecture Plan"
 ];
 
 const ROUTE_RULES = [
@@ -104,8 +105,47 @@ const TexasBot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [activeRouteHint, setActiveRouteHint] = useState(null);
+  const [conciergePrompt, setConciergePrompt] = useState(null);
   
   const messagesEndRef = useRef(null);
+  const idleTimerRef = useRef(null);
+
+  // Proactive Executive Guide: Detect user idle (~4.5 mins) or section lingering
+  useEffect(() => {
+    const IDLE_TIME_MS = 270000; // 4.5 minutes
+
+    const getContextualAdvice = () => {
+      const path = location.pathname;
+      if (path === '/diagnostic') {
+        return "Evaluating operational drag? I can calculate your exact payroll leakage and map the 68% recovery curve for your team.";
+      }
+      if (path === '/assessment') {
+        return "Navigating the 10-dimension audit? Let me synthesize your baseline systems score and identify high-friction risks.";
+      }
+      if (path === '/cloud-provisioner') {
+        return "Designing your cloud footprint? I can verify permanent $0 free-tier allocations across Cloudflare and AWS.";
+      }
+      return "Need guidance navigating the platform? As your Virtual Systems Architect, I can help you evaluate your architecture, calculate operational drag, or schedule an executive strategy session.";
+    };
+
+    const resetIdleTimer = () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(() => {
+        if (!isOpen) {
+          setConciergePrompt(getContextualAdvice());
+        }
+      }, IDLE_TIME_MS);
+    };
+
+    const activityEvents = ['mousemove', 'keydown', 'scroll', 'touchstart'];
+    activityEvents.forEach(evt => window.addEventListener(evt, resetIdleTimer, { passive: true }));
+    resetIdleTimer();
+
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      activityEvents.forEach(evt => window.removeEventListener(evt, resetIdleTimer));
+    };
+  }, [location.pathname, isOpen]);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -247,6 +287,52 @@ const TexasBot = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
       
+      {/* Proactive Concierge Nudge Toast (Idle / Confusion Assistance) */}
+      <AnimatePresence>
+        {conciergePrompt && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="mb-3 max-w-[320px] p-4 rounded-2xl bg-[#0B0F17] border border-[#D4AF37]/50 shadow-[0_15px_40px_rgba(0,0,0,0.9)] text-slate-100 text-xs relative"
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); setConciergePrompt(null); }}
+              className="absolute top-2.5 right-2.5 text-slate-500 hover:text-white p-1 rounded cursor-pointer"
+            >
+              <X size={12} />
+            </button>
+            <div className="flex items-center gap-2 mb-1.5 font-mono text-[10px] text-[#D4AF37] font-semibold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>Virtual Systems Concierge</span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed mb-3">
+              {conciergePrompt}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(true);
+                  setIsMinimized(false);
+                  setConciergePrompt(null);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#EAB308] text-[#05070A] font-mono text-[10px] font-bold uppercase tracking-wider cursor-pointer"
+              >
+                Open Architecture Chat &rarr;
+              </button>
+              <button
+                type="button"
+                onClick={() => setConciergePrompt(null)}
+                className="px-2.5 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white font-mono text-[10px] cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Minimized Docked Bar */}
       <AnimatePresence>
         {isOpen && isMinimized && (
@@ -255,15 +341,15 @@ const TexasBot = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             onClick={() => setIsMinimized(false)}
-            className="mb-3 px-4 py-2.5 rounded-full bg-[#0B0F17] border border-[#D4AF37]/50 shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-3 cursor-pointer hover:border-[#D4AF37] transition-all"
+            className="mb-3 px-4 py-2 rounded-full bg-[#05070A] border border-[#D4AF37]/50 shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-3 cursor-pointer hover:border-[#D4AF37] transition-all"
           >
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
               <img src="/logo.png" alt="MrTechSys" className="w-4 h-4 object-contain" />
-              <span className="text-xs font-bold text-white tracking-wider">MrTechSys &bull; Advisor Online</span>
+              <span className="text-xs font-bold text-white tracking-wider font-mono">MrTechSys &bull; Advisor Online</span>
             </div>
-            <span className="text-[10px] text-[#D4AF37] bg-[#D4AF37]/15 px-2 py-0.5 rounded font-semibold">
-              Click to restore
+            <span className="text-[10px] text-[#D4AF37] bg-[#D4AF37]/15 px-2 py-0.5 rounded font-mono font-semibold">
+              Restore
             </span>
           </motion.div>
         )}
@@ -277,14 +363,14 @@ const TexasBot = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 15 }}
             transition={{ duration: 0.2 }}
-            className={`absolute bottom-16 right-0 bg-[#07090E] border border-[#D4AF37]/35 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col transition-all ${
+            className={`absolute bottom-16 right-0 bg-[#05070A] border border-[#D4AF37]/35 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col transition-all backdrop-blur-xl ${
               isExpanded 
                 ? 'w-[94vw] sm:w-[600px] h-[680px]' 
                 : 'w-[94vw] sm:w-[420px] h-[560px]'
             }`}
           >
-            {/* Header (Clean, Professional & No Tacky Badges) */}
-            <div className="p-3.5 bg-[#0B0F17] border-b border-white/[0.08] flex justify-between items-center select-none">
+            {/* Header */}
+            <div className="p-3.5 bg-[#0B0F17] border-b border-[#D4AF37]/20 flex justify-between items-center select-none">
               <div className="flex items-center gap-2.5">
                 <img 
                   src="/logo.png" 
@@ -292,11 +378,11 @@ const TexasBot = () => {
                   className="w-4 h-4 object-contain"
                 />
                 <div>
-                  <div className="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
-                    <span>MrTechSysGPT Assistant</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <div className="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    <span>Virtual Architecture Advisor</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                   </div>
-                  <div className="text-[10px] text-[#D4AF37]/90 font-medium">Digital Transformation Architect</div>
+                  <div className="text-[10px] text-[#D4AF37] font-medium font-mono">MrTechSys AI Advisory Console</div>
                 </div>
               </div>
 

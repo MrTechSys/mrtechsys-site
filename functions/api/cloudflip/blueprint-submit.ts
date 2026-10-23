@@ -1,9 +1,12 @@
 // functions/api/cloudflip/blueprint-submit.ts
 
+import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../../shared/emailSafety';
+
 interface Env {
   DB?: any;
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
+  ADMIN_ALERT_EMAIL?: string;
 }
 
 const CSP_NAMES: Record<string, string> = {
@@ -66,17 +69,19 @@ const CSP_PLAYBOOKS: Record<string, Array<{ step: string; title: string; desc: s
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const payload = await request.json() as {
-      businessName: string;
-      contactName?: string;
-      email: string;
-      selectedBuild: string[];
-      selectedCsps: string[];
-      scalePreference: string;
+    // Public and unauthenticated: normalise every field before it is stored or put into the email.
+    const raw = await readJsonBody(request);
+    const payload = {
+      businessName: cleanText(raw?.businessName, 100),
+      contactName: cleanText(raw?.contactName, 100),
+      email: String(raw?.email ?? '').trim(),
+      selectedBuild: (Array.isArray(raw?.selectedBuild) ? raw.selectedBuild : []).slice(0, 12).map((w: unknown) => cleanText(w, 40)).filter(Boolean),
+      selectedCsps: (Array.isArray(raw?.selectedCsps) ? raw.selectedCsps : []).map(String).filter((c: string) => Object.hasOwn(CSP_NAMES, c)),
+      scalePreference: cleanText(raw?.scalePreference, 40),
     };
 
-    if (!payload.email || !payload.businessName) {
-      return new Response(JSON.stringify({ error: "Business name and email are required" }), {
+    if (!isSingleEmail(payload.email) || !payload.businessName) {
+      return new Response(JSON.stringify({ error: "Business name and one valid email address are required" }), {
         status: 400,
         headers: { "Content-Type": "application/json" }
       });
@@ -121,9 +126,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     if (env.RESEND_API_KEY) {
       const fromEmail = env.RESEND_FROM_EMAIL || "notifications@mrtechsys.com";
-      const userFirstName = payload.contactName ? payload.contactName.split(' ')[0] : payload.businessName;
-      const cspListFormatted = payload.selectedCsps.map(c => CSP_NAMES[c] || c.toUpperCase()).join(' + ');
-      const workloadsFormatted = payload.selectedBuild.map(w => w.toUpperCase()).join(', ');
+      const userFirstName = escapeHtml(payload.contactName ? payload.contactName.split(' ')[0] : payload.businessName);
+      const cspListFormatted = escapeHtml(payload.selectedCsps.map(c => CSP_NAMES[c]).join(' + '));
+      const workloadsFormatted = escapeHtml(payload.selectedBuild.map(w => w.toUpperCase()).join(', '));
 
       // Build checklist sections for HTML email
       let playbooksHtml = '';
@@ -193,7 +198,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                     Your Custom Cloud Footprint Blueprint
                   </h1>
                   <p style="color: #94A3B8; font-size: 13px; margin: 0;">
-                    Prepared for <strong>${payload.businessName}</strong> &bull; Free-Tier First Architecture
+                    Prepared for <strong>${escapeHtml(payload.businessName)}</strong> &bull; Free-Tier First Architecture
                   </p>
                 </div>
 
@@ -254,6 +259,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
           body: JSON.stringify({
             from: `MrTechSys Notifications <${fromEmail}>`,
             to: [payload.email],
+            bcc: [env.ADMIN_ALERT_EMAIL || "direct@mrtechsys.com"],
+            reply_to: "direct@mrtechsys.com",
             subject: `Your Cloud Architecture Blueprint: ${payload.businessName} (10-Point Playbook)`,
             html: emailHtml
           })
@@ -262,13 +269,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         if (resendRes.ok) {
           emailSent = true;
         } else {
-          const resendErr = await resendRes.text();
-          console.warn("Resend API warning:", resendErr);
-          emailError = resendErr;
+          console.warn("Resend API warning:", resendRes.status, await resendRes.text());
+          emailError = 'delivery_failed';
         }
       } catch (rErr: any) {
         console.warn("Resend fetch error:", rErr);
-        emailError = rErr.message;
+        emailError = 'delivery_failed';
       }
     }
 
@@ -285,7 +291,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     });
 
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("blueprint-submit failed:", err);
+    if (err?.status === 413 || err instanceof SyntaxError) {
+      return new Response(JSON.stringify({ error: err?.status === 413 ? "Request too large" : "Invalid request" }), {
+        status: err?.status === 413 ? 413 : 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+    return new Response(JSON.stringify({ error: "Could not process the request" }), {
       status: 500,
       headers: { "Content-Type": "application/json" }
     });

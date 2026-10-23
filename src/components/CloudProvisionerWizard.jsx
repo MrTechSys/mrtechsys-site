@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Globe, Server, Database, HardDrive, Key, BarChart3, 
@@ -104,21 +105,67 @@ const CSP_PLAYBOOKS = {
 };
 
 const CloudProvisionerWizard = ({ initialWorkload = null, onClose = null }) => {
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const paramWorkload = query.get('workload');
+  const paramIndustry = query.get('industry');
+
+  const initialSelection = useMemo(() => {
+    if (paramWorkload) {
+      return paramWorkload.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    return initialWorkload ? [initialWorkload] : ['web', 'api', 'database'];
+  }, [paramWorkload, initialWorkload]);
+
   const [step, setStep] = useState(1);
-  const [selectedBuild, setSelectedBuild] = useState(initialWorkload ? [initialWorkload] : ['web', 'api', 'database']);
+  const [selectedBuild, setSelectedBuild] = useState(initialSelection);
   const [selectedCsps, setSelectedCsps] = useState(['cloudflare', 'aws']);
   const [scalePreference, setScalePreference] = useState('free_first');
   const [copied, setCopied] = useState(false);
   const [showIaC, setShowIaC] = useState(false);
 
+  // Viewport Auto-Scroll: Resets scroll to top of wizard container on step change
+  useEffect(() => {
+    const el = document.getElementById('cloud-provisioner-container');
+    if (el) {
+      const topOffset = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+  }, [step]);
+
   // Delivery Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [businessName, setBusinessName] = useState('');
-  const [contactName, setContactName] = useState('');
-  const [email, setEmail] = useState('');
+  const [businessName, setBusinessName] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_business_name') || ''; } catch { return ''; }
+  });
+  const [contactName, setContactName] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_name') || ''; } catch { return ''; }
+  });
+  const [email, setEmail] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_email') || ''; } catch { return ''; }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliverySuccess, setDeliverySuccess] = useState(false);
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
+
+  // Sync cache on change
+  useEffect(() => {
+    if (email && email.includes('@')) {
+      try { localStorage.setItem('mrtechsys_cached_email', email.trim()); } catch {}
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (businessName) {
+      try { localStorage.setItem('mrtechsys_cached_business_name', businessName.trim()); } catch {}
+    }
+  }, [businessName]);
+
+  useEffect(() => {
+    if (contactName) {
+      try { localStorage.setItem('mrtechsys_cached_name', contactName.trim()); } catch {}
+    }
+  }, [contactName]);
 
   const toggleBuild = (id) => {
     setSelectedBuild(prev => 
@@ -237,7 +284,7 @@ module "mrtechsys_footprint" {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 md:p-10 rounded-2xl bg-[#07090E] border border-[#D4AF37]/30 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative overflow-hidden text-slate-100">
+    <div id="cloud-provisioner-container" className="w-full max-w-5xl mx-auto p-6 md:p-10 rounded-2xl bg-[#07090E] border border-[#D4AF37]/30 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative overflow-hidden text-slate-100">
       
       {/* Texas Watermark Backdrop */}
       <div className="absolute -right-12 -bottom-12 w-96 opacity-[0.03] pointer-events-none select-none">

@@ -11,11 +11,36 @@ const ConsultationModal = ({
   diagnosticMetrics = null,
   source = "general"
 }) => {
-  const [name, setName] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_name') || ''; } catch { return ''; }
+  });
+  const [businessName, setBusinessName] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_business_name') || ''; } catch { return ''; }
+  });
+  const [email, setEmail] = useState(() => {
+    try { return localStorage.getItem('mrtechsys_cached_email') || ''; } catch { return ''; }
+  });
   const [question, setQuestion] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync cache on change
+  React.useEffect(() => {
+    if (email && email.includes('@')) {
+      try { localStorage.setItem('mrtechsys_cached_email', email.trim()); } catch {}
+    }
+  }, [email]);
+
+  React.useEffect(() => {
+    if (businessName) {
+      try { localStorage.setItem('mrtechsys_cached_business_name', businessName.trim()); } catch {}
+    }
+  }, [businessName]);
+
+  React.useEffect(() => {
+    if (name) {
+      try { localStorage.setItem('mrtechsys_cached_name', name.trim()); } catch {}
+    }
+  }, [name]);
 
   if (!isOpen) return null;
 
