@@ -1,12 +1,18 @@
 // functions/api/assessment-advisor.ts
 // MrTechSysGPT Consultant Agent & Deterministic Assessment Engine
 
+import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
+
 interface Env {
   AI?: any;
   DB: D1Database;
   OPENAI_API_KEY?: string;
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
+  ADMIN_ALERT_EMAIL?: string;
+  // 'true' turns on send_report_email. Off by default: it emails any address a visitor gives, so it stays off until
+  // the endpoint has bot protection (Turnstile) and a per-IP / per-recipient rate limit.
+  REPORT_EMAIL_ENABLED?: string;
 }
 
 interface DiagnosticState {
@@ -118,7 +124,8 @@ const INDUSTRY_PROFILES: Record<string, {
 
 // ─── JOB 3: DETERMINISTIC DIAGNOSTIC RULES ENGINE ────────────────────────────
 function runDiagnosticRules(state: DiagnosticState, profileKey: string = 'contractor') {
-  const profileConfig = INDUSTRY_PROFILES[profileKey] || INDUSTRY_PROFILES.contractor;
+  // Own keys only: '__proto__' or 'constructor' would otherwise resolve to a built-in object.
+  const profileConfig = Object.hasOwn(INDUSTRY_PROFILES, profileKey) ? INDUSTRY_PROFILES[profileKey] : INDUSTRY_PROFILES.contractor;
 
   let operations = 75;
   let security = 80;
@@ -275,7 +282,7 @@ function runDiagnosticRules(state: DiagnosticState, profileKey: string = 'contra
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const body = await request.json() as any;
+    const body = await readJsonBody(request);
     const { action, dialogueHistory, currentAnswer, state = {}, profile = 'contractor' } = body;
 
     // ─── ACTION 1: ADAPTIVE INTERVIEW TURN (Job 1 & Job 2) ──────────────────
@@ -397,12 +404,16 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
 
     // ─── ACTION 3: EMAIL REPORT DISPATCH VIA RESEND ─────────────────────────
     if (action === 'send_report_email') {
-      const recipientEmail = (body.email || state.contact_email || '').trim();
-      const targetBusinessName = (body.businessName || state.business_name || 'Valued Business').trim();
-      const targetContactName = (body.contactName || state.contact_name || 'Executive Leader').trim();
+      if (env.REPORT_EMAIL_ENABLED !== 'true') {
+        return new Response(JSON.stringify({ success: false, emailSent: false, error: 'Email reports are not available yet. Please download your report instead.' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
+      }
+      const recipientEmail = String(body.email || state.contact_email || '').trim();
+      // Plain text for the subject and storage; escaped wherever it goes into the email HTML.
+      const targetBusinessName = cleanText(body.businessName || state.business_name || 'Valued Business', 100);
+      const targetContactName = cleanText(body.contactName || state.contact_name || 'Executive Leader', 100);
 
-      if (!recipientEmail || !recipientEmail.includes('@')) {
-        return new Response(JSON.stringify({ error: 'Valid email address required' }), { status: 400 });
+      if (!isSingleEmail(recipientEmail)) {
+        return new Response(JSON.stringify({ error: 'One valid email address required' }), { status: 400 });
       }
 
       const evaluation = runDiagnosticRules(state, profile);
@@ -429,7 +440,7 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
             state.contact_phone || null,
             profile,
             state.team_size || '1-10',
-            JSON.stringify(body.dialogueHistory || []),
+            JSON.stringify((Array.isArray(body.dialogueHistory) ? body.dialogueHistory : []).slice(-20).map((t: unknown) => cleanText(typeof t === 'string' ? t : JSON.stringify(t), 1000))),
             JSON.stringify(state),
             evaluation.healthScore,
             evaluation.categories.operations,
@@ -490,12 +501,12 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
             10-Point Operational Diagnostic Report
           </h1>
           <p style="color: #94A3B8; font-size: 13px; margin: 0;">
-            Prepared for <strong>${targetBusinessName}</strong> &bull; Profile: ${evaluation.profileName}
+            Prepared for <strong>${escapeHtml(targetBusinessName)}</strong> &bull; Profile: ${evaluation.profileName}
           </p>
         </div>
 
         <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
-          Hello ${targetContactName},
+          Hello ${escapeHtml(targetContactName)},
         </p>
         <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">
           Here is your executive operational briefing synthesized by the MrTechSys Diagnostic Engine. Your baseline scores and prioritized recovery actions are summarized below.
@@ -600,11 +611,11 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
           if (resendRes.ok) {
             emailSent = true;
           } else {
-            emailError = await resendRes.text();
-            console.warn('[RESEND ASSESSMENT ERROR]', emailError);
+            console.warn('[RESEND ASSESSMENT ERROR]', resendRes.status, await resendRes.text());
+            emailError = 'delivery_failed';
           }
         } catch (rErr: any) {
-          emailError = rErr.message;
+          emailError = 'delivery_failed';
           console.warn('[RESEND FETCH ERROR]', rErr);
         }
       }
@@ -617,8 +628,8 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
         message: emailSent
           ? `Briefing successfully dispatched to ${recipientEmail}.`
           : emailError
-            ? `Briefing saved. Email delivery notice: ${emailError}`
-            : `Briefing saved and queued for ${recipientEmail}.`,
+            ? 'Your briefing was saved, but the email could not be delivered. Please download your report instead.'
+            : 'Your briefing was saved. Email delivery is not configured.',
         timestamp
       }), { headers: { 'Content-Type': 'application/json' } });
     }
@@ -627,6 +638,8 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
     return new Response(JSON.stringify({ error: 'Invalid action' }), { status: 400 });
   } catch (err: any) {
     console.error('[ASSESSMENT ADVISOR ERROR]', err);
-    return new Response(JSON.stringify({ error: err.message || 'Server error' }), { status: 500 });
+    if (err?.status === 413) return new Response(JSON.stringify({ error: 'Request too large' }), { status: 413 });
+    if (err instanceof SyntaxError) return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
   }
 };

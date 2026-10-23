@@ -123,10 +123,10 @@ export default function AssessmentPage() {
           sent: data.emailSent,
           message: data.emailSent
             ? `Briefing successfully dispatched to ${targetEmail}.`
-            : data.emailError
-              ? `Delivery alert: ${data.emailError}`
-              : `Briefing recorded for ${targetEmail}.`
+            : data.message || 'Your briefing was saved, but no email was sent.'
         });
+      } else {
+        setEmailStatus({ sent: false, message: data.error || 'Could not send the briefing. Please download your report instead.' });
       }
     } catch (e) {
       setEmailStatus({ sent: false, message: 'Could not dispatch briefing. Please retry.' });
