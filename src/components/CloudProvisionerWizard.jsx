@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,6 +8,7 @@ import {
   ExternalLink, ChevronDown, ChevronUp, Mail, Send
 } from 'lucide-react';
 import ConsultationModal from './ConsultationModal';
+import TurnstileWidget from './TurnstileWidget';
 
 const BUILD_OPTIONS = [
   { id: 'web', name: 'Website / Landing Page', icon: Globe, desc: 'Ultra-fast global static site with edge SSL' },
@@ -146,6 +147,9 @@ const CloudProvisionerWizard = ({ initialWorkload = null, onClose = null }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliverySuccess, setDeliverySuccess] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const [deliveryError, setDeliveryError] = useState('');
+  const turnstileRef = useRef(null);
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
 
   // Sync cache on change
@@ -259,11 +263,12 @@ module "mrtechsys_footprint" {
 
   const handleDeliverySubmit = async (e) => {
     e.preventDefault();
-    if (!email || !businessName) return;
+    if (!email || !businessName || !turnstileToken) return;
 
     setIsSubmitting(true);
+    setDeliveryError('');
     try {
-      await fetch('/api/blueprint-submit', {
+      const res = await fetch('/api/blueprint-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -272,14 +277,22 @@ module "mrtechsys_footprint" {
           email,
           selectedBuild,
           selectedCsps,
-          scalePreference
+          scalePreference,
+          turnstileToken
         })
       });
-      setDeliverySuccess(true);
+      // Success only when the server says so (it used to show success whatever happened).
+      if (res.ok) {
+        setDeliverySuccess(true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setDeliveryError(data.message || data.error || 'We could not send your blueprint. Please try again.');
+      }
     } catch (err) {
-      setDeliverySuccess(true);
+      setDeliveryError('Network error. Please try again.');
     } finally {
       setIsSubmitting(false);
+      turnstileRef.current?.reset(); // tokens are single-use
     }
   };
 
@@ -845,9 +858,11 @@ module "mrtechsys_footprint" {
                     />
                   </div>
 
+                  <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} className="flex justify-center" />
+                  {deliveryError && <p className="text-xs text-red-300 text-center">{deliveryError}</p>}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !turnstileToken}
                     className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] disabled:opacity-50 text-[#07090E] font-mono text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] mt-2 cursor-pointer flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? 'Sending...' : 'Deliver My Blueprint & Playbook →'}

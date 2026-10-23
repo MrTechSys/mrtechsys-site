@@ -2,12 +2,14 @@
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../../shared/emailSafety';
 import { consumeLimits, emailLimits, limitResponse } from '../../../shared/rateLimit';
+import { verifyTurnstile } from '../../../shared/turnstile';
 
 interface Env {
   DB?: any;
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
   ADMIN_ALERT_EMAIL?: string;
+  TURNSTILE_SECRET_KEY?: string;
 }
 
 const CSP_NAMES: Record<string, string> = {
@@ -88,7 +90,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       });
     }
 
-    // Per IP, per recipient and site-wide, before anything is stored or sent (shared/rateLimit.ts).
+    // A human (Turnstile), then per IP, per recipient and site-wide limits, before anything is stored or sent.
+    const human = await verifyTurnstile(env, request, raw?.turnstileToken);
+    if (!human.ok) return human.response;
     const limited = await consumeLimits(env.DB, await emailLimits(request, payload.email));
     if (!limited.ok) return limitResponse(limited);
 

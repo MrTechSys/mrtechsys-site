@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TurnstileWidget from './TurnstileWidget';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ChevronRight, ChevronLeft, Bot, Calendar, Clock,
@@ -150,6 +151,8 @@ const SmartBookingModal = ({ isOpen, onClose, prefillService = null, prefillCont
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
   const [submitError, setSubmitError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const turnstileRef = useRef(null);
 
   const modalContentRef = useRef(null);
 
@@ -271,7 +274,7 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
   };
 
   const handleSubmit = async () => {
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim() || !turnstileToken) return;
     setIsSubmitting(true);
     setSubmitError('');
     try {
@@ -291,6 +294,7 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
           aiPlanSummary: aiPlan,
           bookingDate: selectedDate,
           bookingTime: selectedTime,
+          turnstileToken,
           duration,
           meetingType
         })
@@ -310,6 +314,7 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
       setSubmitError('Network error. Please try again.');
     } finally {
       setIsSubmitting(false);
+      turnstileRef.current?.reset(); // tokens are single-use
     }
   };
 
@@ -587,10 +592,11 @@ Keep it practical, direct, and exciting. No more than 250 words.`;
                     <p className="text-xs text-red-300">{submitError}</p>
                   </div>
                 )}
+                <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} className="flex justify-center" />
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={isSubmitting || !canAdvance()}
+                  disabled={isSubmitting || !canAdvance() || !turnstileToken}
                   className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#EAB308] hover:from-[#EAB308] hover:to-[#F1C40F] disabled:opacity-50 text-[#07090E] font-mono text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] cursor-pointer flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? <><Loader2 size={14} className="animate-spin" /> Confirming Booking...</> : <><CheckCircle2 size={14} /> Confirm Strategy Session →</>}
