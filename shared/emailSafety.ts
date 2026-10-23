@@ -18,9 +18,12 @@ export function escapeHtml(value: unknown): string {
     .replace(/'/g, '&#39;');
 }
 
-/** One line of plain text: no control characters or line breaks, trimmed, at most `max` characters. */
+/**
+ * One line of plain text, trimmed, at most `max` characters: no control characters, line or paragraph separators
+ * (U+2028/2029), or bidirectional overrides (U+202A-202E, U+2066-2069) that could disguise a subject line.
+ */
 export function cleanText(value: unknown, max = 100): string {
-  return String(value ?? '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim().slice(0, max);
+  return String(value ?? '').replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029\u202a-\u202e\u2066-\u2069]+/g, ' ').trim().slice(0, max);
 }
 
 /** Exactly one address: no commas, semicolons, spaces or angle brackets (a list would send to several people). */
@@ -31,9 +34,11 @@ export function isSingleEmail(value: unknown): boolean {
 
 /** Rejects bodies over MAX_BODY_BYTES before parsing them. */
 export async function readJsonBody(request: Request): Promise<any> {
+  const tooLarge = () => Object.assign(new Error('Request too large'), { status: 413 });
+  if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES) throw tooLarge();
   const text = await request.text();
   if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) {
-    throw Object.assign(new Error('Request too large'), { status: 413 });
+    throw tooLarge();
   }
   return JSON.parse(text);
 }
