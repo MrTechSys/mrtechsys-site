@@ -2,7 +2,7 @@
 // MrTechSysGPT Consultant Agent & Deterministic Assessment Engine
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
-import { consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
+import { aiLimits, consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
 import { verifyTurnstile } from '../../shared/turnstile';
 
 interface Env {
@@ -318,7 +318,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       let replyText = "Understood. How does your team currently track appointments and job schedules?";
       let quickOptions = ["Manual Whiteboard / Calendar", "Google / Outlook Calendar", "Texting Back & Forth", "Dedicated Scheduling App"];
 
-      if (env.AI) {
+      // The site-wide AI limits (shared/rateLimit.ts); over them the interview goes on with the default question above.
+      if (env.AI && (await consumeLimits(env.DB, aiLimits(request))).ok) {
         try {
           const aiRes = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fp8', {
             messages: [

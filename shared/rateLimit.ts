@@ -27,6 +27,8 @@ export const LIMITS = Object.freeze({
   perRecipient: { limit: 3, windowSec: 86400 },  // email-sending requests to one address per day (up to 2 emails each)
   global: { limit: 30, windowSec: 86400 },       // email-sending requests for the whole site per day
   bookingPerIp: { limit: 3, windowSec: 86400 },  // new bookings from one IP (or IPv6 /64) per day
+  aiPerIp: { limit: 20, windowSec: 3600 },       // AI requests from one IP per hour (all AI endpoints together)
+  aiGlobal: { limit: 400, windowSec: 86400 },    // AI requests for the whole site per day (Workers AI is shared with CloudFlip)
 });
 
 const RETENTION_SEC = 2 * 86400; // longest window, twice
@@ -49,6 +51,12 @@ export const clientIp = (request: Request) => {
   const groups = ip.includes('::') ? [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right] : left;
   return `${groups.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, '')).join(':')}::/64`;
 };
+
+/** The counters for one AI request, shared by every endpoint that calls a model. */
+export const aiLimits = (request: Request): Limit[] => [
+  { bucket: `ai:ip:${clientIp(request)}`, ...LIMITS.aiPerIp },
+  { bucket: 'ai:global', ...LIMITS.aiGlobal },
+];
 
 /** The counters for one email-sending request: per IP, per recipient and site-wide, for `kind` (e.g. 'blueprint'). */
 export async function emailLimits(request: Request, recipient: string): Promise<Limit[]> {

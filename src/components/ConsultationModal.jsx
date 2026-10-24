@@ -189,6 +189,7 @@ const ConsultationModal = ({
             <textarea
               rows={3}
               value={question}
+              maxLength={1200}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="e.g. How do we connect our customer data to Cloudflare Workers and AWS without running up billing surprises?"
               className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-[#D4AF37] resize-none"

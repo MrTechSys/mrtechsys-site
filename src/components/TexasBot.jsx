@@ -6,6 +6,12 @@ import {
   Copy, Check, Sparkles, Compass, ArrowUpRight, Calendar
 } from 'lucide-react';
 
+// The same allow-list as the server (functions/api/mrtechsysgpt.ts ALLOWED_LINK_HOSTS).
+const ALLOWED_LINK_HOSTS = new Set(['dash.cloudflare.com', 'aws.amazon.com', 'azure.microsoft.com', 'cloud.google.com', 'stripe.com', 'cloudflip.mrtechsys.com', 'mrtechsys.com', 'www.mrtechsys.com']);
+const isAllowedLink = (url) => {
+  try { const u = new URL(url); return u.protocol === 'https:' && ALLOWED_LINK_HOSTS.has(u.hostname); } catch { return false; }
+};
+
 const STORAGE_KEY_MESSAGES = 'mrtechsys_chat_history_v1';
 const STORAGE_KEY_STATE = 'mrtechsys_chat_state_v1';
 
@@ -240,12 +246,14 @@ const TexasBot = () => {
         // Also check assistant response for recommended feature navigation
         handleSmartRouting(result.reply);
       } else {
+        // Too long (400) and too many requests (429) say so; anything else gets the general note.
+        const problem = (res.status === 400 || res.status === 429) ? await res.json().catch(() => ({})) : {};
         setMessages(prev => [
           ...prev,
           {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
-            text: "MrTechSys Technology Advisory is online. Contact MrTechSys directly for specialized multi-cloud architectures.",
+            text: problem.message || problem.error || "MrTechSys Technology Advisory is online. Contact MrTechSys directly for specialized multi-cloud architectures.",
             timestamp: new Date().toISOString()
           }
         ]);
@@ -481,6 +489,12 @@ const TexasBot = () => {
                         while ((match = linkRegex.exec(m.text)) !== null) {
                           if (match.index > lastIndex) {
                             parts.push(m.text.slice(lastIndex, match.index));
+                          }
+                          // Only allow-listed hosts become links (the server filters too); anything else stays text.
+                          if (!isAllowedLink(match[2])) {
+                            parts.push(match[1]);
+                            lastIndex = linkRegex.lastIndex;
+                            continue;
                           }
                           parts.push(
                             <a

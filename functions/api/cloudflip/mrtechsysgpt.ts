@@ -1,17 +1,32 @@
 // functions/api/cloudflip/mrtechsysgpt.ts
 
+import { readJsonBody } from '../../../shared/emailSafety';
+import { aiLimits, consumeLimits, limitResponse } from '../../../shared/rateLimit';
+
 interface Env {
   OPENAI_API_KEY?: string;
   AI?: any; // Cloudflare Workers AI binding
+  DB?: D1Database; // rate_counters (shared/rateLimit.ts)
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const { message } = await request.json() as { message: string };
-    
+    let message = '';
+    try {
+      message = String((await readJsonBody(request))?.message ?? '');
+    } catch {
+      return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
+    }
+
     if (!message || !message.trim()) {
       return new Response(JSON.stringify({ error: "Message is required" }), { status: 400 });
     }
+    if (message.length > 2000) {
+      return new Response(JSON.stringify({ error: 'Please keep messages under 2000 characters.' }), { status: 400 });
+    }
+    // Public: the same AI limits as every other AI endpoint on the site (shared/rateLimit.ts).
+    const limited = await consumeLimits(env.DB, aiLimits(request));
+    if (!limited.ok) return limitResponse(limited);
 
     const lower = message.toLowerCase();
 
