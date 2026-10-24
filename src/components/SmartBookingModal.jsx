@@ -207,25 +207,20 @@ const SmartBookingModal = ({ isOpen, onClose, prefillService = null, prefillCont
     setIsLoadingAI(true);
     setAiError('');
     try {
-      const prompt = `Architecture Strategy Request for ${businessName || 'a business'}:
-Service Needed: ${serviceType}
-Industry: ${INDUSTRIES.find(i => i.id === industry)?.label || industry}
-Problem: ${problemSummary || 'Looking for digital transformation guidance'}
-Budget: ${budgetRange || 'TBD'}
-Timeline: ${timeline || 'Flexible'}
-
-As MrTechSys Virtual Architect, provide a concise personalized plan covering:
-1. Recommended architecture approach (2-3 sentences)
-2. Top 3 specific tools/services for their stack
-3. Quick wins they can implement immediately
-4. What we'll cover in the strategy session
-
-Keep it practical, direct, and exciting. No more than 250 words.`;
+      // The server builds the prompt from these answers (functions/api/mrtechsysgpt.ts, action booking_plan).
+      const plan = {
+        businessName,
+        serviceType,
+        industry: INDUSTRIES.find(i => i.id === industry)?.label || industry,
+        problemSummary,
+        budgetRange,
+        timeline,
+      };
 
       const res = await fetch('/api/mrtechsysgpt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt })
+        body: JSON.stringify({ action: 'booking_plan', plan })
       });
       const data = await res.json();
       setAiPlan(data.reply || 'Unable to generate plan at this time.');
