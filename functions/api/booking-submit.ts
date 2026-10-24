@@ -3,6 +3,7 @@
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
 import { LIMITS, clientIp, consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
+import { verifyTurnstile } from '../../shared/turnstile';
 
 interface Env {
   DB?: D1Database;
@@ -11,6 +12,7 @@ interface Env {
   OWNER_ALERT_EMAIL?: string;
   CLOUDFLIP_PROVISION_SECRET?: string;
   ZOOM_MEETING_URL?: string;
+  TURNSTILE_SECRET_KEY?: string;
 }
 
 function json(data: unknown, status = 200) {
@@ -261,6 +263,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   // Bookings per IP, and the email limits for the confirmation (per IP, per recipient, site-wide), before the slot
   // is taken, anything is stored, any email is sent or CloudFlip is asked to send a sign-in code (shared/rateLimit.ts).
+  const human = await verifyTurnstile(env, request, payload.turnstileToken);
+  if (!human.ok) return human.response;
   const limited = await consumeLimits(env.DB, [
     { bucket: `booking:ip:${clientIp(request)}`, ...LIMITS.bookingPerIp },
     ...(await emailLimits(request, payload.email)),

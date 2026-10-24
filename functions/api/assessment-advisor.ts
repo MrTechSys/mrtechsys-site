@@ -3,6 +3,7 @@
 
 import { cleanText, escapeHtml, isSingleEmail, readJsonBody } from '../../shared/emailSafety';
 import { consumeLimits, emailLimits, limitResponse } from '../../shared/rateLimit';
+import { verifyTurnstile } from '../../shared/turnstile';
 
 interface Env {
   AI?: any;
@@ -14,6 +15,7 @@ interface Env {
   // 'true' turns on send_report_email. Off by default: it emails any address a visitor gives, so it stays off until
   // the endpoint has bot protection (Turnstile) and a per-IP / per-recipient rate limit.
   REPORT_EMAIL_ENABLED?: string;
+  TURNSTILE_SECRET_KEY?: string;
 }
 
 interface DiagnosticState {
@@ -416,6 +418,10 @@ Keep your response short (1 to 2 sentences max, no double asterisks **). Then su
       if (!isSingleEmail(recipientEmail)) {
         return new Response(JSON.stringify({ error: 'One valid email address required' }), { status: 400 });
       }
+      // Prerequisite for REPORT_EMAIL_ENABLED=true: AssessmentPage must render TurnstileWidget and send turnstileToken,
+      // or every report email is refused here (403).
+      const human = await verifyTurnstile(env, request, body.turnstileToken);
+      if (!human.ok) return human.response;
       const limited = await consumeLimits(env.DB, await emailLimits(request, recipientEmail));
       if (!limited.ok) return limitResponse(limited);
 
