@@ -2,7 +2,7 @@
 // MrTechSys Senior Cloud & Digital Transformation Advisor Edge Runtime
 
 import { cleanText, readJsonBody } from '../../shared/emailSafety';
-import { clientIp, consumeLimits, limitResponse } from '../../shared/rateLimit';
+import { aiLimits, consumeLimits, limitResponse } from '../../shared/rateLimit';
 
 interface Env {
   OPENAI_API_KEY?: string;
@@ -10,9 +10,8 @@ interface Env {
   DB?: D1Database;
 }
 
-// Public and unauthenticated: an AI endpoint anyone can call, so it is rate limited (shared/rateLimit.ts) and its
-// input is capped. Per IP 20 requests an hour; 400 a day for the whole site (the Workers AI budget is shared with CloudFlip).
-const AI_LIMITS = { perIp: { limit: 20, windowSec: 3600 }, global: { limit: 400, windowSec: 86400 } };
+// Public and unauthenticated: an AI endpoint anyone can call, so it is rate limited (shared/rateLimit.ts aiLimits,
+// shared with the other AI endpoints) and its input is capped.
 const MAX_MESSAGE_CHARS = 2000;
 const MAX_HISTORY_TURNS = 4;
 const MAX_HISTORY_CHARS = 1000;
@@ -20,14 +19,15 @@ const MAX_HISTORY_CHARS = 1000;
 const ALLOWED_LINK_HOSTS = new Set(['dash.cloudflare.com', 'aws.amazon.com', 'azure.microsoft.com', 'cloud.google.com', 'stripe.com', 'cloudflip.mrtechsys.com', 'mrtechsys.com', 'www.mrtechsys.com']);
 
 // ─── LAYER 1: HEURISTIC ANTI-TAMPERING TRIPWIRES ──────────────────────────────
+// Checked only on what the visitor typed (the chat message, or the booking answers), never on the server's own prompt.
+// Phrased narrowly so ordinary wording ("our phone system prompts callers…") isn't mistaken for an attack.
 const TAMPERING_PATTERNS = [
-  /ignore (all|previous|above) (instructions|directives|prompts)/i,
-  /(system prompt|initial prompt|core prompt|developer message)/i,
-  /(what are your (instructions|rules|guidelines|parameters))/i,
-  /(repeat|print|output|display|show) (verbatim|everything above|your prompt)/i,
-  /(response matrix|scoring matrix|diagnostic rules|internal weights)/i,
-  /(you are now in developer mode|jailbreak|DAN mode|unfiltered mode)/i,
-  /(reveal your|expose your|tell me your) (system|configuration|secret|backend)/i
+  /\bignore (all |any )?(the )?(previous|prior|above|earlier) (instructions|directives|prompts|rules)\b/i,
+  /\b(reveal|show|print|repeat|output|display|tell me) (me )?(your|the) (system|initial|core|hidden|developer) (prompt|message|instructions)\b/i,
+  /\bwhat (are|were) your (instructions|rules|guidelines|system prompt)\b/i,
+  /\b(repeat|print|output) (everything|all of the text) above\b/i,
+  /\b(scoring|response) matrix\b|\binternal weights\b/i,
+  /\b(developer|jailbreak|dan|unfiltered|god) mode\b/i,
 ];
 
 const EXECUTIVE_SYSTEM_PROMPT = `You are the Senior Digital Transformation & Cloud Solutions Architect for MrTechSys.
@@ -38,24 +38,27 @@ Tone & Persona:
 
 Facts (the only things you may state about MrTechSys and CloudFlip; never claim a product, feature, service, price or
 guarantee that is not listed here, and say you will cover it in the session when unsure):
-- MrTechSys is a technology advisory firm for small and growing businesses. Services: advisory and a Technology Health
-  Audit; systems and workflow integration; automation (for example missed-call text-back, online booking, invoicing);
-  unbiased multi-cloud setup that starts on free tiers; security and governance basics. Strategy sessions are 30-minute
-  video calls.
+- MrTechSys is a technology advisory firm for small and growing businesses. Services offered for booking: AI automation,
+  cloud migration, DevOps setup, security audit, custom build, CloudFlip setup, enterprise integration and general
+  advisory, plus a Technology Health Audit; cloud work starts on free tiers and is provider-neutral. Strategy sessions
+  are 30, 45 or 60 minutes, by Zoom, Google Meet, phone or CloudFlip Live.
 - CloudFlip OS is MrTechSys's field-operations platform for small service businesses (trades and field services,
-  commercial and professional services, and CloudFlip Ops for kitchens). It handles requests and dispatch, photo-to-quote,
-  driveway tap-to-pay and instant invoicing, and works alongside existing accounting software. It is NOT a cloud
+  commercial and professional services, and CloudFlip Ops for kitchens). It handles requests and dispatch, photo-to-quote
+  with SMS quote approval, SMS ETA alerts to customers, driveway tap-to-pay and instant invoicing, and works alongside
+  existing accounting software. It is NOT a cloud
   migration, cloud cost-optimisation or infrastructure-management tool. For a service business losing leads or quoting
   on paper, CloudFlip is usually the first recommendation.
 - What each linkable provider is for, and nothing more (never attribute any other capability to them):
   Cloudflare: website hosting, domain and DNS, security. AWS / Azure / Google Cloud: cloud hosting and storage for
   larger needs. Stripe: card payments and invoices. CloudFlip: requests, dispatch, photo-to-quote, invoicing and
-  tap-to-pay. None of them provides phone numbers or SMS. Missed-call text-back is an automation MrTechSys sets up;
-  the phone provider is chosen in the session.
+  tap-to-pay, including its SMS quote approval and ETA alerts. Cloudflare, AWS, Azure, Google Cloud and Stripe don't
+  provide phone numbers or SMS. Missed-call text-back is an automation MrTechSys sets up; the phone provider is chosen
+  in the session.
 
 Context calibration:
 - Size the advice to the business. For a solo operator, an early-stage business or a budget under about $5,000, never
-  recommend Kubernetes, microservices, multi-cloud migrations or heavy infrastructure; lead with the one or two changes
+  recommend Kubernetes, microservices, multi-cloud migrations or heavy infrastructure (if they asked for a migration,
+  keep it to the smallest safe step); lead with the one or two changes
   that fix their stated problem fastest (missed calls, booking, quoting, invoicing, getting paid) on free or low-cost tools.
 - For larger teams or budgets, focus on integration, identity and MFA, automated dispatch and resilient, simple hosting.
 - Base every recommendation on what the visitor said; if a detail is missing, say what you would need to know.
@@ -85,7 +88,7 @@ function sanitizeOutput(text: string): string {
     // Strip out double asterisks to save tokens and keep UI clean
     .replace(/\*\*/g, '')
     // Markdown links to anywhere but the allow-list keep only their text; bare URLs elsewhere are removed.
-    .replace(/\[([^\]]{0,200})\]\(([^)\s]{1,500})\)/g, (m, label, url) => (linkAllowed(url) ? m : label))
+    .replace(/\[([^\]]*)\]\(([^)\s]+)\)/g, (m, label, url) => (linkAllowed(url) ? m : label))
     .replace(/(?<!\()\bhttps?:\/\/[^\s)]+/g, (url) => (linkAllowed(url) ? url : '[link removed]'))
     .trim();
 }
@@ -96,8 +99,11 @@ const PLAN_FIELDS: Array<[string, string, number]> = [
   ['businessName', 'Business', 100], ['serviceType', 'Service needed', 80], ['industry', 'Industry', 80],
   ['problemSummary', 'Problem', 1200], ['budgetRange', 'Budget', 60], ['timeline', 'Timeline', 60],
 ];
+// Angle brackets are removed so an answer can't close the <visitor_data> block.
+const planValue = (plan: Record<string, unknown>, key: string, max: number) => cleanText(plan?.[key], max).replace(/[<>]/g, '');
+const planVisitorText = (plan: Record<string, unknown>) => PLAN_FIELDS.map(([key, , max]) => planValue(plan, key, max)).join('\n');
 function bookingPlanPrompt(plan: Record<string, unknown>): string {
-  const lines = PLAN_FIELDS.map(([key, label, max]) => `${label}: ${cleanText(plan?.[key], max) || 'not given'}`);
+  const lines = PLAN_FIELDS.map(([key, label, max]) => `${label}: ${planValue(plan, key, max) || 'not given'}`);
   return `Architecture Strategy Request. The visitor's answers:
 <visitor_data>
 ${lines.join('\n')}
@@ -128,17 +134,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return new Response(JSON.stringify({ error: `Please keep messages under ${MAX_MESSAGE_CHARS} characters.` }), { status: 400 });
     }
 
-    const limited = await consumeLimits(env.DB, [
-      { bucket: `ai:ip:${clientIp(request)}`, ...AI_LIMITS.perIp },
-      { bucket: 'ai:global', ...AI_LIMITS.global },
-    ]);
+    const limited = await consumeLimits(env.DB, aiLimits(request));
     if (!limited.ok) return limitResponse(limited);
 
     const trimmedMsg = message.trim();
     const lower = trimmedMsg.toLowerCase();
 
     // ─── LAYER 1: DETERMINISTIC HEURISTIC DEFLECTION ──────────────────────────
-    const isTampering = TAMPERING_PATTERNS.some(pat => pat.test(trimmedMsg));
+    const visitorText = body?.action === 'booking_plan' ? planVisitorText(body.plan || {}) : trimmedMsg;
+    const isTampering = TAMPERING_PATTERNS.some(pat => pat.test(visitorText));
     if (isTampering) {
       return new Response(JSON.stringify({
         reply: "I am configured exclusively to assist with business technology architecture, systems integration, and CloudFlip advisory for MrTechSys. How can I assist with evaluating your operational workflows or cloud footprint today?"
